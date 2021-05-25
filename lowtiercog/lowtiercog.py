@@ -8,33 +8,35 @@ class Lowtiercog(commands.Cog):
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx: commands.Context):
         """Base command. Without arguments it speaks a random LTG quote."""
-        try:
-            with open('quotes.json') as file:
-                data = json.load(file)
-            random.seed(random.random())
-            selected = random.choice(data['quotes'])
-            msg = selected['msg']
-            await ctx.send(msg)
-        except IndexError as e:
-            await ctx.send("There are no LTG quotes.")
+        if ( ctx.channel.id == 319638586364395520 or ctx.channel.id == 344539989906030612 ):
+            try:
+                with open('quotes.json') as file:
+                    data = json.load(file)
+                random.seed(random.random())
+                selected = random.choice(data['quotes'])
+                msg = selected['msg']
+                await ctx.send(msg)
+            except IndexError as e:
+                await ctx.send("There are no LTG quotes.")
 
     @lowtierquote.command(name = "show")
     async def _lowtiershow(self, ctx: commands.Context, code):
         """Showcases a specific quote given an ID."""
-        try:
-            id = int(code)
-            msg = "The given ID wasn't found."
-            with open('quotes.json') as file:
-                data = json.load(file)
-            quotes = data['quotes']
-            for x in range(len(quotes)):
-                key = quotes[x]['id']
-                if ( id == key ):
-                    msg = quotes[x]['msg']
-                    break
-            await ctx.send(msg)
-        except:
-            await ctx.send("Invalid code.")
+        if ( ctx.channel.id == 319638586364395520 or ctx.channel.id == 344539989906030612 ):
+            try:
+                id = int(code)
+                msg = "The given ID wasn't found."
+                with open('quotes.json') as file:
+                    data = json.load(file)
+                quotes = data['quotes']
+                for x in range(len(quotes)):
+                    key = quotes[x]['id']
+                    if ( id == key ):
+                        msg = quotes[x]['msg']
+                        break
+                await ctx.send(msg)
+            except:
+                await ctx.send("Invalid code.")
 
     @lowtierquote.command(name = "list")
     async def _lowtierlist(self, ctx: commands.Context):

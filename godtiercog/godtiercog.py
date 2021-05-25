@@ -8,33 +8,35 @@ class Godtiercog(commands.Cog):
     @commands.group(invoke_without_command = True)
     async def godpost(self, ctx: commands.Context):
         """Base command. Without arguments it spits out a random post."""
-        try:
-            with open('posts.json') as file:
-                data = json.load(file)
-            random.seed(random.random())
-            selected = random.choice(data['quotes'])
-            msg = selected['msg']
-            await ctx.send(msg)
-        except IndexError as e:
-            await ctx.send("There are no posts!")
+        if ( ctx.channel.id == 319638586364395520 or ctx.channel.id == 344539989906030612 ):
+            try:
+                with open('posts.json') as file:
+                    data = json.load(file)
+                random.seed(random.random())
+                selected = random.choice(data['quotes'])
+                msg = selected['msg']
+                await ctx.send(msg)
+            except IndexError as e:
+                await ctx.send("There are no posts!")
 
     @godpost.command(name = "show")
     async def _showpost(self, ctx: commands.Context, code):
         """Showcases a specific post given an ID."""
-        try:
-            id = int(code)
-            msg = "The given ID wasn't found."
-            with open('posts.json') as file:
-                data = json.load(file)
-            quotes = data['quotes']
-            for x in range(len(quotes)):
-                key = quotes[x]['id']
-                if ( id == key ):
-                    msg = quotes[x]['msg']
-                    break
-            await ctx.send(msg)
-        except:
-            await ctx.send("Invalid code.")
+        if ( ctx.channel.id == 319638586364395520 or ctx.channel.id == 344539989906030612 ):
+            try:
+                id = int(code)
+                msg = "The given ID wasn't found."
+                with open('posts.json') as file:
+                    data = json.load(file)
+                quotes = data['quotes']
+                for x in range(len(quotes)):
+                    key = quotes[x]['id']
+                    if ( id == key ):
+                        msg = quotes[x]['msg']
+                        break
+                await ctx.send(msg)
+            except:
+                await ctx.send("Invalid code.")
 
     @godpost.command(name = "list")
     async def _listposts(self, ctx: commands.Context):
