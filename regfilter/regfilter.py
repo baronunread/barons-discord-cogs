@@ -100,13 +100,13 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "names")
     async def _list(self, ctx: commands.Context):
         """Sends the names list through DMs."""
-        try:
-            user = ctx.message.author
-            list = self.cache_names
-            prettyList = "\n".join(list)
-            await user.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+        # try:
+        user = ctx.message.author
+        list = self.cache_names
+        prettyList = "\n".join(list)
+        await user.send(prettyList)
+        # except:
+        #     await ctx.send("ERROR: Open your DMs.")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
