@@ -26,7 +26,7 @@ class Regfilter(commands.Cog):
                          }
         self.config.register_global(**default_global)
         self.cache = []
-        self.validate_cache()
+        self.validate_cache(self)
     
     async def validate_cache(self, ctx):   
         async with self.config.regex() as regex: 
