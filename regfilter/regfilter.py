@@ -99,7 +99,7 @@ class Regfilter(commands.Cog):
             async with self.config.names() as names:
             # try
                 name = random.choice(names)
-                if member.top_role >= member.guild.me.top_role:
+                if not member.guild.me.guild_permissions.manage_nicknames:
                     member.send("I can't do this shit mang")
                 await member.edit(nick = name, reason = "Filtered username")
             # except:
