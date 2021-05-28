@@ -25,8 +25,8 @@ class Regfilter(commands.Cog):
                                      ]
                          }
         self.config.register_global(**default_global)
-        self.cache_regex = default_global['regex']
-        self.cache_names = default_global['names']
+        self.cache_regex = self.config.regex()
+        self.cache_names = self.config.names()
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -97,7 +97,7 @@ class Regfilter(commands.Cog):
         except:
             await ctx.send("ERROR: Open your DMs.")
 
-    @listThings.command(name = "name")
+    @listThings.command(name = "names")
     async def _list(self, ctx: commands.Context):
         """Sends the names list through DMs."""
         try:
@@ -140,10 +140,10 @@ class Regfilter(commands.Cog):
 
     async def maybe_filter_name(self, member: discord.Member):
         if await self.triggered_filter(member.display_name):
-            async with self.config.names() as names:
-                try:
-                    name = random.choice(names)
-                    await member.edit(nick = name, reason = "Filtered username")
-                except discord.HTTPException:
-                    pass
-                return
+            names = self.cache_names
+            try:
+                name = random.choice(names)
+                await member.edit(nick = name, reason = "Filtered username")
+            except discord.HTTPException:
+                pass
+            return
