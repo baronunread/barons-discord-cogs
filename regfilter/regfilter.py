@@ -35,6 +35,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
+        """Base command. Can either add a name, or a regex."""
         pass
 
     @add.command(name = "regex")
