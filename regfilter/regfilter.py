@@ -94,7 +94,7 @@ class Regfilter(commands.Cog):
         """Sends the REGEX list through DMs."""
         try:
             user = ctx.message.author
-            self.validate_cache(self, ctx)
+            await self.validate_cache(self, ctx)
             list = self.cache
             prettyList = "\n".join(list)
             await user.send(prettyList)
@@ -122,7 +122,7 @@ class Regfilter(commands.Cog):
             await message.delete()
     
     async def triggered_filter(self, content):
-        self.validate_cache(self)
+        await self.validate_cache(self)
         patterns = self.cache
         for pattern in patterns:
             result = re.findall(pattern, content)
