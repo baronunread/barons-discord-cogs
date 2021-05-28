@@ -1,6 +1,8 @@
 from redbot.core import commands, Config
 import discord
+import random
 import re
+
 
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words."""
@@ -17,6 +19,9 @@ class Regfilter(commands.Cog):
                                       '(?i)n+[\\s+e3]+[\\s+gğq]+[\\s+r]+[o0]',
                                       '(?i)n+[\\s+iïl1y]+[\\s+gğq]{2,}[\\s+e3]+r',
                                       '(?i)t+[\\s+r]+[\\s+@4aáäÄæÆ]+[\\s+n]+[iïl1y]'
+                                     ],
+                            "names": [
+                                      "Michael", "James"  
                                      ]
                          }
         self.config.register_global(**default_global)
@@ -54,7 +59,7 @@ class Regfilter(commands.Cog):
         try:
             user = ctx.message.author
             list = await self.config.regex()
-            prettyList = "\n".join(str(e) for e in list)
+            prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
             await ctx.send("ERROR: Open your DMs.")
@@ -66,12 +71,36 @@ class Regfilter(commands.Cog):
         content = message.content
         if author.bot:
             return
+        if await self.triggered_filter(content):
+            await message.delete()
+    
+    async def triggered_filter(self, content):
+        patterns = self.cache
         for pattern in patterns:
             result = re.findall(pattern, content)
             if ( result != [] ):
-                await message.delete()
-                return
-    
+                return True
+        return False
+
     @commands.Cog.listener()
     async def on_message_edit(self, _prior, message):
         await self.on_message(message)
+
+    @commands.Cog.listener()
+    async def on_member_update(self, before: discord.Member, after: discord.Member):
+        if before.display_name != after.display_name:
+            await self.maybe_filter_name(after)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member: discord.Member):
+        await self.maybe_filter_name(member)
+
+    async def maybe_filter_name(self, member: discord.Member):
+        if await self.triggered_filter(member.display_name):
+            async with self.config.names() as names:
+                name = random.choice(names)
+            try:
+                await member.edit(nick = name, reason = "Filtered username")
+            except:
+                pass
+        
