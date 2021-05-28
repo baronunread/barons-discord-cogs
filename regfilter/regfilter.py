@@ -102,4 +102,4 @@ class Regfilter(commands.Cog):
                 await member.edit(nick = name, reason = "Filtered username")
             except:
                 pass
-        
+            return
