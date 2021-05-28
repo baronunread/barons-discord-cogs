@@ -46,11 +46,11 @@ class Regfilter(commands.Cog):
 
     @add.command(name = "regex")
     async def add_regex(self, ctx: commands.Context, *, msg):
-        """Adds a REGEX to the list."""
+        """Adds a regex to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
             self.cache = regex
-        await ctx.send("The new REGEX has been added.")
+        await ctx.send("The new regex has been added.")
 
     @add.command(name = "name")
     async def add_name(self, ctx: commands.Context, *, msg):
@@ -66,14 +66,14 @@ class Regfilter(commands.Cog):
 
     @delete.command(name = "regex")
     async def delete_regex(self, ctx: commands.Context, *, msg):
-        """Removes a REGEX from the list."""
+        """Removes a regex from the list."""
         try:
             async with self.config.regex() as regex:
                 regex.remove(msg)
                 self.cache = regex
-            await ctx.send("REGEX removed successfully.")
+            await ctx.send("Regex removed successfully.")
         except:
-            await ctx.send("Couldn't find that REGEX in the list.")
+            await ctx.send("Couldn't find that regex in the list.")
 
     @delete.command(name = "name")
     async def delete_name(self, ctx: commands.Context, *, msg):
@@ -87,11 +87,11 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
-        """Base command. Can either send the list of names or REGEX."""
+        """Base command. Can either send the list of regex or names."""
 
     @listThings.command(name = "regex")
     async def list_regex(self, ctx: commands.Context):
-        """Sends the REGEX list through DMs."""
+        """Sends the regex list through DMs."""
         try:
             user = ctx.message.author
             await self.validate_cache(self)
