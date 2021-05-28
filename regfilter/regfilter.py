@@ -27,9 +27,9 @@ class Regfilter(commands.Cog):
         self.config.register_global(**default_global)
         self.cache = []
     
-    async def validate_cache(self, ctx):   
-        async with self.config.regex() as regex: 
-            if ( regex != self.cache ):
+    async def validate_cache(self, ctx): 
+        if ( self.cache == [] ):  
+            async with self.config.regex() as regex:     
                 self.cache = regex
         
 
@@ -92,14 +92,14 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "regex")
     async def list_regex(self, ctx: commands.Context):
         """Sends the REGEX list through DMs."""
-        #try:
-        user = ctx.message.author
-        await self.validate_cache(self)
-        list = self.cache
-        prettyList = "\n".join(list)
-        await user.send(prettyList)
-        # except:
-        #     await ctx.send("ERROR: Open your DMs.")
+        try:
+            user = ctx.message.author
+            await self.validate_cache(self)
+            list = self.cache
+            prettyList = "\n".join(list)
+            await user.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "names")
     async def _list(self, ctx: commands.Context):
