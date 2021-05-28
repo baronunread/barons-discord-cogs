@@ -91,7 +91,7 @@ class Regfilter(commands.Cog):
         """Sends the REGEX list through DMs."""
         try:
             user = ctx.message.author
-            list = await self.config.regex()
+            list = self.cache_regex
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
@@ -102,7 +102,7 @@ class Regfilter(commands.Cog):
         """Sends the names list through DMs."""
         try:
             user = ctx.message.author
-            list = await self.config.names()
+            list = self.cache_names
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
@@ -118,7 +118,7 @@ class Regfilter(commands.Cog):
             await message.delete()
     
     async def triggered_filter(self, content):
-        patterns = self.cache
+        patterns = self.cache_regex
         for pattern in patterns:
             result = re.findall(pattern, content)
             if ( result != [] ):
