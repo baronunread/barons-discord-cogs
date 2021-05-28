@@ -66,7 +66,6 @@ class Regfilter(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        patterns = self.cache
         author = message.author
         content = message.content
         if author.bot:
