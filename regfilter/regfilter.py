@@ -34,12 +34,23 @@ class Regfilter(commands.Cog):
         pass
 
     @filter.command(name = "add")
-    async def _add(self, ctx: commands.Context, *, msg):
+    async def add(self, ctx: commands.Context):
+        pass
+
+    @add.command(name = "regex")
+    async def _regex(self, ctx: commands.Context, *, msg):
         """Adds a REGEX to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
             self.cache = regex
         await ctx.send("The new REGEX has been added.")
+
+    @add.command(name = "name")
+    async def _name(self, ctx: commands.Context, *, msg):
+        """Adds a name to the list of default names. Applied when filtering a name."""
+        async with self.config.names() as names:
+            names.append(msg)
+        await ctx.send("The new name has been added.")
 
     @filter.command(name = "delete")
     async def _delete(self, ctx: commands.Context, *, msg):
