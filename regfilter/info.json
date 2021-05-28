@@ -1,0 +1,8 @@
+{
+    "author" : ["Baron Unread"],
+    "install_msg" : "I just hope it works",
+    "name" : "regfilter",
+    "short" : "f*cking tasks",
+    "description" : "Filters text with a REGEX instead through literals.",
+    "tags" : ["tools"]
+}
