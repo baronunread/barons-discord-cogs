@@ -92,14 +92,14 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "regex")
     async def list_regex(self, ctx: commands.Context):
         """Sends the REGEX list through DMs."""
-        try:
-            user = ctx.message.author
-            await self.validate_cache(self, ctx)
-            list = self.cache
-            prettyList = "\n".join(list)
-            await user.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+        #try:
+        user = ctx.message.author
+        await self.validate_cache(self, ctx)
+        list = self.cache
+        prettyList = "\n".join(list)
+        await user.send(prettyList)
+        # except:
+        #     await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "names")
     async def _list(self, ctx: commands.Context):
