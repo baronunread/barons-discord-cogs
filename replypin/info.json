@@ -1,0 +1,8 @@
+{
+    "author" : ["Baron Unread"],
+    "install_msg" : "I just hope it works",
+    "name" : "replypin",
+    "short" : "f*cking tasks",
+    "description" : "Useful tool for pinning more messages than possible.",
+    "tags" : ["tools"]
+}
