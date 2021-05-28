@@ -88,6 +88,7 @@ class Regfilter(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         if before.display_name != after.display_name:
+            await after.send("Ayo wtf nigga")
             await self.maybe_filter_name(after)
 
     @commands.Cog.listener()
