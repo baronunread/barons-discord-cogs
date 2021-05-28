@@ -61,7 +61,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "delete")
     async def delete(self, ctx: commands.Context):
-        """Base commands. Can either remove a regex or a name."""
+        """Base command. Can either remove a regex or a name."""
         pass
 
     @delete.command(name = "regex")
@@ -122,7 +122,7 @@ class Regfilter(commands.Cog):
             await message.delete()
     
     async def triggered_filter(self, content):
-        self.validate_cache()
+        self.validate_cache(self)
         patterns = self.cache
         for pattern in patterns:
             result = re.findall(pattern, content)
