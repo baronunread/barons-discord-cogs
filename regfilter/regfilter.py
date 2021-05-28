@@ -94,7 +94,7 @@ class Regfilter(commands.Cog):
         """Sends the REGEX list through DMs."""
         #try:
         user = ctx.message.author
-        await self.validate_cache(self, ctx)
+        await self.validate_cache(self)
         list = self.cache
         prettyList = "\n".join(list)
         await user.send(prettyList)
