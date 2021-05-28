@@ -25,8 +25,14 @@ class Regfilter(commands.Cog):
                                      ]
                          }
         self.config.register_global(**default_global)
-        self.cache_regex = self.config.regex()
-        self.cache_names = self.config.names()
+        self.cache = []
+        self.validate_cache()
+    
+    async def validate_cache(self, ctx):   
+        async with self.config.regex() as regex: 
+            if ( regex != self.cache ):
+                self.cache = regex
+        
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -44,7 +50,7 @@ class Regfilter(commands.Cog):
         """Adds a REGEX to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
-            self.cache_regex = regex
+            self.cache = regex
         await ctx.send("The new REGEX has been added.")
 
     @add.command(name = "name")
@@ -52,7 +58,6 @@ class Regfilter(commands.Cog):
         """Adds a name to the list of default names. Applied when filtering a name."""
         async with self.config.names() as names:
             names.append(msg)
-            self.cache_names = names
         await ctx.send("The new name has been added.")
 
     @filter.group(name = "delete")
@@ -66,7 +71,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.regex() as regex:
                 regex.remove(msg)
-                self.cache_regex = regex
+                self.cache = regex
             await ctx.send("REGEX removed successfully.")
         except:
             await ctx.send("Couldn't find that REGEX in the list.")
@@ -77,7 +82,6 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.names() as names:
                 names.remove(msg)
-                self.cache_names = names
             await ctx.send("Name removed successfully.")
         except:
             await ctx.send("Couldn't find that name in the list.")
@@ -91,7 +95,8 @@ class Regfilter(commands.Cog):
         """Sends the REGEX list through DMs."""
         try:
             user = ctx.message.author
-            list = self.cache_regex
+            self.validate_cache(self, ctx)
+            list = self.cache
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
@@ -100,13 +105,13 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "names")
     async def _list(self, ctx: commands.Context):
         """Sends the names list through DMs."""
-        # try:
-        user = ctx.message.author
-        list = self.cache_names
-        prettyList = "\n".join(list)
-        await user.send(prettyList)
-        # except:
-        #     await ctx.send("ERROR: Open your DMs.")
+        try:
+            user = ctx.message.author
+            list = await self.config.names()
+            prettyList = "\n".join(list)
+            await user.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -118,7 +123,8 @@ class Regfilter(commands.Cog):
             await message.delete()
     
     async def triggered_filter(self, content):
-        patterns = self.cache_regex
+        self.validate_cache()
+        patterns = self.cache
         for pattern in patterns:
             result = re.findall(pattern, content)
             if ( result != [] ):
@@ -140,7 +146,7 @@ class Regfilter(commands.Cog):
 
     async def maybe_filter_name(self, member: discord.Member):
         if await self.triggered_filter(member.display_name):
-            names = self.cache_names
+            names = await self.config.names()
             try:
                 name = random.choice(names)
                 await member.edit(nick = name, reason = "Filtered username")
