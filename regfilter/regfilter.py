@@ -33,6 +33,7 @@ class Regfilter(commands.Cog):
         """Base command. Check the subcommands."""
         pass
 
+    @commands.group()
     @filter.command(name = "add")
     async def add(self, ctx: commands.Context):
         pass
