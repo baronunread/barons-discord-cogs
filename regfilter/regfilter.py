@@ -5,7 +5,7 @@ import re
 
 
 class Regfilter(commands.Cog):
-    """Uses a REGEX expression to filter bad words."""
+    """Uses a REGEX expression to filter bad words. Includes by default some very used slurs."""
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
@@ -21,7 +21,7 @@ class Regfilter(commands.Cog):
                                       '(?i)t+[\\s+r]+[\\s+@4aáäÄæÆ]+[\\s+n]+[iïl1y]'
                                      ],
                             "names": [
-                                      "Michael", "James"  
+                                      "Michael" 
                                      ]
                          }
         self.config.register_global(**default_global)
