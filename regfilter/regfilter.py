@@ -83,10 +83,10 @@ class Regfilter(commands.Cog):
             await ctx.send("Couldn't find that name in the list.")
 
     @filter.group(name = "list")
-    async def _list(self, ctx: commands.Context):
+    async def listThings(self, ctx: commands.Context):
         """Base command. Can either send the list of names or REGEX."""
 
-    @_list.command(name = "regex")
+    @listThings.command(name = "regex")
     async def list_regex(self, ctx: commands.Context):
         """Sends the REGEX list through DMs."""
         try:
@@ -97,7 +97,7 @@ class Regfilter(commands.Cog):
         except:
             await ctx.send("ERROR: Open your DMs.")
 
-    @_list.command(name = "name")
+    @listThings.command(name = "name")
     async def _list(self, ctx: commands.Context):
         """Sends the names list through DMs."""
         try:
