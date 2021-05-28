@@ -25,7 +25,8 @@ class Regfilter(commands.Cog):
                                      ]
                          }
         self.config.register_global(**default_global)
-        self.cache = default_global['regex']
+        self.cache_regex = default_global['regex']
+        self.cache_names = default_global['names']
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -39,18 +40,19 @@ class Regfilter(commands.Cog):
         pass
 
     @add.command(name = "regex")
-    async def _regex(self, ctx: commands.Context, *, msg):
+    async def add_regex(self, ctx: commands.Context, *, msg):
         """Adds a REGEX to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
-            self.cache = regex
+            self.cache_regex = regex
         await ctx.send("The new REGEX has been added.")
 
     @add.command(name = "name")
-    async def _name(self, ctx: commands.Context, *, msg):
+    async def add_name(self, ctx: commands.Context, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
         async with self.config.names() as names:
             names.append(msg)
+            self.cache_names = names
         await ctx.send("The new name has been added.")
 
     @filter.group(name = "delete")
@@ -64,8 +66,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.regex() as regex:
                 regex.remove(msg)
-                self.cache = regex
-                await self.config.regex.set(regex)
+                self.cache_regex = regex
             await ctx.send("REGEX removed successfully.")
         except:
             await ctx.send("Couldn't find that REGEX in the list.")
@@ -76,17 +77,32 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.names() as names:
                 names.remove(msg)
-                #await self.config.names.set(names)
+                self.cache_names = names
             await ctx.send("Name removed successfully.")
         except:
             await ctx.send("Couldn't find that name in the list.")
 
-    @filter.command(name = "list")
+    @filter.group(name = "list")
     async def _list(self, ctx: commands.Context):
+        """Base command. Can either send the list of names or REGEX."""
+
+    @_list.command(name = "regex")
+    async def list_regex(self, ctx: commands.Context):
         """Sends the REGEX list through DMs."""
         try:
             user = ctx.message.author
             list = await self.config.regex()
+            prettyList = "\n".join(list)
+            await user.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
+
+    @_list.command(name = "name")
+    async def _list(self, ctx: commands.Context):
+        """Sends the names list through DMs."""
+        try:
+            user = ctx.message.author
+            list = await self.config.names()
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
