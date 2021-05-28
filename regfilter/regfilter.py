@@ -35,7 +35,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
-        """Base command. Can either add a name, or a regex."""
+        """Base command. Can either add a regex or a name."""
         pass
 
     @add.command(name = "regex")
@@ -53,8 +53,13 @@ class Regfilter(commands.Cog):
             names.append(msg)
         await ctx.send("The new name has been added.")
 
-    @filter.command(name = "delete")
-    async def _delete(self, ctx: commands.Context, *, msg):
+    @filter.group(name = "delete")
+    async def delete(self, ctx: commands.Context):
+        """Base commands. Can either remove a regex or a name."""
+        pass
+
+    @delete.command(name = "regex")
+    async def delete_regex(self, ctx: commands.Context, *, msg):
         """Removes a REGEX from the list."""
         try:
             async with self.config.regex() as regex:
@@ -64,7 +69,18 @@ class Regfilter(commands.Cog):
             await ctx.send("REGEX removed successfully.")
         except:
             await ctx.send("Couldn't find that REGEX in the list.")
-    
+
+    @delete.command(name = "name")
+    async def delete_name(self, ctx: commands.Context, *, msg):
+        """Removes a name from the list."""
+        try:
+            async with self.config.names() as names:
+                names.remove(msg)
+                #await self.config.names.set(names)
+            await ctx.send("Name removed successfully.")
+        except:
+            await ctx.send("Couldn't find that name in the list.")
+
     @filter.command(name = "list")
     async def _list(self, ctx: commands.Context):
         """Sends the REGEX list through DMs."""
