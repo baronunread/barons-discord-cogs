@@ -13,7 +13,7 @@ class Regfilter(commands.Cog):
                                       '(?i)g+[\\s+o0]{2,}k',
                                       '(?i)f+[\\s+@4aáäÄæÆ]+g',
                                       '(?i)j+[\\s+@4aáäÄæÆ]+p',
-                                      '(?i)s+[\\s+p]+[\\s+iïl1y]+c',
+                                      '(?i)[ϟs]+[\\s+p]+[\\s+iïl1y]+c',
                                       '(?i)k+[\\s+iïl1y]+[\\s+k]+[e3]',
                                       '(?i)c+[\\s+h]+[\\s+iïl1y]+[\\s+n]+k',
                                       '(?i)n+[\\s+e3]+[\\s+gğq]+[\\s+r]+[o0]',
