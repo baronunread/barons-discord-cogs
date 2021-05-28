@@ -97,11 +97,9 @@ class Regfilter(commands.Cog):
     async def maybe_filter_name(self, member: discord.Member):
         if await self.triggered_filter(member.display_name):
             async with self.config.names() as names:
-            # try
-                name = random.choice(names)
-                if not member.guild.me.guild_permissions.manage_nicknames:
-                    member.send("I can't do this shit mang")
-                await member.edit(nick = name, reason = "Filtered username")
-            # except:
-            #     pass
-            # return
+                try:
+                    name = random.choice(names)
+                    await member.edit(nick = name, reason = "Filtered username")
+                except discord.HTTPException:
+                    pass
+                return
