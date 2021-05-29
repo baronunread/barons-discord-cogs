@@ -7,7 +7,7 @@ import re
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words. Includes by default some very used slurs."""
     def __init__(self):
-        self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952952)
+        self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
                                         "(?i)g+[\s+o0]{2,}k",                       
