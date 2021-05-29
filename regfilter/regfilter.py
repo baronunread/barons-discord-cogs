@@ -65,7 +65,7 @@ class Regfilter(commands.Cog):
     async def add_name(self, ctx: commands.Context, *, msg):
         """Adds a word to ignore to the list of ignored words."""
         async with self.config.ignore() as ignore:
-            ignore.append( "(?i)".join(msg) )
+            ignore.append( "(?i)" + msg )
         await ctx.send("The new word has been added.")
 
     @filter.group(name = "delete")
@@ -98,7 +98,7 @@ class Regfilter(commands.Cog):
         """Removes an ignored word from the list."""
         try:
             async with self.config.ignore() as ignore:
-                ignore.remove( "(?i)".join(msg) )
+                ignore.remove( "(?i)" + msg )
             await ctx.send("Ignored word removed successfully.")
         except:
             await ctx.send("Couldn't find that word in the list.")
