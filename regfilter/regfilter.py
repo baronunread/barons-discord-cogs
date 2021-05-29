@@ -119,7 +119,7 @@ class Regfilter(commands.Cog):
             await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "names")
-    async def _list(self, ctx: commands.Context):
+    async def list_names(self, ctx: commands.Context):
         """Sends the names list through DMs."""
         try:
             user = ctx.message.author
@@ -130,7 +130,7 @@ class Regfilter(commands.Cog):
             await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "ignored")
-    async def _list(self, ctx: commands.Context):
+    async def list_ignored(self, ctx: commands.Context):
         """Sends the ignored word list through DMs."""
         try:
             user = ctx.message.author
