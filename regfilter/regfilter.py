@@ -15,13 +15,6 @@ class Regfilter(commands.Cog):
                                      ]
                          }
         self.config.register_global(**default_global)
-        self.cache = []
-    
-    async def validate_cache(self, ctx): 
-        if ( self.cache == [] ):  
-            async with self.config.regex() as regex:     
-                self.cache = regex
-        
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -39,7 +32,6 @@ class Regfilter(commands.Cog):
         """Adds a regex to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
-            self.cache = regex
         await ctx.send("The new regex has been added.")
 
     @add.command(name = "name")
@@ -60,7 +52,6 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.regex() as regex:
                 regex.remove(msg)
-                self.cache = regex
             await ctx.send("Regex removed successfully.")
         except:
             await ctx.send("Couldn't find that regex in the list.")
@@ -84,8 +75,7 @@ class Regfilter(commands.Cog):
         """Sends the regex list through DMs."""
         try:
             user = ctx.message.author
-            await self.validate_cache(self)
-            list = self.cache
+            list = await self.config.regex()
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
@@ -112,8 +102,7 @@ class Regfilter(commands.Cog):
             await message.delete()
     
     async def triggered_filter(self, content):
-        await self.validate_cache(self)
-        patterns = self.cache
+        patterns = await self.config.regex()
         for pattern in patterns:
             result = re.findall(pattern, content)
             if ( result != [] ):
