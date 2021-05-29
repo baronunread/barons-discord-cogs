@@ -21,7 +21,8 @@ class Regfilter(commands.Cog):
                                         "(?i)\\bt+\\s*r+[\\sr]*[@4aáäÄæÆ]+[\\s@4aáäÄæÆ]*n+\\s*n+[\\sn]*[iïl1y!]",
                                         "(?i)f+\\s*[@4aáäÄæÆ]+[\\s@4aáäÄæÆ]*[gğ]+\\s*[\\sgğ]*s?\\b|f+\\s*[@4aáäÄæÆ]+[\\s@4aáäÄæÆ]*[gğ]+\\s*[gğ]+[\\sgğ]*[oø0ö@]+[\\soø0ö@]*t"
                                      ],
-                            "names": ["Michael"]
+                            "names": ["Michael"],
+                            "ignore":[]
                          }
         self.config.register_global(**default_global)
 
@@ -60,6 +61,13 @@ class Regfilter(commands.Cog):
             names.append(msg)
         await ctx.send("The new name has been added.")
 
+    @add.command(name = "ignore")
+    async def add_name(self, ctx: commands.Context, *, msg):
+        """Adds a word to ignore to the list of ignored words."""
+        async with self.config.ignore() as ignore:
+            ignore.append( "(?i)".join(msg) )
+        await ctx.send("The new word has been added.")
+
     @filter.group(name = "delete")
     async def delete(self, ctx: commands.Context):
         """Base command. Can either remove a regex or a name."""
@@ -84,6 +92,16 @@ class Regfilter(commands.Cog):
             await ctx.send("Name removed successfully.")
         except:
             await ctx.send("Couldn't find that name in the list.")
+
+    @delete.command(name = "ignore")
+    async def delete_name(self, ctx: commands.Context, *, msg):
+        """Removes an ignored word from the list."""
+        try:
+            async with self.config.ignore() as ignore:
+                ignore.remove( "(?i)".join(msg) )
+            await ctx.send("Ignored word removed successfully.")
+        except:
+            await ctx.send("Couldn't find that word in the list.")
 
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
@@ -110,18 +128,31 @@ class Regfilter(commands.Cog):
             await user.send(prettyList)
         except:
             await ctx.send("ERROR: Open your DMs.")
+
+    @listThings.command(name = "ignored")
+    async def _list(self, ctx: commands.Context):
+        """Sends the ignored word list through DMs."""
+        try:
+            user = ctx.message.author
+            list = await self.config.ignore()
+            prettyList = "\n".join(list)
+            await user.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         author = message.author
         content = message.content
+        patterns = await self.config.regex()
+        ignore = await self.config.ignore()
         if author.bot:
             return
-        if await self.triggered_filter(content):
-            await message.delete()
+        if await self.triggered_filter(content, patterns):
+            if await self.triggered_filter(content, ignore):
+                await message.delete()
     
-    async def triggered_filter(self, content):
-        patterns = await self.config.regex()
+    async def triggered_filter(self, content, patterns):
         for pattern in patterns:
             result = re.findall(pattern, content)
             if ( result != [] ):
