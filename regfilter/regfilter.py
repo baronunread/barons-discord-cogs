@@ -9,7 +9,16 @@ class Regfilter(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
-                            "regex": [],
+                            "regex": [  "(?i)g+[\s+o0]{2,}k",                       
+                                        "(?i)f+[\s+@4aáäÄæÆ]+g",                    
+                                        "(?i)j+[\s+@4aáäÄæÆ]+p",                    
+                                        "(?i)[ϟs]+[\s+p]+[\s+iïl1y!]+c",            
+                                        "(?i)k+[\s+iïl1y!]+[\s+k]+[e3]",            
+                                        "(?i)c+[\s+h]+[\s+iïl1y!]+[\s+n]+k",        
+                                        "(?i)n+[\s+e3]+[\s+gğq]+[\s+r]+[o0]",       
+                                        "(?i)n+[\s+iïl1y!]+[\s+gğq]{2,}[\s+e3]+r",  
+                                        "(?i)t+[\s+r]+[\s+@4aáäÄæÆ]+[\s+n]+[iïl1y!]"
+                                     ],
                             "names": ["Michael"]
                          }
         self.config.register_global(**default_global)
@@ -19,6 +28,10 @@ class Regfilter(commands.Cog):
     async def filter(self, ctx: commands.Context):
         """Base command. Check the subcommands."""
         pass
+
+    @filter.group(name = "reset")
+    async def _reset(self, ctx):
+        await self.config.clear_all()    
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
