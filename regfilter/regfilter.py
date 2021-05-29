@@ -44,25 +44,25 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
-        """Base command. Can either add a regex or a name."""
+        """Base command. Can add a regex, a name or a word to ignore."""
         pass
 
     @add.command(name = "regex")
-    async def add_regex(self, ctx: commands.Context, *, msg):
+    async def add_regex(self, ctx, *, msg):
         """Adds a regex to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
         await ctx.send("The new regex has been added.")
 
     @add.command(name = "name")
-    async def add_name(self, ctx: commands.Context, *, msg):
+    async def add_name(self, ctx, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
         async with self.config.names() as names:
             names.append(msg)
         await ctx.send("The new name has been added.")
 
     @add.command(name = "ignore")
-    async def add_name(self, ctx: commands.Context, *, msg):
+    async def add_name(self, ctx, *, msg):
         """Adds a word to ignore to the list of ignored words."""
         async with self.config.ignore() as ignore:
             ignore.append( "(?i)" + msg )
@@ -74,7 +74,7 @@ class Regfilter(commands.Cog):
         pass
 
     @delete.command(name = "regex")
-    async def delete_regex(self, ctx: commands.Context, *, msg):
+    async def delete_regex(self, ctx, *, msg):
         """Removes a regex from the list."""
         try:
             async with self.config.regex() as regex:
@@ -84,7 +84,7 @@ class Regfilter(commands.Cog):
             await ctx.send("Couldn't find that regex in the list.")
 
     @delete.command(name = "name")
-    async def delete_name(self, ctx: commands.Context, *, msg):
+    async def delete_name(self, ctx, *, msg):
         """Removes a name from the list."""
         try:
             async with self.config.names() as names:
@@ -94,7 +94,7 @@ class Regfilter(commands.Cog):
             await ctx.send("Couldn't find that name in the list.")
 
     @delete.command(name = "ignore")
-    async def delete_name(self, ctx: commands.Context, *, msg):
+    async def delete_name(self, ctx, *, msg):
         """Removes an ignored word from the list."""
         try:
             async with self.config.ignore() as ignore:
@@ -108,7 +108,7 @@ class Regfilter(commands.Cog):
         """Base command. Can either send the list of regex or names."""
 
     @listThings.command(name = "regex")
-    async def list_regex(self, ctx: commands.Context):
+    async def list_regex(self, ctx):
         """Sends the regex list through DMs."""
         try:
             user = ctx.message.author
@@ -119,7 +119,7 @@ class Regfilter(commands.Cog):
             await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "names")
-    async def list_names(self, ctx: commands.Context):
+    async def list_names(self, ctx):
         """Sends the names list through DMs."""
         try:
             user = ctx.message.author
@@ -130,7 +130,7 @@ class Regfilter(commands.Cog):
             await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "ignored")
-    async def list_ignored(self, ctx: commands.Context):
+    async def list_ignored(self, ctx):
         """Sends the ignored word list through DMs."""
         try:
             user = ctx.message.author
