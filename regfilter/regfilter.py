@@ -10,15 +10,15 @@ class Regfilter(commands.Cog):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [
-                                      '(?i)g+[\\s+o0]{2,}k',
-                                      '(?i)f+[\\s+@4aáäÄæÆ]+g',
-                                      '(?i)j+[\\s+@4aáäÄæÆ]+p',
-                                      '(?i)[ϟs]+[\\s+p]+[\\s+iïl1y!]+c',
-                                      '(?i)k+[\\s+iïl1y!]+[\\s+k]+[e3]',
-                                      '(?i)c+[\\s+h]+[\\s+iïl1y!]+[\\s+n]+k',
-                                      '(?i)n+[\\s+e3]+[\\s+gğq]+[\\s+r]+[o0]',
-                                      '(?i)n+[\\s+iïl1y!]+[\\s+gğq]{2,}[\\s+e3]+r',
-                                      '(?i)t+[\\s+r]+[\\s+@4aáäÄæÆ]+[\\s+n]+[iïl1y!]'
+                                      'g+[\\s+o0]{2,}k',
+                                      'f+[\\s+@4aáäÄæÆ]+g',
+                                      'j+[\\s+@4aáäÄæÆ]+p',
+                                      '[ϟs]+[\\s+p]+[\\s+iïl1y!]+c',
+                                      'k+[\\s+iïl1y!]+[\\s+k]+[e3]',
+                                      'c+[\\s+h]+[\\s+iïl1y!]+[\\s+n]+k',
+                                      'n+[\\s+e3]+[\\s+gğq]+[\\s+r]+[o0]',
+                                      'n+[\\s+iïl1y!]+[\\s+gğq]{2,}[\\s+e3]+r',
+                                      't+[\\s+r]+[\\s+@4aáäÄæÆ]+[\\s+n]+[iïl1y!]'
                                      ],
                             "names": [
                                       "Michael" 
