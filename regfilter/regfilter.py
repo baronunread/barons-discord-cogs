@@ -10,7 +10,8 @@ class Regfilter(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
-                            "regex": [  "(?i)\\b[gğ]+\\s*[oø0ö@]+\\s*[oø0ö@]+[\\soø0ö@]*k",                                                         
+                            "regex": [  
+                                        "(?i)\\b[gğ]+\\s*[oø0ö@]+\\s*[oø0ö@]+[\\soø0ö@]*k",                                                         
                                         "(?i)\\bk+\\s*+[iïl1y!]+[\\siïl1y!]*k+[\\sk]*[e3]",            
                                         "(?i)\\bj+\\s*[@4aáäÄæÆ]+[\\s@4aáäÄæÆ]*p+[\\sp]*s?\\b",  
                                         "(?i)\\bc+\\s*h+[\\sh]*[iïl1y!]+[\\siïl1y!]*n+[\\sn]*k",        
