@@ -34,8 +34,8 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "reset", invoke_without_command = True)
     async def _reset(self, ctx: commands.Context, *, confirmation):
-        """If you call it by adding a yes at the end it will reset the current regex 
-        and name values to the default values."""
+        """If you call it by adding a yes at the end it will reset the current regex,name and
+        ignored values to the default values."""
         if confirmation.lower() == "yes":
             await self.config.clear_all()   
             await ctx.send("Reset to default values complete.") 
@@ -44,7 +44,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
-        """Base command. Can add a regex, a name or a word to ignore."""
+        """Base command. Can add a regex, a name for replacing or a word to ignore."""
         pass
 
     @add.command(name = "regex")
@@ -70,7 +70,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "delete")
     async def delete(self, ctx: commands.Context):
-        """Base command. Can either remove a regex or a name."""
+        """Base command. Can either remove a regex, name or ignored word."""
         pass
 
     @delete.command(name = "regex")
@@ -105,7 +105,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
-        """Base command. Can either send the list of regex or names."""
+        """Base command. Can either send the list of regex, names or ignored words."""
 
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
