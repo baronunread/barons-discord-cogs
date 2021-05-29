@@ -148,9 +148,8 @@ class Regfilter(commands.Cog):
         ignore = await self.config.ignore()
         if author.bot:
             return
-        if await self.triggered_filter(content, patterns):
-            if( not await self.triggered_filter(content, ignore) ):
-                await message.delete()
+        if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
+            await message.delete()
     
     async def triggered_filter(self, content, patterns):
         for pattern in patterns:
@@ -173,7 +172,9 @@ class Regfilter(commands.Cog):
         await self.maybe_filter_name(member)
 
     async def maybe_filter_name(self, member: discord.Member):
-        if await self.triggered_filter(member.display_name):
+        patterns = await self.config.regex()
+        ignore = await self.config.ignore()
+        if ( await self.triggered_filter(member.display_name, patterns) and not await self.triggered_filter(member.display_name, ignore) ):
             names = await self.config.names()
             try:
                 name = random.choice(names)
