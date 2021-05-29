@@ -149,7 +149,7 @@ class Regfilter(commands.Cog):
         if author.bot:
             return
         if await self.triggered_filter(content, patterns):
-            if await self.triggered_filter(content, ignore):
+            if( not await self.triggered_filter(content, ignore) ):
                 await message.delete()
     
     async def triggered_filter(self, content, patterns):
