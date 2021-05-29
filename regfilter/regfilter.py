@@ -5,7 +5,8 @@ import re
 
 
 class Regfilter(commands.Cog):
-    """Uses a REGEX expression to filter bad words. Includes by default some very used slurs."""
+    """Uses a REGEX expression to filter bad words.
+    Includes by default some very used slurs."""
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
@@ -30,10 +31,14 @@ class Regfilter(commands.Cog):
         pass
 
     @filter.group(name = "reset")
-    async def _reset(self, ctx: commands.Context, *, msg):
-        if (msg.content == "YES"):
+    async def _reset(self, ctx: commands.Context, *, confirmation):
+        """If you call it by adding a yes at the end it will reset the current regex 
+        and name values to the default values"""
+        if confirmation.lower() == "yes":
             await self.config.clear_all()   
             await ctx.send("Reset to default values complete.") 
+            return
+        await ctx.send("Reset cancelled. If you want to reset type in YES or yes.")
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
