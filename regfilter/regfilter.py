@@ -114,6 +114,7 @@ class Regfilter(commands.Cog):
             user = ctx.message.author
             list = await self.config.regex()
             prettyList = "\n".join(list)
+            prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
         except:
             await ctx.send("ERROR: Open your DMs.")
