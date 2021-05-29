@@ -30,10 +30,10 @@ class Regfilter(commands.Cog):
         """Base command. Check the subcommands."""
         pass
 
-    @filter.group(name = "reset")
+    @filter.group(name = "reset", invoke_without_command = True)
     async def _reset(self, ctx: commands.Context, *, confirmation):
         """If you call it by adding a yes at the end it will reset the current regex 
-        and name values to the default values"""
+        and name values to the default values."""
         if confirmation.lower() == "yes":
             await self.config.clear_all()   
             await ctx.send("Reset to default values complete.") 
