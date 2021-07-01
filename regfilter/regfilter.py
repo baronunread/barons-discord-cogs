@@ -34,7 +34,7 @@ class Regfilter(commands.Cog):
     @commands.command()
     async def updateCacheTest(self, ctx):
         self.cache = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
-        await ctx.send( str(self.cache) )
+        await ctx.send( await str(self.cache) )
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
