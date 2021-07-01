@@ -35,8 +35,14 @@ class Regfilter(commands.Cog):
     async def updateCache(self, type):
         if type == 'pattern':
             self.cache_pattern = await self.config.regex()
-        else:
+        elif type == 'ignored':
             self.cache_ignored = await self.config.ignore()
+
+    async def validateCache(self):
+        if self.cache_pattern == []: 
+            await self.updateCache('pattern')
+        if self.cache_ignored == []:
+            await self.updateCache('ignored')
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -167,10 +173,7 @@ class Regfilter(commands.Cog):
     async def on_message(self, message: discord.Message):
         author = message.author
         content = await self.replace(message.content)
-        if self.cache_pattern == []: 
-            await self.updateCache('pattern')
-        if self.cache_ignored == []:
-            await self.updateCache('ignored')
+        await self.validateCache()
         patterns = self.cache_pattern
         ignore = self.cache_ignored
         if author.bot:
@@ -200,10 +203,7 @@ class Regfilter(commands.Cog):
 
     async def maybe_filter_name(self, member: discord.Member):
         content = await self.replace(member.display_name)
-        if self.cache_pattern == []:
-            await self.updateCache('pattern')
-        if self.cache_ignored == []:
-            await self.updateCache('ignored')
+        await self.validateCache()
         patterns = self.cache_pattern
         ignore = self.cache_ignored
         if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
