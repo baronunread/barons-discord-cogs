@@ -166,6 +166,7 @@ class Regfilter(commands.Cog):
         author = message.author
         content = await self.replace(message.content)
         if self.cache_pattern == [] or self.cache_ignored == []:
+            await author.send("Using cache!")
             await self.updateCache('pattern')
             await self.updateCache('ignored')
         patterns = self.cache_pattern
