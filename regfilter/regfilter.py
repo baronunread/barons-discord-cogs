@@ -31,7 +31,7 @@ class Regfilter(commands.Cog):
     async def testReplace(self, ctx, msg):
         await ctx.send( self.replace(msg) )
 
-    async def replace(msg):
+    async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg)
         return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
