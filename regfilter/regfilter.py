@@ -36,8 +36,10 @@ class Regfilter(commands.Cog):
     async def updateCacheTest(self, ctx):
         self.cache_pattern = await self.config.regex()
         self.cache_ignored = await self.config.ignore()
-        await ctx.send( str(self.cache_pattern) )
-        await ctx.send( str(self.cache_ignored) )
+        pattern = str(self.cache_pattern)
+        ignored = str(self.cache_ignored)
+        await ctx.send( pattern )
+        await ctx.send( ignored )
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
