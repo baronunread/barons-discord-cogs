@@ -32,14 +32,11 @@ class Regfilter(commands.Cog):
         nfkd_form = unicodedata.normalize('NFKD', msg)
         return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
-    @commands.command()
-    async def updateCacheTest(self, ctx):
-        self.cache_pattern = await self.config.regex()
-        self.cache_ignored = await self.config.ignore()
-        pattern = str(self.cache_pattern)
-        ignored = str(self.cache_ignored)
-        await ctx.send( pattern )
-        await ctx.send( ignored )
+    async def updateCache(self, type):
+        if type == 'pattern':
+            self.cache_pattern = await self.config.regex()
+        else:
+            self.cache_ignored = await self.config.ignore()
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -67,6 +64,7 @@ class Regfilter(commands.Cog):
         """Adds a regex to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
+            self.cache_pattern = regex
         await ctx.send("The new regex has been added.")
 
     @add.command(name = "name")
@@ -81,6 +79,7 @@ class Regfilter(commands.Cog):
         """Adds a word to ignore to the list of ignored words."""
         async with self.config.ignore() as ignore:
             ignore.append( "(?i)" + msg )
+            self.cache_ignored = ignore
         await ctx.send("The new word has been added.")
 
     @filter.group(name = "delete")
@@ -94,6 +93,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.regex() as regex:
                 regex.remove(msg)
+                self.cache_pattern = regex
             await ctx.send("Regex removed successfully.")
         except:
             await ctx.send("Couldn't find that regex in the list.")
@@ -114,6 +114,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.ignore() as ignore:
                 ignore.remove( "(?i)" + msg )
+                self.cache_ignored = ignore
             await ctx.send("Ignored word removed successfully.")
         except:
             await ctx.send("Couldn't find that word in the list.")
@@ -127,7 +128,9 @@ class Regfilter(commands.Cog):
         """Sends the regex list through DMs."""
         try:
             user = ctx.message.author
-            list = await self.config.regex()
+            if self.cache_pattern == []:
+                await self.updateCache('pattern')
+            list = self.cache_pattern
             prettyList = "\n".join(list)
             prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
@@ -150,7 +153,9 @@ class Regfilter(commands.Cog):
         """Sends the ignored word list through DMs."""
         try:
             user = ctx.message.author
-            list = await self.config.ignore()
+            if self.cache_ignored == []:
+                await self.updateCache('ignored')
+            list = self.cache_ignored
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
@@ -160,8 +165,11 @@ class Regfilter(commands.Cog):
     async def on_message(self, message: discord.Message):
         author = message.author
         content = await self.replace(message.content)
-        patterns = await self.config.regex()
-        ignore = await self.config.ignore()
+        if self.cache_pattern == [] or self.cache_ignored == []:
+            await self.updateCache('pattern')
+            await self.updateCache('ignored')
+        patterns = self.cache_pattern
+        ignore = self.cache_ignored
         if author.bot:
             return
         if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
@@ -189,8 +197,11 @@ class Regfilter(commands.Cog):
 
     async def maybe_filter_name(self, member: discord.Member):
         content = await self.replace(member.display_name)
-        patterns = await self.config.regex()
-        ignore = await self.config.ignore()
+        if self.cache_pattern == [] or self.cache_ignored == []:
+            await self.updateCache('pattern')
+            await self.updateCache('ignored')
+        patterns = self.cache_pattern
+        ignore = self.cache_ignored
         if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
             names = await self.config.names()
             try:
