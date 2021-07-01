@@ -1,5 +1,6 @@
 from redbot.core import commands, Config
 import discord
+import unicodedata
 import random
 import re
 
@@ -25,6 +26,10 @@ class Regfilter(commands.Cog):
                             "ignore":[]
                          }
         self.config.register_global(**default_global)
+
+    @commands.comman()
+    async def testReplace(self, ctx, msg):
+        await ctx.send( unicodedata.normalize('NFC', msg) )
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
