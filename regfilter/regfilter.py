@@ -200,8 +200,9 @@ class Regfilter(commands.Cog):
 
     async def maybe_filter_name(self, member: discord.Member):
         content = await self.replace(member.display_name)
-        if self.cache_pattern == [] or self.cache_ignored == []:
+        if self.cache_pattern == []:
             await self.updateCache('pattern')
+        if self.cache_ignored == []:
             await self.updateCache('ignored')
         patterns = self.cache_pattern
         ignore = self.cache_ignored
