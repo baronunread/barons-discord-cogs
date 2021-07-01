@@ -33,7 +33,7 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def updateCacheTest(self, ctx):
-        self.cache = await self.config()
+        self.cache = await self.config.guild()
         ctx.send( str(self.cache) )
 
     @commands.group()
