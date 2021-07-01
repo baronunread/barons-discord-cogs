@@ -27,7 +27,7 @@ class Regfilter(commands.Cog):
                          }
         self.config.register_global(**default_global)
 
-    @commands.comman()
+    @commands.command()
     async def testReplace(self, ctx, msg):
         await ctx.send( unicodedata.normalize('NFC', msg) )
 
