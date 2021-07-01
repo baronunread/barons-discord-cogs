@@ -153,7 +153,7 @@ class Regfilter(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         author = message.author
-        content = message.content
+        content = await self.replace(message.content)
         patterns = await self.config.regex()
         ignore = await self.config.ignore()
         if author.bot:
@@ -182,9 +182,10 @@ class Regfilter(commands.Cog):
         await self.maybe_filter_name(member)
 
     async def maybe_filter_name(self, member: discord.Member):
+        content = await self.replace(member.display_name)
         patterns = await self.config.regex()
         ignore = await self.config.ignore()
-        if ( await self.triggered_filter(member.display_name, patterns) and not await self.triggered_filter(member.display_name, ignore) ):
+        if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
             names = await self.config.names()
             try:
                 name = random.choice(names)
