@@ -29,7 +29,9 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def testReplace(self, ctx, msg):
-        await ctx.send( unicodedata.normalize('NFC', msg) )
+        nfkd_form = unicodedata.normalize('NFKD', msg)
+        replaced = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+        await ctx.send(replaced)
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
