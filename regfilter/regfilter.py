@@ -4,7 +4,6 @@ import unicodedata
 import random
 import re
 
-
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
@@ -26,14 +25,16 @@ class Regfilter(commands.Cog):
                             "ignore":[]
                          }
         self.config.register_global(**default_global)
-
-    @commands.command()
-    async def testReplace(self, ctx, msg):
-        await ctx.send( await self.replace(msg) )
+        self.cache = {}
 
     async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg)
         return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+
+    @commands.command()
+    async def updateCacheTest(self, ctx):
+        self.cache = await self.config()
+        ctx.send( str(self.cache) )
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
