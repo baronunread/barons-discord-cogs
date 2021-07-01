@@ -49,7 +49,9 @@ class Regfilter(commands.Cog):
         """If you call it by adding a yes at the end it will reset the current regex,name and
         ignored values to the default values."""
         if confirmation.lower() == "yes":
-            await self.config.clear_all()   
+            await self.config.clear_all() 
+            await self.updateCache('pattern')
+            await self.updateCache('ignored')  
             await ctx.send("Reset to default values complete.") 
             return
         await ctx.send("Reset cancelled. If you want to reset type in YES or yes.")
@@ -165,8 +167,9 @@ class Regfilter(commands.Cog):
     async def on_message(self, message: discord.Message):
         author = message.author
         content = await self.replace(message.content)
-        if self.cache_pattern == [] or self.cache_ignored == []:
+        if self.cache_pattern == []: 
             await self.updateCache('pattern')
+        if self.cache_ignored == []:
             await self.updateCache('ignored')
         patterns = self.cache_pattern
         ignore = self.cache_ignored
