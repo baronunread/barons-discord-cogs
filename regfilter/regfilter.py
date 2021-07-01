@@ -25,7 +25,8 @@ class Regfilter(commands.Cog):
                             "ignore":[]
                          }
         self.config.register_global(**default_global)
-        self.cache = {}
+        self.cache_pattern = []
+        self.cache_ignored = []
 
     async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg)
@@ -33,8 +34,10 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def updateCacheTest(self, ctx):
-        self.cache = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
-        await ctx.send( await str(self.cache) )
+        self.cache_pattern = await self.config.regex()
+        self.cache_ignored = await self.config.ignore()
+        await ctx.send( str(self.cache_pattern) )
+        await ctx.send( str(self.cache_ignored) )
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
