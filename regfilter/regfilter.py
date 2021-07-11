@@ -13,13 +13,13 @@ class Regfilter(commands.Cog):
                             "regex": [  
                                         "(?i)\\bg+\\s*[oø0@]+\\s*[oø0@]+[\\soø0@]*k",                                                         
                                         "(?i)\\bk+\\s*[il1y!]+[\\sil1y!]*k+[\\sk]*[e3]",            
-                                        "(?i)\\bj+\\s*[@4aæÆ]+[\\s@4aæÆ]*p+[\\sp]*s?\\b",  
+                                        "(?i)\\bj+\\s*[@4aæÆ]+[\\s@4aæÆ]*p+[\\sp]*s?\\b",
+                                        "(?i)\\bf+\\s*[@4aæÆ]+[\\s@4aæÆ]*g+\\s*[\\sg]*s?",  
                                         "(?i)\\bc+\\s*h+[\\sh]*[il1y!]+[\\sil1y!]*n+[\\sn]*k",        
                                         "(?i)\\bn+\\s*[e3]+[\\se3]*g+[\\sg]*r+[\\sr]*[oø0@]",  
                                         "(?i)\\b[szϟ]+\\s*p+[\\sp]*[il1y!]+[\\sil1y!]*[ck]+[\\sck]*s?\\b",      
                                         "(?i)\\bn+\\s*[il1y!]+[\\sil1y!]*g+\\s*g+[\\sg]*[e3]+[\\se3]*r",  
-                                        "(?i)\\bt+\\s*r+[\\sr]*[@4aæÆ]+[\\s@4aæÆ]*n+\\s*n+[\\sn]*[il1y!]",
-                                        "(?i)f+\\s*[@4aæÆ]+[\\s@4aæÆ]*g+\\s*[\\sg]*s?\\b|f+\\s*[@4aæÆ]+[\\s@4aæÆ]*g+\\s*g+[\\sg]*[oø0@]+[\\soø0@]*t"
+                                        "(?i)\\bt+\\s*r+[\\sr]*[@4aæÆ]+[\\s@4aæÆ]*n+\\s*n+[\\sn]*[il1y!]"
                                      ],
                             "names": ["Michael"],
                             "ignore":[]
