@@ -21,8 +21,8 @@ class Regfilter(commands.Cog):
                                         "(?i)\\b\\w*[nη]+\\s*[il1y!]+[\\sil1y!]*g+\\s*g+[\\sg]*[e3]+[\\se3]*r",  
                                         "(?i)\\b\\w*t+\\s*r+[\\sr]*[@4aæÆ]+[\\s@4aæÆ]*[nη]+\\s*[nη]+[\\snη]*[il1y!]", "(?i)Test"
                                      ],
-                            "names": ["Michael"],
-                            "ignore":[]
+                            "names": ["Michael", "Test"],
+                            "ignore":["Test"]
                          }
         self.config.register_global(**default_global)
         self.cache_pattern = []
