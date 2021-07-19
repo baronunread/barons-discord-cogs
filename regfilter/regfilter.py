@@ -11,15 +11,15 @@ class Regfilter(commands.Cog):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
-                                        "(?i)\\bg+\\s*[oø0@]+\\s*[oø0@]+[\\soø0@]*k",                                                         
-                                        "(?i)\\bk+\\s*[il1y!]+[\\sil1y!]*k+[\\sk]*[e3]",            
-                                        "(?i)\\bj+\\s*[@4aæÆ]+[\\s@4aæÆ]*p+[\\sp]*s?\\b",
-                                        "(?i)\\bf+\\s*[@4aæÆ]+[\\s@4aæÆ]*g+\\s*[\\sg]*s?",  
-                                        "(?i)\\bc+\\s*h+[\\sh]*[il1y!]+[\\sil1y!]*n+[\\sn]*k",        
-                                        "(?i)\\bn+\\s*[e3]+[\\se3]*g+[\\sg]*r+[\\sr]*[oø0@]",  
-                                        "(?i)\\b[szϟ]+\\s*p+[\\sp]*[il1y!]+[\\sil1y!]*[ck]+[\\sck]*s?\\b",      
-                                        "(?i)\\bn+\\s*[il1y!]+[\\sil1y!]*g+\\s*g+[\\sg]*[e3]+[\\se3]*r",  
-                                        "(?i)\\bt+\\s*r+[\\sr]*[@4aæÆ]+[\\s@4aæÆ]*n+\\s*n+[\\sn]*[il1y!]"
+                                        "(?i)\\b\\w*g+\\s*[oø0@]+\\s*[oø0@]+[\\soø0@]*k",                                                         
+                                        "(?i)\\b\\w*k+\\s*[il1y!]+[\\sil1y!]*k+[\\sk]*[e3]",            
+                                        "(?i)\\b\\w*j+\\s*[@4aæÆ]+[\\s@4aæÆ]*p+[\\sp]*s?\\b",
+                                        "(?i)\\b\\w*f+\\s*[@4aæÆ]+[\\s@4aæÆ]*g+\\s*[\\sg]*s?",  
+                                        "(?i)\\b\\w*c+\\s*h+[\\sh]*[il1y!]+[\\sil1y!]*[nη]+[\\snη]*k",        
+                                        "(?i)\\b\\w*[nη]+\\s*[e3]+[\\se3]*g+[\\sg]*r+[\\sr]*[oø0@]",  
+                                        "(?i)\\b\\w*[szϟ]+\\s*p+[\\sp]*[il1y!]+[\\sil1y!]*[ck]+[\\sck]*s?\\b",      
+                                        "(?i)\\b\\w*[nη]+\\s*[il1y!]+[\\sil1y!]*g+\\s*g+[\\sg]*[e3]+[\\se3]*r",  
+                                        "(?i)\\b\\w*t+\\s*r+[\\sr]*[@4aæÆ]+[\\s@4aæÆ]*[nη]+\\s*[nη]+[\\snη]*[il1y!]"
                                      ],
                             "names": ["Michael"],
                             "ignore":[]
