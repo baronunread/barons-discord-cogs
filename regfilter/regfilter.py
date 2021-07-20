@@ -20,7 +20,6 @@ class Regfilter(commands.Cog):
                                         r"(?i)\bc+\s*h+[\sh]*[il1y!]+[\sil1y!]*[nη]+[\snη]*k|\b\w*c+h+[il1y!]+[nη]+k",
                                         r"(?i)\b[nη]+\s*[il1y!]+[\sil1y!]*g+\s*g+[\sg]*[e3]+[\se3]*r|\b\w*[nη]+[il1y!]+g{2,}[e3]+r",
                                         r"(?i)\bt+\s*r+[\sr]*[@4aæÆ]+[\s@4aæÆ]*[nη]+\s*[nη]+[\snη]*[il1y!]|\b\w*t+r+[@4aæÆ]+[nη]{2,}[il1y!]"
-
                                      ],
                             "names": [],
                             "ignore":[]
@@ -45,6 +44,11 @@ class Regfilter(commands.Cog):
             await self.updateCache('pattern')
         if self.cache_ignored == []:
             await self.updateCache('ignored')
+
+    @commands.command()
+    async def clean_print(self, ctx, msg):
+        cleaned = await self.replace(msg)
+        await ctx.send(cleaned)
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
