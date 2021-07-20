@@ -57,19 +57,17 @@ class Regfilter(commands.Cog):
         if type.lower() == "regex":
             await self.config.clear_raw("regex") 
             await self.updateCache('pattern')
-            await ctx.send("Reset complete.")
         elif type.lower() == "ignored":
             await self.config.clear_raw("ignore")
             await self.updateCache('ignored')
-            await ctx.send("Reset complete.")
         elif type.lower() == "names":
             await self.config.clear_raw("names")
-            await ctx.send("Reset complete.")
         elif type.lower() == "all":
-            await self.config.clear_all()
-            await ctx.send("Reset complete.")
+            await self.config.clear_all()      
         else:
             await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORED or ALL.")
+            return
+        await ctx.send("Reset complete.")
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
@@ -148,6 +146,9 @@ class Regfilter(commands.Cog):
             if self.cache_pattern == []:
                 await self.updateCache('pattern')
             list = self.cache_pattern
+            if list.len() == 0:
+                await user.send("There's nothing in that list.")
+                return
             prettyList = "\n".join(list)
             prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
@@ -160,6 +161,9 @@ class Regfilter(commands.Cog):
         try:
             user = ctx.message.author
             list = await self.config.names()
+            if list.len() == 0:
+                await user.send("There's nothing in that list.")
+                return
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
@@ -173,6 +177,9 @@ class Regfilter(commands.Cog):
             if self.cache_ignored == []:
                 await self.updateCache('ignored')
             list = self.cache_ignored
+            if list.len() == 0:
+                await user.send("There's nothing in that list.")
+                return
             prettyList = "\n".join(list)
             await user.send(prettyList)
         except:
