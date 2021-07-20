@@ -156,7 +156,7 @@ class Regfilter(commands.Cog):
                 await user.send("There's nothing in that list.")
                 return
             prettyList = "\n".join(list)
-            if type == "regex":
+            if type == "pattern":
                 prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
         except:
