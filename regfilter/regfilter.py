@@ -182,12 +182,13 @@ class Regfilter(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         author = message.author
+        if author.bot:
+            return
         content = await self.replace(message.content)
+        await author.send(content)
         await self.validateCache()
         patterns = self.cache_pattern
         ignore = self.cache_ignored
-        if author.bot:
-            return
         if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
             await message.delete()
     
