@@ -52,16 +52,24 @@ class Regfilter(commands.Cog):
         pass
 
     @filter.group(name = "reset", invoke_without_command = True)
-    async def _reset(self, ctx: commands.Context, *, confirmation):
-        """If you call it by adding a yes at the end it will reset the current regex,name and
-        ignored values to the default values."""
-        if confirmation.lower() == "yes":
-            await self.config.clear_all() 
+    async def _reset(self, ctx: commands.Context, *, type):
+        """Testing"""
+        if type.lower() == "regex":
+            await self.config.clear_raw("regex") 
             await self.updateCache('pattern')
-            await self.updateCache('ignored')  
-            await ctx.send("Reset to default values complete.") 
-            return
-        await ctx.send("Reset cancelled. If you want to reset type in YES or yes.")
+            await ctx.send("Reset complete.")
+        elif type.lower() == "ignored":
+            await self.config.clear_raw("ignore")
+            await self.updateCache('ignored')
+            await ctx.send("Reset complete.")
+        elif type.lower() == "names":
+            await self.config.clear_raw("names")
+            await ctx.send("Reset complete.")
+        elif type.lower() == "all":
+            await self.config.clear_all()
+            await ctx.send("Reset complete.")
+        else:
+            await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORED or ALL.")
 
     @filter.group(name = "add")
     async def add(self, ctx: commands.Context):
