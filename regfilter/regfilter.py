@@ -165,17 +165,17 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
         """Sends the regex list through DMs."""
-        self.generic_list(ctx, ctx.message.author, "pattern")
+        await self.generic_list(ctx, ctx.message.author, "pattern")
 
     @listThings.command(name = "names")
     async def list_names(self, ctx):
         """Sends the names list through DMs."""
-        self.generic_list(ctx, ctx.message.author, "names")
+        await self.generic_list(ctx, ctx.message.author, "names")
 
     @listThings.command(name = "ignored")
     async def list_ignored(self, ctx):
         """Sends the ignored word list through DMs."""
-        self.generic_list(ctx, ctx.message.author, "ignored")
+        await self.generic_list(ctx, ctx.message.author, "ignored")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
