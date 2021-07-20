@@ -11,16 +11,15 @@ class Regfilter(commands.Cog):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
-                                        "(?i)\\bj+\\s*[@4aæÆ]+[\\s@4aæÆ]*p+[\\sp]*s?\\b",
-                                        "(?i)\\bf+\\s*[@4aæÆ]+[\\s@4aæÆ]*g|\\b\\w*f+[@4aæÆ]+g",
-                                        "(?i)\\b[szϟ]+\\s*p+[\\sp]*[il1y!]+[\\sil1y!]*[ck]+[\\sck]*s?\\b",
-                                        "(?i)\\bg+\\s*[oø0@]+\\s*[oø0@]+[\\soø0@]*k|(?i)\\b\\w*g+[oø0@]{2,}k",
-                                        "(?i)\\bk+\\s*[i1y!]+[\\si1y!]*k+[\\sk]*[e3]|(?i)\\b\\w*k+[i1y!]+k+[e3]",
-                                        "(?i)\\b[nη]+\\s*[e3]+[\\se3]*g+[\\sg]*r+[\\sr]*[oø0@]|(?i)\\b\\w*[nη]+[e3]+g+r+[oø0@]",
-                                        "(?i)\\bc+\\s*h+[\\sh]*[il1y!]+[\\sil1y!]*[nη]+[\\snη]*k|(?i)\\b\\w*c+h+[il1y!]+[nη]+k",
-                                        "(?i)\\b[nη]+\\s*[il1y!]+[\\sil1y!]*g+\\s*g+[\\sg]*[e3]+[\\se3]*r|(?i)\\b\\w*[nη]+[il1y!]+g{2,}[e3]+r",
-                                        "(?i)\\bt+\\s*r+[\\sr]*[@4aæÆ]+[\\s@4aæÆ]*[nη]+\\s*[nη]+[\\snη]*[il1y!]|(?i)\\b\\w*t+r+[@4aæÆ]+[nη]{2,}[il1y!]"
-
+                                        r"(?i)\bj+\s*[@4aæÆ]+[\s@4aæÆ]*p+[\sp]*s?\b",
+                                        r"(?i)\bf+\s*[@4aæÆ]+[\s@4aæÆ]*g|\b\w*f+[@4aæÆ]+g",
+                                        r"(?i)\b[szϟ]+\s*p+[\sp]*[il1y!]+[\sil1y!]*[ck]+[\sck]*s?\b",
+                                        r"(?i)\bg+\s*[oø0@]+\s*[oø0@]+[\soø0@]*k|\b\w*g+[oø0@]{2,}k",
+                                        r"(?i)\bk+\s*[i1y!]+[\si1y!]*k+[\sk]*[e3]|\b\w*k+[i1y!]+k+[e3]",
+                                        r"(?i)\b[nη]+\s*[e3]+[\se3]*g+[\sg]*r+[\sr]*[oø0@]|\b\w*[nη]+[e3]+g+r+[oø0@]",
+                                        r"(?i)\bc+\s*h+[\sh]*[il1y!]+[\sil1y!]*[nη]+[\snη]*k|\b\w*c+h+[il1y!]+[nη]+k",
+                                        r"(?i)\b[nη]+\s*[il1y!]+[\sil1y!]*g+\s*g+[\sg]*[e3]+[\se3]*r|\b\w*[nη]+[il1y!]+g{2,}[e3]+r",
+                                        r"(?i)\bt+\s*r+[\sr]*[@4aæÆ]+[\s@4aæÆ]*[nη]+\s*[nη]+[\snη]*[il1y!]|\b\w*t+r+[@4aæÆ]+[nη]{2,}[il1y!]"
 
                                      ],
                             "names": [],
