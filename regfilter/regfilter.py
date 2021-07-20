@@ -146,7 +146,7 @@ class Regfilter(commands.Cog):
             if self.cache_pattern == []:
                 await self.updateCache('pattern')
             list = self.cache_pattern
-            if list.len() == 0:
+            if len(list) == 0:
                 await user.send("There's nothing in that list.")
                 return
             prettyList = "\n".join(list)
@@ -161,7 +161,7 @@ class Regfilter(commands.Cog):
         try:
             user = ctx.message.author
             list = await self.config.names()
-            if list.len() == 0:
+            if len(list) == 0:
                 await user.send("There's nothing in that list.")
                 return
             prettyList = "\n".join(list)
@@ -177,7 +177,7 @@ class Regfilter(commands.Cog):
             if self.cache_ignored == []:
                 await self.updateCache('ignored')
             list = self.cache_ignored
-            if list.len() == 0:
+            if len(list) == 0:
                 await user.send("There's nothing in that list.")
                 return
             prettyList = "\n".join(list)
