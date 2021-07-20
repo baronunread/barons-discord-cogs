@@ -148,6 +148,7 @@ class Regfilter(commands.Cog):
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
         """Base command. Can either send the list of regex, names or ignored words."""
+        pass
 
     async def generic_list(self, ctx, user, type: str):
         try:    
