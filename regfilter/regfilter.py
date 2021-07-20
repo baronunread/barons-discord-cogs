@@ -26,6 +26,7 @@ class Regfilter(commands.Cog):
                          }
         self.config.register_global(**default_global)
         self.cache_pattern = []
+        self.cache_ofnames = []
         self.cache_ignored = []
 
     async def replace(self, msg):
@@ -36,15 +37,22 @@ class Regfilter(commands.Cog):
     async def updateCache(self, type):
         if type == 'pattern':
             self.cache_pattern = await self.config.regex()
+            return self.cache_pattern
+        elif type == 'names':
+            self.cache_ofnames = await self.config.names()
+            return self.cache_ofnames
         elif type == 'ignored':
             self.cache_ignored = await self.config.ignore()
+            return self.cache_ignored
 
     async def validateCache(self):
         if self.cache_pattern == []: 
             await self.updateCache('pattern')
         if self.cache_ignored == []:
+            await self.updateCache('names')    
+        if self.cache_ignored == []:
             await self.updateCache('ignored')
-            
+
     @commands.group()
     @commands.has_permissions(manage_messages = True)
     async def filter(self, ctx: commands.Context):
@@ -62,6 +70,7 @@ class Regfilter(commands.Cog):
             await self.updateCache('ignored')
         elif type.lower() == "names":
             await self.config.clear_raw("names")
+            await self.updateCache('names')
         elif type.lower() == "all":
             await self.config.clear_all()      
         else:
@@ -87,6 +96,7 @@ class Regfilter(commands.Cog):
         """Adds a name to the list of default names. Applied when filtering a name."""
         async with self.config.names() as names:
             names.append(msg)
+            self.cache_ofnames = names
         await ctx.send("The new name has been added.")
 
     @add.command(name = "ignore")
@@ -119,6 +129,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.names() as names:
                 names.remove(msg)
+                self.cache_ofnames = names
             await ctx.send("Name removed successfully.")
         except:
             await ctx.send("Couldn't find that name in the list.")
@@ -138,52 +149,33 @@ class Regfilter(commands.Cog):
     async def listThings(self, ctx: commands.Context):
         """Base command. Can either send the list of regex, names or ignored words."""
 
-    @listThings.command(name = "regex")
-    async def list_regex(self, ctx):
-        """Sends the regex list through DMs."""
-        try:
-            user = ctx.message.author
-            if self.cache_pattern == []:
-                await self.updateCache('pattern')
-            list = self.cache_pattern
+    async def generic_list(self, ctx, user, type: str):
+        try:    
+            await list = self.updateCache(type)
             if len(list) == 0:
                 await user.send("There's nothing in that list.")
                 return
             prettyList = "\n".join(list)
-            prettyList = "```" + prettyList + "```"
+            if type == "regex":
+                prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
         except:
             await ctx.send("ERROR: Open your DMs.")
+
+    @listThings.command(name = "regex")
+    async def list_regex(self, ctx):
+        """Sends the regex list through DMs."""
+        self.generic_list(ctx, ctx.message.author, "pattern")
 
     @listThings.command(name = "names")
     async def list_names(self, ctx):
         """Sends the names list through DMs."""
-        try:
-            user = ctx.message.author
-            list = await self.config.names()
-            if len(list) == 0:
-                await user.send("There's nothing in that list.")
-                return
-            prettyList = "\n".join(list)
-            await user.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+        self.generic_list(ctx, ctx.message.author, "names")
 
     @listThings.command(name = "ignored")
     async def list_ignored(self, ctx):
         """Sends the ignored word list through DMs."""
-        try:
-            user = ctx.message.author
-            if self.cache_ignored == []:
-                await self.updateCache('ignored')
-            list = self.cache_ignored
-            if len(list) == 0:
-                await user.send("There's nothing in that list.")
-                return
-            prettyList = "\n".join(list)
-            await user.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+        self.generic_list(ctx, ctx.message.author, "ignored")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -223,7 +215,7 @@ class Regfilter(commands.Cog):
         patterns = self.cache_pattern
         ignore = self.cache_ignored
         if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
-            names = await self.config.names()
+            names = self.cache_ofnames
             try:
                 name = random.choice(names)
                 await member.edit(nick = name, reason = "Filtered username")
