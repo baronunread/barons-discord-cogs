@@ -49,7 +49,7 @@ class Regfilter(commands.Cog):
     async def clean_print(self, ctx, msg):
         cleaned = await self.replace(msg)
         await ctx.send(cleaned)
-        if self.triggered_filter(cleaned, self.cache_pattern):
+        if await self.triggered_filter(cleaned, self.cache_pattern):
             await ctx.send("I actually did find this to be a slur...")
         else:
             await ctx.send("What's that?")
