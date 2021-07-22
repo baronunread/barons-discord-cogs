@@ -44,7 +44,7 @@ class Voicerole(commands.Cog):
     async def _add(self, ctx, voiceChannelID, voiceRoleID):
         """Adds a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
         async with self.config.voiceroles() as pairs:
-            pairs[voiceChannelID] = voiceRoleID
+            pairs[voiceChannelID] = int(voiceRoleID)
             self.voicepairs = pairs
         await ctx.send("The new voicerole rule has been added.")
 
