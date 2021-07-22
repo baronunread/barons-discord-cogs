@@ -1,3 +1,4 @@
+import voicerole
 from redbot.core import commands, Config
 from discord.utils import get
 
@@ -61,3 +62,16 @@ class Voicerole(commands.Cog):
             await ctx.send("Voicerole rule removed successfully.")
         except:
             await ctx.send("Couldn't find that voicerole rule in the list.")
+
+    @voicerole.group(name = "list", invoke_without_command = True)
+    async def _list(self, ctx):
+        try:    
+            await self.validate_cache()
+            list = self.cache_voicepairs
+            if len(list) == 0:
+                await ctx.user.send("There's nothing in that list.")
+                return
+            prettyList = "\n".join(list)
+            await ctx.user.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
