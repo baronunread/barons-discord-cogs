@@ -59,7 +59,7 @@ class Voicerole(commands.Cog):
             async with self.config.pairs() as pairs:
                 for elem in pairs:
                     if elem == pair:
-                        pairs.pop(elem)
+                        pairs.remove(elem)
                 self.cache_voicepairs = pairs
             await ctx.send("Voicerole rule removed successfully.")
         except:
