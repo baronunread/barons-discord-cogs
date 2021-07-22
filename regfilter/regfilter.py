@@ -61,7 +61,7 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "reset", invoke_without_command = True)
     async def _reset(self, ctx: commands.Context, *, type):
-        """Testing"""
+        """Reset regex, names, ignored or all by typing out what to reset."""
         if type.lower() == "regex":
             await self.config.clear_raw("regex") 
             await self.updateCache('pattern')
