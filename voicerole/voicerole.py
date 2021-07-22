@@ -73,7 +73,7 @@ class Voicerole(commands.Cog):
             prettyList = ""
             for tuple in list:
                 work = ''.join(map(str, tuple))
-                output = work + "\n"
+                prettyList = work + "\n"
             await ctx.user.send(prettyList)
         except:
             await ctx.send("ERROR: Open your DMs.")
