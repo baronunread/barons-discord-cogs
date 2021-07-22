@@ -8,14 +8,14 @@ class Voicerole(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 3434346710410199107115321051023211210)
         default_global = {
-                            "pairs":{}
+                            "voicepairs":{}
                          }
         self.config.register_global(**default_global)
         self.cache_voicepairs = {}
 
     async def validate_cache(self):
         if self.cache_voicepairs == {}: 
-            self.cache_voicepairs = await self.config.pairs()
+            self.cache_voicepairs = await self.config.voiceroles()
             
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
@@ -46,7 +46,7 @@ class Voicerole(commands.Cog):
     @voicerole.group(name = "add", invoke_without_command = True)
     async def _add(self, ctx, voiceChannelID, voiceRoleID):
         """Adds a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
-        async with self.config.pairs() as pairs:
+        async with self.config.voiceroles() as pairs:
             pairs[voiceChannelID] = voiceRoleID
             self.voicepairs = pairs
         await ctx.send("The new voicerole rule has been added.")
@@ -55,7 +55,7 @@ class Voicerole(commands.Cog):
     async def _delete(self, ctx, voiceChannelID):
         """Removes a voicerole rule. Needs, in order, the voice channel ID."""
         try:
-            async with self.config.pairs() as pairs:
+            async with self.config.voiceroles() as pairs:
                 pairs.pop(voiceChannelID)
                 self.cache_voicepairs = pairs
             await ctx.send("Voicerole rule removed successfully.")
