@@ -24,7 +24,7 @@ class Voicerole(commands.Cog):
         if not before.channel:
             await member.add_roles(role)
         if before.channel and not after.channel:
-            beforeChannel = str(after.channel.id)
+            beforeChannel = str(before.channel.id)
             voice = await self.get_voice(beforeChannel)
             role = get(member.guild.roles, id = voice)
             await member.remove_roles(role)
