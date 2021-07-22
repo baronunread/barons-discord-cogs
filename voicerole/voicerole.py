@@ -6,33 +6,58 @@ class Voicerole(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 3434346710410199107115321051023211210)
         default_global = {
-                            "voicepairs":[]
+                            "voice_pairs":[]
                          }
         self.config.register_global(**default_global)
         self.cache_voicepairs = []
 
+    async def validate_cache(self):
+        if self.cache_voicepairs == []: 
+            self.cache_voicepairs = await self.config.voice_pairs()
+            
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         voiceChannel = after.channel
-        voice = self.get_voice()
-        role = get(member.guild.roles, id = voice)
-        if member.bot:
+        voice = await self.get_voice(voiceChannel)
+        if member.bot or voice == None:
             return
+        role = get(member.guild.roles, id = voice)
         if not before.channel:
             await member.add_roles(role)
         if before.channel and not after.channel:
             await member.remove_roles(role)
 
-    async def get_voice():
-        pass
-    
+    async def get_voice(self, voiceChannel):
+        await self.validate_cache()
+        pairs = self.cache_voicepairs
+        for pair in pairs:
+            if voiceChannel == pair[0]:
+                return pair[1]
+        return None
+
     @commands.group()
     @commands.has_permissions(manage_messages = True)
     async def voicerole(self, ctx: commands.Context):
         """Base command. Check the subcommands."""
         pass
 
-    @voicerole.group()
-    async def add(self, ctx, voiceChannelID, voiceRoleID):
-        await ctx.send("This is the voice channel id" + voiceChannelID)
-        await ctx.send("This is the voice role id" + voiceRoleID)
+    @voicerole.group(name = "add", invoke_without_command = True)
+    async def _add(self, ctx, voiceChannelID, voiceRoleID):
+        """Adds a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
+        pair = (voiceChannelID, voiceRoleID)
+        async with self.config.voice_pairs() as pairs:
+            pairs.append(pair)
+            self.cache_pattern = pairs
+        await ctx.send("The new voicerole rule has been added.")
+
+    @voicerole.group(name = "delete", invoke_without_command = True)
+    async def _delete(self, ctx, voiceChannelID, voiceRoleID):
+        """Removes a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
+        try:
+            pair = (voiceChannelID, voiceRoleID)
+            async with self.config.voice_pairs() as pairs:
+                pairs.remove(pair)
+                self.cache_voicepairs = pairs
+            await ctx.send("Voicerole rule removed successfully.")
+        except:
+            await ctx.send("Couldn't find that voicerole rule in the list.")
