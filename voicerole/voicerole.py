@@ -47,7 +47,7 @@ class Voicerole(commands.Cog):
         """Adds a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
         (voiceChannelID, voiceRoleID)
         async with self.config.voice_pairs() as pairs:
-            pairs.append( (voiceChannelID, voiceRoleID) )
+            pairs.append( (int(voiceChannelID), int(voiceRoleID) ) )
             self.cache_pattern = pairs
         await ctx.send("The new voicerole rule has been added.")
 
@@ -56,7 +56,7 @@ class Voicerole(commands.Cog):
         """Removes a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
         try:
             async with self.config.voice_pairs() as pairs:
-                pairs.remove( (voiceChannelID, voiceRoleID) )
+                pairs.remove( (int(voiceChannelID), int(voiceRoleID) ) )
                 self.cache_voicepairs = pairs
             await ctx.send("Voicerole rule removed successfully.")
         except:
