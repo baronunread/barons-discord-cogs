@@ -16,11 +16,10 @@ class Voicerole(commands.Cog):
             
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        await member.send("I saw you move somewhere")
         voiceChannel = str(after.channel.id)
         voice = await self.get_voice(voiceChannel)
         role = get(member.guild.roles, id = voice)
-        if member.bot or voice == None:
+        if member.bot:
             return
         if not before.channel:
             await member.add_roles(role)
