@@ -74,7 +74,7 @@ class Voicerole(commands.Cog):
                 await ctx.message.author.send("There's nothing in that list.")
                 return
             prettyList = ""
-            for tuple in enumerate(list):
+            for index, tuple in enumerate(list):
                 work = tuple[0] + " " + tuple[1]
                 prettyList = work + "\n"
             await ctx.message.author.send(prettyList)
