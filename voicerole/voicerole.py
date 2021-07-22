@@ -7,10 +7,7 @@ class Voicerole(commands.Cog):
     """Checks if people have joined the voice chat and gives them the voice chat role."""
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 3434346710410199107115321051023211210)
-        default_global = {
-                            "voicepairs":{}
-                         }
-        self.config.register_global(**default_global)
+        self.config.register_global(voiceroles={})
         self.cache_voicepairs = {}
 
     async def validate_cache(self):
