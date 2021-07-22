@@ -16,27 +16,22 @@ class Voicerole(commands.Cog):
             
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        voiceChannel = str(after.channel.id)
-        voice = await self.get_voice(voiceChannel)
-        role = get(member.guild.roles, id = voice)
+        beforeRole = self.get_role(member, before)
+        afterRole = self.get_role(member, after)
         if member.bot:
             return
         if not before.channel:
-            await member.add_roles(role)
+            await member.add_roles(afterRole)
         if before.channel and after.channel:
-            beforeChannel = str(before.channel.id)
-            voice = await self.get_voice(beforeChannel)
-            role = get(member.guild.roles, id = voice)
-            await member.remove_roles(role)
-            voiceChannel = str(after.channel.id)
-            voice = await self.get_voice(voiceChannel)
-            role = get(member.guild.roles, id = voice)
-            await member.add_roles(role)
+            await member.remove_roles(beforeRole)
+            await member.add_roles(afterRole)
         if before.channel and not after.channel:
-            beforeChannel = str(before.channel.id)
-            voice = await self.get_voice(beforeChannel)
-            role = get(member.guild.roles, id = voice)
-            await member.remove_roles(role)
+            await member.remove_roles(beforeRole)
+
+    async def get_role(self, member, moment):
+        voiceChannel = str(moment.channel.id)
+        voice = await self.get_voice(voiceChannel)
+        return get(member.guild.roles, id = voice)
 
     async def get_voice(self, voiceChannel):
         await self.validate_cache()
