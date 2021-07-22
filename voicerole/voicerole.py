@@ -45,18 +45,22 @@ class Voicerole(commands.Cog):
     @voicerole.group(name = "add", invoke_without_command = True)
     async def _add(self, ctx, voiceChannelID, voiceRoleID):
         """Adds a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
-        (voiceChannelID, voiceRoleID)
+        pair = (voiceChannelID, voiceRoleID)
         async with self.config.pairs() as pairs:
-            pairs.append( (int(voiceChannelID), int(voiceRoleID) ) )
-            self.cache_pattern = pairs
+            pairs.append(pair)
+            self.voicepairs = pairs
         await ctx.send("The new voicerole rule has been added.")
 
     @voicerole.group(name = "delete", invoke_without_command = True)
     async def _delete(self, ctx, voiceChannelID, voiceRoleID):
         """Removes a voicerole rule. Needs, in order, the voice channel ID and then the voice role ID."""
         try:
+            pair = (voiceChannelID, voiceRoleID)
             async with self.config.pairs() as pairs:
-                pairs.remove( (int(voiceChannelID), int(voiceRoleID) ) )
+                pairs.remove(pair)
+                # for elem in pairs:
+                #     if elem == pair:
+                #         pairs.pop(elem)
                 self.cache_voicepairs = pairs
             await ctx.send("Voicerole rule removed successfully.")
         except:
