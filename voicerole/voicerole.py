@@ -19,6 +19,8 @@ class Voicerole(commands.Cog):
         voiceChannel = str(before.channel.id)
         voice = await self.get_voice(voiceChannel)
         beforeRole = get(member.guild.roles, id = voice)
+        if before.channel and not after.channel:
+            await member.remove_roles(beforeRole)
         voiceChannel = str(after.channel.id)
         voice = await self.get_voice(voiceChannel)
         afterRole = get(member.guild.roles, id = voice)
@@ -29,8 +31,6 @@ class Voicerole(commands.Cog):
         if before.channel and after.channel:
             await member.remove_roles(beforeRole)
             await member.add_roles(afterRole)
-        if before.channel and not after.channel:
-            await member.remove_roles(beforeRole)
 
     async def get_voice(self, voiceChannel):
         await self.validate_cache()
