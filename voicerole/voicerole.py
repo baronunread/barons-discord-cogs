@@ -72,7 +72,7 @@ class Voicerole(commands.Cog):
                 return
             prettyList = ""
             for tuple in list:
-                work = ''.join(map(str, tuple))
+                work = ' '.join(map(str, tuple))
                 prettyList = work + "\n"
             await ctx.message.author.send(prettyList)
         except:
