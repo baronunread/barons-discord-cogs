@@ -16,8 +16,8 @@ class Voicerole(commands.Cog):
             
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        beforeRole = await self.get_role(member, before)
-        afterRole = await self.get_role(member, after)
+        beforeRole = await self.get_role(member, before.channel.id)
+        afterRole = await self.get_role(member, after.channel.id)
         if member.bot:
             return
         if not before.channel:
@@ -28,8 +28,8 @@ class Voicerole(commands.Cog):
         if before.channel and not after.channel:
             await member.remove_roles(beforeRole)
 
-    async def get_role(self, member, moment):
-        voiceChannel = str(moment.channel.id)
+    async def get_role(self, member, id):
+        voiceChannel = str(id)
         voice = await self.get_voice(voiceChannel)
         return get(member.guild.roles, id = voice)
 
