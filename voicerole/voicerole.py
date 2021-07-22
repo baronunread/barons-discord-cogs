@@ -68,12 +68,12 @@ class Voicerole(commands.Cog):
             await self.validate_cache()
             list = self.cache_voicepairs
             if len(list) == 0:
-                await ctx.user.send("There's nothing in that list.")
+                await ctx.message.author.send("There's nothing in that list.")
                 return
-            # prettyList = ""
-            # for tuple in list:
-            #     work = ''.join(map(str, tuple))
-            #     prettyList = work + "\n"
-            await ctx.user.send("Bruh")
+            prettyList = ""
+            for tuple in list:
+                work = ''.join(map(str, tuple))
+                prettyList = work + "\n"
+            await ctx.message.author.send(prettyList)
         except:
             await ctx.send("ERROR: Open your DMs.")
