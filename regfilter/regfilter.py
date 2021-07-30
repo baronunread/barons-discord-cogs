@@ -40,7 +40,7 @@ class Regfilter(commands.Cog):
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
         alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
         for ignore in self.cache_ignored:
-            alpha = re.sub(ignore, ' ', alpha)
+            alpha = re.sub(ignore, '', alpha)
         return alpha
 
     async def updateCache(self, type):
