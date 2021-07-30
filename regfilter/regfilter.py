@@ -55,7 +55,7 @@ class Regfilter(commands.Cog):
         nfkd_form = unicodedata.normalize('NFKD', msg)
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
         for toReplace in self.leet_dict:
-            cleaned.replace(toReplace, self.leet_dict[toReplace])
+            cleaned = cleaned.replace(toReplace, self.leet_dict[toReplace])
         alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
         for ignore in self.cache_ignored:
             alpha = re.sub(ignore, '', alpha)
