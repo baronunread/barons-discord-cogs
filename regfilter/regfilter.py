@@ -56,29 +56,38 @@ class Regfilter(commands.Cog):
             alpha = re.sub(ignore, '', alpha)
         return alpha
 
-    async def updateCache(self, type):
+    async def return_cache(self, type: str):
         if type == "regex":
-            self.cache_regex = await self.config.regex()
             return self.cache_regex
         elif type == "names":
-            self.cache_names = await self.config.names()
             return self.cache_names
         elif type == "ignore":
-            self.cache_ignore = await self.config.ignore()
             return self.cache_ignore
 
-    async def validateCache(self):
+    async def update_cache(self, type, content = None):
+        if type == "regex":
+            self.cache_regex = content if content else await self.config.regex()
+        elif type == "names":
+            self.cache_names = content if content else await self.config.names()
+        elif type == "ignore":
+            self.cache_ignore = content if content else await self.config.ignore()
+        elif type == "all":
+            await self.update_cache("regex")
+            await self.update_cache("names")
+            await self.update_cache("ignore")
+
+    async def validate_cache(self):
         if self.cache_regex == []: 
-            await self.updateCache("regex")
+            await self.update_cache("regex")
         if self.cache_ignore == []:
-            await self.updateCache("names")    
+            await self.update_cache("names")    
         if self.cache_ignore == []:
-            await self.updateCache("ignore")
+            await self.update_cache("ignore")
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
     async def filter(self, ctx: commands.Context):
-        """Base command. Chec the subcommands."""
+        """Base command. Check the subcommands."""
         pass
 
     @filter.group(name = "reset", invoke_without_command = True)
@@ -92,7 +101,7 @@ class Regfilter(commands.Cog):
         else:
             await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORE or ALL.")
             return
-        await self.updateCache(type)
+        await self.update_cache(type)
         await ctx.send("Reset complete.")
 
     @filter.group(name = "add")
@@ -100,29 +109,29 @@ class Regfilter(commands.Cog):
         """Base command. Can add a regex, a name for replacing or a word to ignore."""
         pass
 
+    async def generic_add(self, ctx, msg, type: str):
+        await self.validate_cache()
+        list = await self.return_cache(type)
+        list = list.append(msg)
+        await self.config.set_raw(type, value = list)
+        await self.update_cache(type, list)
+        await ctx.send("The new item has been added.")
+
+
     @add.command(name = "regex")
     async def add_regex(self, ctx, *, msg):
         """Adds a regex to the list."""
-        async with self.config.regex() as regex:
-            regex.append(msg)
-            self.cache_regex = regex
-        await ctx.send("The new regex has been added.")
+        await self.generic_add(ctx, msg, "regex")
 
     @add.command(name = "name")
     async def add_name(self, ctx, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
-        async with self.config.names() as names:
-            names.append(msg)
-            self.cache_names = names
-        await ctx.send("The new name has been added.")
+        await self.generic_add(ctx, msg, "names")
 
     @add.command(name = "ignore")
     async def add_ignore(self, ctx, *, msg):
         """Adds a word to ignore to the list of ignored words."""
-        async with self.config.ignore() as ignore:
-            ignore.append( "(?i)" + msg )
-            self.cache_ignore = ignore
-        await ctx.send("The new word has been added.")
+        await self.generic_add(ctx, "(?i)" + msg, "ignore")
 
     @filter.group(name = "delete")
     async def delete(self, ctx: commands.Context):
@@ -169,7 +178,7 @@ class Regfilter(commands.Cog):
 
     async def generic_list(self, ctx, user, type: str):
         try:    
-            list = await self.updateCache(type)
+            list = await self.update_cache(type)
             if len(list) == 0:
                 await user.send("There's nothing in that list.")
                 return
@@ -200,9 +209,9 @@ class Regfilter(commands.Cog):
         author = message.author
         if author.bot:
             return
-        await self.validateCache()    
+        await self.validate_cache()    
         content = await self.replace(message.clean_content)
-        regexs = self.cache_regex
+        regexs = await self.return_cache("regex")
         if await self.triggered_filter(content, regexs):
             await message.delete()
     
@@ -227,14 +236,14 @@ class Regfilter(commands.Cog):
         await self.maybe_filter_name(member)
 
     async def maybe_filter_name(self, member: discord.Member):
-        await self.validateCache()
+        await self.validate_cache()
         content = await self.replace(member.display_name)
-        regexs = self.cache_regex
-        if await self.triggered_filter(content, regexs):
-            names = self.cache_names
+        regex = await self.return_cache("regex")
+        if await self.triggered_filter(content, regex):
+            names = await self.return_cache("names")
             try:
                 name = random.choice(names)
-                await member.edit(nic = name, reason = "Filtered username")
+                await member.edit(nick = name, reason = "Filtered username")
             except discord.HTTPException:
                 pass
             except IndexError:
