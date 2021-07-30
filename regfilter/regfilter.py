@@ -46,10 +46,6 @@ class Regfilter(commands.Cog):
                                 "ϟ":"s"
                             }
 
-    @commands.command()
-    async def test(self, ctx):
-        await self.config.set_raw("regex", value = ["e moh"])
-
     async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg)
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
@@ -70,11 +66,11 @@ class Regfilter(commands.Cog):
 
     async def update_cache(self, type, content = None):
         if type == "regex":
-            self.cache_regex = content if content else await self.config.regex()
+            self.cache_regex = await( content if content else await self.config.regex() )
         elif type == "names":
-            self.cache_names = content if content else await self.config.names()
+            self.cache_names = await( content if content else await self.config.names() )
         elif type == "ignore":
-            self.cache_ignore = content if content else await self.config.ignore()
+            self.cache_ignore = await( content if content else await self.config.ignore() )
         elif type == "all":
             await self.update_cache("regex")
             await self.update_cache("names")
