@@ -112,18 +112,16 @@ class Regfilter(commands.Cog):
     async def generic_add(self, ctx, msg, type: str):
         await self.validate_cache()
         list = await self.return_cache(type)
-        list = list.append(msg)
+        list.append(msg)
         await self.config.set_raw(type, value = list)
-        #await self.update_cache(type, content = list)
+        await self.update_cache(type, content = list)
         await ctx.send("The new item has been added.")
-        return list
 
     @add.command(name = "regex")
     async def add_regex(self, ctx, *, msg):
         """Adds a regex to the list."""
-        cache = await self.generic_add(ctx, msg, "regex")
-        self.cache_regex = cache
-
+        await self.generic_add(ctx, msg, "regex")
+        
     @add.command(name = "name")
     async def add_name(self, ctx, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
