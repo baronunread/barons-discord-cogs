@@ -66,8 +66,7 @@ class Regfilter(commands.Cog):
 
     async def update_cache(self, type, content = None):
         if type == "regex":
-            test = await self.config.regex()
-            self.cache_regex = content if content else test
+            self.cache_regex = await self.config.regex()
         elif type == "names":
             self.cache_names = content if content else await self.config.names()
         elif type == "ignore":
