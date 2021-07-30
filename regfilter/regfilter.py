@@ -36,8 +36,8 @@ class Regfilter(commands.Cog):
         pass
 
     @commands.command()
-    async def test(self, ctx, msg):
-        await ctx.send( await self.replace(msg.clean_content) )
+    async def test(self, ctx, *, msg):
+        await ctx.send( await self.replace(msg) )
         if( 'Æ'.isalpha() ):
             await ctx.send( "Æ is alpha!!" )
 
