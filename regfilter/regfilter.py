@@ -31,8 +31,7 @@ class Regfilter(commands.Cog):
 
     async def replace(self, msg):
         #TODO remove [non markdown characters that aren't letters]
-        text = msg.clean_content
-        text = discord.utils.remove_markdown(text)
+        text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', text)
         return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
 
@@ -185,7 +184,7 @@ class Regfilter(commands.Cog):
         author = message.author
         if author.bot:
             return
-        content = await self.replace(message.content)
+        content = await self.replace(message.clean_content)
         await self.validateCache()
         patterns = self.cache_pattern
         ignore = self.cache_ignored
