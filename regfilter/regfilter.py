@@ -37,7 +37,7 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, *, msg):
-        return await self.replace(msg)
+        await ctx.send( await self.replace(msg) )
 
     async def replace(self, msg):
         text = discord.utils.remove_markdown(msg)
