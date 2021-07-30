@@ -177,8 +177,9 @@ class Regfilter(commands.Cog):
         pass
 
     async def generic_list(self, ctx, user, type: str):
-        try:    
-            list = await self.update_cache(type)
+        try:
+            await self.validate_cache()    
+            list = await self.return_cache(type)
             if len(list) == 0:
                 await user.send("There's nothing in that list.")
                 return
