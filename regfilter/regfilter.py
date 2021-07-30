@@ -30,7 +30,7 @@ class Regfilter(commands.Cog):
         self.cache_ignored = []
 
     @commands.command()
-    async def test(self, ctx, msg):
+    async def test(self, ctx, *, msg):
         await ctx.send(await self.replace(msg))
 
     async def replace(self, msg):
