@@ -64,13 +64,13 @@ class Regfilter(commands.Cog):
         elif type == "ignore":
             return self.cache_ignore
 
-    async def update_cache(self, type, content = None):
+    async def update_cache(self, type):
         if type == "regex":
             self.cache_regex = await self.config.regex()
         elif type == "names":
-            self.cache_names = content if content else await self.config.names()
+            self.cache_names = await self.config.names()
         elif type == "ignore":
-            self.cache_ignore = content if content else await self.config.ignore()
+            self.cache_ignore = await self.config.ignore()
         elif type == "all":
             await self.update_cache("regex")
             await self.update_cache("names")
@@ -114,7 +114,7 @@ class Regfilter(commands.Cog):
         list = await self.return_cache(type)
         list = list.append(msg)
         await self.config.set_raw(type, value = list)
-        await self.update_cache(type, content = list)
+        await self.update_cache(type)
         await ctx.send("The new item has been added.")
 
 
