@@ -48,7 +48,7 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await self.config.set_raw("regex", ["e moh"])
+        await self.config.set_raw("regex", value = ["e moh"])
 
     async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg)
