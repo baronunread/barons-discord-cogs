@@ -29,12 +29,7 @@ class Regfilter(commands.Cog):
         self.cache_ofnames = []
         self.cache_ignored = []
 
-    @commands.command()
-    async def test(self, ctx, *, msg):
-        await ctx.send(await self.replace(msg))
-
     async def replace(self, msg):
-        #TODO remove [non markdown characters that aren't letters]
         text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', text)
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
