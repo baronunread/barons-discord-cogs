@@ -114,7 +114,7 @@ class Regfilter(commands.Cog):
         list = await self.return_cache(type)
         list = list.append(msg)
         await self.config.set_raw(type, value = list)
-        await self.update_cache(type, list)
+        await self.update_cache(type, content = list)
         await ctx.send("The new item has been added.")
 
 
