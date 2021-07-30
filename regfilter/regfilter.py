@@ -63,7 +63,7 @@ class Regfilter(commands.Cog):
         elif type == "names":
             self.cache_ofnames = await self.config.names()
             return self.cache_ofnames
-        elif type == "ignored":
+        elif type == "ignore":
             self.cache_ignored = await self.config.ignore()
             return self.cache_ignored
 
@@ -73,7 +73,7 @@ class Regfilter(commands.Cog):
         if self.cache_ignored == []:
             await self.updateCache("names")    
         if self.cache_ignored == []:
-            await self.updateCache("ignored")
+            await self.updateCache("ignore")
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -83,14 +83,14 @@ class Regfilter(commands.Cog):
 
     @filter.group(name = "reset", invoke_without_command = True)
     async def _reset(self, ctx: commands.Context, *, type):
-        """Reset regex, names, ignored or all by typing out what to reset."""
+        """Reset regex, names, ignore or all by typing out what to reset."""
         typed = type.lower()
-        if typed == "regex" or typed == "ignored" or typed == "names":
+        if typed == "regex" or typed == "ignore" or typed == "names":
             await self.config.clear_raw(typed) 
         elif typed == "all":
             await self.config.clear_all() 
         else:
-            await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORED or ALL.")
+            await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORE or ALL.")
             return
         await self.updateCache(type)
         await ctx.send("Reset complete.")
@@ -193,7 +193,7 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "ignored")
     async def list_ignored(self, ctx):
         """Sends the ignored word list through DMs."""
-        await self.generic_list(ctx, ctx.message.author, "ignored")
+        await self.generic_list(ctx, ctx.message.author, "ignore")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
