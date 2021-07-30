@@ -28,6 +28,12 @@ class Regfilter(commands.Cog):
         self.cache_pattern = []
         self.cache_ofnames = []
         self.cache_ignored = []
+        self.leet_dict =    {
+                                
+                            }
+
+    async def de_leetspeak(self, msg):
+        pass
 
     async def replace(self, msg):
         text = discord.utils.remove_markdown(msg)
