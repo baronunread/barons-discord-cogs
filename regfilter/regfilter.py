@@ -35,6 +35,10 @@ class Regfilter(commands.Cog):
     async def de_leetspeak(self, msg):
         pass
 
+    @commands.command()
+    async def test(self, ctx, *, msg):
+        return await self.replace(msg)
+
     async def replace(self, msg):
         text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', text)
