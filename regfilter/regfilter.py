@@ -41,6 +41,7 @@ class Regfilter(commands.Cog):
         alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
         for ignore in self.cache_ignored:
             alpha = re.sub(ignore, ' ', alpha)
+        return alpha
 
     async def updateCache(self, type):
         if type == 'pattern':
