@@ -37,8 +37,10 @@ class Regfilter(commands.Cog):
         #TODO remove [non markdown characters that aren't letters]
         text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', text)
-        replaced = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-        return ''.join(c for c in replaced if c.isalpha() or c == ' ')
+        cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+        alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
+        for ignore in self.cache_ignored:
+            alpha = re.sub(ignore, ' ', alpha)
 
     async def updateCache(self, type):
         if type == 'pattern':
@@ -189,17 +191,16 @@ class Regfilter(commands.Cog):
         author = message.author
         if author.bot:
             return
+        await self.validateCache()    
         content = await self.replace(message.clean_content)
-        await self.validateCache()
         patterns = self.cache_pattern
-        ignore = self.cache_ignored
-        if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
+        if await self.triggered_filter(content, patterns):
             await message.delete()
     
     async def triggered_filter(self, content, patterns):
         for pattern in patterns:
             result = re.findall(pattern, content)
-            if ( result != [] ):
+            if result != []:
                 return True
         return False
 
@@ -217,11 +218,10 @@ class Regfilter(commands.Cog):
         await self.maybe_filter_name(member)
 
     async def maybe_filter_name(self, member: discord.Member):
-        content = await self.replace(member.display_name)
         await self.validateCache()
+        content = await self.replace(member.display_name)
         patterns = self.cache_pattern
-        ignore = self.cache_ignored
-        if ( await self.triggered_filter(content, patterns) and not await self.triggered_filter(content, ignore) ):
+        if await self.triggered_filter(content, patterns):
             names = self.cache_ofnames
             try:
                 name = random.choice(names)
