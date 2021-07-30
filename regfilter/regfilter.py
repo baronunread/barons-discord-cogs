@@ -240,6 +240,6 @@ class Regfilter(commands.Cog):
             try:
                 name = random.choice(names)
                 await member.edit(nic = name, reason = "Filtered username")
-            except discord.HTTPException:
+            except discord.HTTPException or IndexError:
                 pass
             return
