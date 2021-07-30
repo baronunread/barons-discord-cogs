@@ -27,7 +27,7 @@ class Regfilter(commands.Cog):
                                      ]
                          }
         self.config.register_global(**default_global)
-        self.cache_pattern = []
+        self.cache_regex = []
         self.cache_ofnames = []
         self.cache_ignored = []
         self.leet_dict =    {
@@ -57,23 +57,23 @@ class Regfilter(commands.Cog):
         return alpha
 
     async def updateCache(self, type):
-        if type == 'pattern':
-            self.cache_pattern = await self.config.regex()
-            return self.cache_pattern
-        elif type == 'names':
+        if type == "regex":
+            self.cache_regex = await self.config.regex()
+            return self.cache_regex
+        elif type == "names":
             self.cache_ofnames = await self.config.names()
             return self.cache_ofnames
-        elif type == 'ignored':
+        elif type == "ignored":
             self.cache_ignored = await self.config.ignore()
             return self.cache_ignored
 
     async def validateCache(self):
-        if self.cache_pattern == []: 
-            await self.updateCache('pattern')
+        if self.cache_regex == []: 
+            await self.updateCache("regex")
         if self.cache_ignored == []:
-            await self.updateCache('names')    
+            await self.updateCache("names")    
         if self.cache_ignored == []:
-            await self.updateCache('ignored')
+            await self.updateCache("ignored")
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -84,20 +84,15 @@ class Regfilter(commands.Cog):
     @filter.group(name = "reset", invoke_without_command = True)
     async def _reset(self, ctx: commands.Context, *, type):
         """Reset regex, names, ignored or all by typing out what to reset."""
-        if type.lower() == "regex":
-            await self.config.clear_raw("regex") 
-            await self.updateCache('pattern')
-        elif type.lower() == "ignored":
-            await self.config.clear_raw("ignore")
-            await self.updateCache('ignored')
-        elif type.lower() == "names":
-            await self.config.clear_raw("names")
-            await self.updateCache('names')
-        elif type.lower() == "all":
-            await self.config.clear_all()      
+        typed = type.lower()
+        if typed == "regex" or typed == "ignored" or typed == "names":
+            await self.config.clear_raw(typed) 
+        elif typed == "all":
+            await self.config.clear_all() 
         else:
             await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORED or ALL.")
             return
+        await self.updateCache(type)
         await ctx.send("Reset complete.")
 
     @filter.group(name = "add")
@@ -110,7 +105,7 @@ class Regfilter(commands.Cog):
         """Adds a regex to the list."""
         async with self.config.regex() as regex:
             regex.append(msg)
-            self.cache_pattern = regex
+            self.cache_regex = regex
         await ctx.send("The new regex has been added.")
 
     @add.command(name = "name")
@@ -140,7 +135,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.regex() as regex:
                 regex.remove(msg)
-                self.cache_pattern = regex
+                self.cache_regex = regex
             await ctx.send("Regex removed successfully.")
         except:
             await ctx.send("Couldn't find that regex in the list.")
@@ -179,7 +174,7 @@ class Regfilter(commands.Cog):
                 await user.send("There's nothing in that list.")
                 return
             prettyList = "\n".join(list)
-            if type == "pattern":
+            if type == "regex":
                 prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
         except:
@@ -188,7 +183,7 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
         """Sends the regex list through DMs."""
-        await self.generic_list(ctx, ctx.message.author, "pattern")
+        await self.generic_list(ctx, ctx.message.author, "regex")
 
     @listThings.command(name = "names")
     async def list_names(self, ctx):
@@ -207,13 +202,13 @@ class Regfilter(commands.Cog):
             return
         await self.validateCache()    
         content = await self.replace(message.clean_content)
-        patterns = self.cache_pattern
-        if await self.triggered_filter(content, patterns):
+        regexs = self.cache_regex
+        if await self.triggered_filter(content, regexs):
             await message.delete()
     
-    async def triggered_filter(self, content, patterns):
-        for pattern in patterns:
-            result = re.findall(pattern, content)
+    async def triggered_filter(self, content, regexs):
+        for regex in regexs:
+            result = re.findall(regex, content)
             if result != []:
                 return True
         return False
@@ -234,8 +229,8 @@ class Regfilter(commands.Cog):
     async def maybe_filter_name(self, member: discord.Member):
         await self.validateCache()
         content = await self.replace(member.display_name)
-        patterns = self.cache_pattern
-        if await self.triggered_filter(content, patterns):
+        regexs = self.cache_regex
+        if await self.triggered_filter(content, regexs):
             names = self.cache_ofnames
             try:
                 name = random.choice(names)
