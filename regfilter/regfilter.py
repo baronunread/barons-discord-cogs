@@ -38,7 +38,7 @@ class Regfilter(commands.Cog):
         text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', text)
         replaced = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
-        return ''.join(c for c in replaced if c.isalpha())
+        return ''.join(c for c in replaced if c.isalpha() or c == ' ')
 
     async def updateCache(self, type):
         if type == 'pattern':
