@@ -51,7 +51,6 @@ class Regfilter(commands.Cog):
         await ctx.send( await self.replace(msg) )
 
     async def replace(self, msg):
-        #text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', msg)
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
         for toReplace in self.leet_dict:
