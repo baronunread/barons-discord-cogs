@@ -37,11 +37,13 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, *, msg):
-        await ctx.send( await self.replace(msg) )
+        await ctx.send( await self.replace(msg.clean_content) )
+        if( 'Æ'.isalpha() ):
+            await ctx.send( "Æ is alpha!!" )
 
     async def replace(self, msg):
-        text = discord.utils.remove_markdown(msg)
-        nfkd_form = unicodedata.normalize('NFKD', text)
+        #text = discord.utils.remove_markdown(msg)
+        nfkd_form = unicodedata.normalize('NFKD', msg)
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
         alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
         for ignore in self.cache_ignored:
