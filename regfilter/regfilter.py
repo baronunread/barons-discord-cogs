@@ -28,8 +28,8 @@ class Regfilter(commands.Cog):
                          }
         self.config.register_global(**default_global)
         self.cache_regex = []
-        self.cache_ofnames = []
-        self.cache_ignored = []
+        self.cache_names = []
+        self.cache_ignore = []
         self.leet_dict =    {
                                 "@":"a",
                                 "4":"a",
@@ -52,7 +52,7 @@ class Regfilter(commands.Cog):
         for toReplace in self.leet_dict:
             cleaned = cleaned.replace(toReplace, self.leet_dict[toReplace])
         alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
-        for ignore in self.cache_ignored:
+        for ignore in self.cache_ignore:
             alpha = re.sub(ignore, '', alpha)
         return alpha
 
@@ -61,18 +61,18 @@ class Regfilter(commands.Cog):
             self.cache_regex = await self.config.regex()
             return self.cache_regex
         elif type == "names":
-            self.cache_ofnames = await self.config.names()
-            return self.cache_ofnames
+            self.cache_names = await self.config.names()
+            return self.cache_names
         elif type == "ignore":
-            self.cache_ignored = await self.config.ignore()
-            return self.cache_ignored
+            self.cache_ignore = await self.config.ignore()
+            return self.cache_ignore
 
     async def validateCache(self):
         if self.cache_regex == []: 
             await self.updateCache("regex")
-        if self.cache_ignored == []:
+        if self.cache_ignore == []:
             await self.updateCache("names")    
-        if self.cache_ignored == []:
+        if self.cache_ignore == []:
             await self.updateCache("ignore")
 
     @commands.group()
@@ -113,7 +113,7 @@ class Regfilter(commands.Cog):
         """Adds a name to the list of default names. Applied when filtering a name."""
         async with self.config.names() as names:
             names.append(msg)
-            self.cache_ofnames = names
+            self.cache_names = names
         await ctx.send("The new name has been added.")
 
     @add.command(name = "ignore")
@@ -121,7 +121,7 @@ class Regfilter(commands.Cog):
         """Adds a word to ignore to the list of ignored words."""
         async with self.config.ignore() as ignore:
             ignore.append( "(?i)" + msg )
-            self.cache_ignored = ignore
+            self.cache_ignore = ignore
         await ctx.send("The new word has been added.")
 
     @filter.group(name = "delete")
@@ -146,7 +146,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.names() as names:
                 names.remove(msg)
-                self.cache_ofnames = names
+                self.cache_names = names
             await ctx.send("Name removed successfully.")
         except:
             await ctx.send("Couldn't find that name in the list.")
@@ -157,7 +157,7 @@ class Regfilter(commands.Cog):
         try:
             async with self.config.ignore() as ignore:
                 ignore.remove( "(?i)" + msg )
-                self.cache_ignored = ignore
+                self.cache_ignore = ignore
             await ctx.send("Ignored word removed successfully.")
         except:
             await ctx.send("Couldn't find that word in the list.")
@@ -190,7 +190,7 @@ class Regfilter(commands.Cog):
         """Sends the names list through DMs."""
         await self.generic_list(ctx, ctx.message.author, "names")
 
-    @listThings.command(name = "ignored")
+    @listThings.command(name = "ignore")
     async def list_ignored(self, ctx):
         """Sends the ignored word list through DMs."""
         await self.generic_list(ctx, ctx.message.author, "ignore")
@@ -231,7 +231,7 @@ class Regfilter(commands.Cog):
         content = await self.replace(member.display_name)
         regexs = self.cache_regex
         if await self.triggered_filter(content, regexs):
-            names = self.cache_ofnames
+            names = self.cache_names
             try:
                 name = random.choice(names)
                 await member.edit(nic = name, reason = "Filtered username")
