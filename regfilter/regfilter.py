@@ -11,44 +11,54 @@ class Regfilter(commands.Cog):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
-                                        r"(?i)\bj+\s*[@4aæÆ]+[\s@4aæÆ]*p+[\sp]*s?\b",
-                                        r"(?i)\bf+\s*[@4aæÆ]+[\s@4aæÆ]*g|\b\w*f+[@4aæÆ]+g",
-                                        r"(?i)\b[szϟ]+\s*p+[\sp]*[il1y!]+[\sil1y!]*[ck]+[\sck]*s?\b",
-                                        r"(?i)\bg+\s*[oø0@ο]+\s*[oø0@ο]+[\soø0@ο]*k|\b\w*g+[oø0@ο]{2,}k",
-                                        r"(?i)\bk+\s*[i1y!]+[\si1y!]*k+[\sk]*[e3Ε]|\b\w*k+[i1y!]+k+[e3Ε]",
-                                        r"(?i)\b[nη]+\s*[e3Ε]+[\se3Ε]*g+[\sg]*r+[\sr]*[oø0@ο]|\b\w*[nη]+[e3Ε]+g+r+[oø0@ο]",
-                                        r"(?i)\bc+\s*h+[\sh]*[il1y!]+[\sil1y!]*[nη]+[\snη]*k|\b\w*c+h+[il1y!]+[nη]+k",
-                                        r"(?i)\b[nη]+\s*[il1y!]+[\sil1y!]*g+\s*g+[\sg]*[e3Ε]+[\se3Ε]*r|\b\w*[nη]+[il1y!]+g{2,}[e3Ε]+r",
-                                        r"(?i)\bt+\s*r+[\sr]*[@4aæÆ]+[\s@4aæÆ]*[nη]+\s*[nη]+[\snη]*[il1y!]|\b\w*t+r+[@4aæÆ]+[nη]{2,}[il1y!]"
+                                        r"(?i)\bj+\s*a+[\sa]*p+[\sp]*s?\b",
+                                        r"(?i)\bf+\s*a+[\sa]*g|\b\w*f+a+g",
+                                        r"(?i)\bs+\s*p+[\sp]*i+[\si]*c+[\sc]*s?\b",
+                                        r"(?i)\bg+\s*o+\s*o+[\so]*k|\b\w*g+o{2,}k",
+                                        r"(?i)\bk+\s*i+[\si]*k+[\sk]*e|\b\w*k+i+k+e",
+                                        r"(?i)\bn+\s*e+[\se]*g+[\sg]*r+[\sr]*o|\b\w*n+e+g+r+o",
+                                        r"(?i)\bc+\s*h+[\sh]*i+[\si]*n+[\sn]*k|\b\w*c+h+i+n+k",
+                                        r"(?i)\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*e+[\se]*r|\b\w*n+[il]+g{2,}e+r",
+                                        r"(?i)\bt+\s*r+[\sr]*a+[\sa]*n+\s*n+[\sn]*[iy]|\b\w*t+r+a+n{2,}[iy]"
                                      ],
                             "names": [],
-                            "ignore":[]
+                            "ignore":[
+                                        r"(?i)\bhttp[^' ']*"
+                                     ]
                          }
         self.config.register_global(**default_global)
         self.cache_pattern = []
         self.cache_ofnames = []
         self.cache_ignored = []
         self.leet_dict =    {
-                                
+                                "@":"a",
+                                "4":"a",
+                                "æ":"a", 
+                                "Æ":"a",
+                                "3":"e",
+                                "Ε":"e", #Greek E
+                                "1":"i",
+                                "!":"i",
+                                "ø":"o",
+                                "0":"o",
+                                "ο":"o", #Greek o
+                                "η":"n",
+                                "ϟ":"s"
                             }
-
-    async def de_leetspeak(self, msg):
-        pass
 
     @commands.command()
     async def test(self, ctx, *, msg):
         await ctx.send( await self.replace(msg) )
-        if( 'Æ'.isalpha() ):
-            await ctx.send( "Æ is alpha!!" )
 
     async def replace(self, msg):
         #text = discord.utils.remove_markdown(msg)
         nfkd_form = unicodedata.normalize('NFKD', msg)
         cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+        for toReplace in self.leet_dict:
+            cleaned.replace(toReplace, self.leet_dict[toReplace])
         alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
         for ignore in self.cache_ignored:
             alpha = re.sub(ignore, '', alpha)
-        alpha = re.sub(r"http[^' ']*", '', alpha)
         return alpha
 
     async def updateCache(self, type):
@@ -73,7 +83,7 @@ class Regfilter(commands.Cog):
     @commands.group()
     @commands.has_permissions(manage_messages = True)
     async def filter(self, ctx: commands.Context):
-        """Base command. Check the subcommands."""
+        """Base command. Chec the subcommands."""
         pass
 
     @filter.group(name = "reset", invoke_without_command = True)
@@ -234,7 +244,7 @@ class Regfilter(commands.Cog):
             names = self.cache_ofnames
             try:
                 name = random.choice(names)
-                await member.edit(nick = name, reason = "Filtered username")
+                await member.edit(nic = name, reason = "Filtered username")
             except discord.HTTPException:
                 pass
             return
