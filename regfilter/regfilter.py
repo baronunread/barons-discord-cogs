@@ -31,7 +31,7 @@ class Regfilter(commands.Cog):
 
     async def replace(self, msg):
         #TODO remove [non markdown characters that aren't letters]
-        text = discord.utils.escape_mentions(msg)
+        text = msg.clean_content
         text = discord.utils.remove_markdown(text)
         nfkd_form = unicodedata.normalize('NFKD', text)
         return u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
