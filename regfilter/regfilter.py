@@ -157,7 +157,7 @@ class Regfilter(commands.Cog):
     @delete.command(name = "ignore")
     async def delete_ignore(self, ctx, *, msg):
         """Removes an ignored word from the list."""
-        await self.generic_add_delete(ctx, msg, "ignore", "deleted")
+        await self.generic_add_delete(ctx, "(?i)" + msg, "ignore", "deleted")
 
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
