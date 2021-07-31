@@ -109,28 +109,35 @@ class Regfilter(commands.Cog):
         """Base command. Can add a regex, a name for replacing or a word to ignore."""
         pass
 
-    async def generic_add(self, ctx, msg, type: str):
+    async def generic_add_delete(self, ctx, msg, type: str, operation: str):
         await self.validate_cache()
         list = await self.return_cache(type)
-        list.append(msg)
+        if operation == "added":
+            list.append(msg)
+        elif operation == "deleted":
+            try:
+                list.remove(msg)
+            except:
+                await ctx.send("Couldn't find that item in the list.")
+                return
         await self.config.set_raw(type, value = list)
         await self.update_cache(type, content = list)
-        await ctx.send("The new item has been added.")
+        await ctx.send("The new item has been " + operation + ".")
 
     @add.command(name = "regex")
     async def add_regex(self, ctx, *, msg):
         """Adds a regex to the list."""
-        await self.generic_add(ctx, msg, "regex")
+        await self.generic_add_delete(ctx, msg, "regex", "added")
         
     @add.command(name = "name")
     async def add_name(self, ctx, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
-        await self.generic_add(ctx, msg, "names")
+        await self.generic_add_delete(ctx, msg, "names", "added")
 
     @add.command(name = "ignore")
     async def add_ignore(self, ctx, *, msg):
         """Adds a word to ignore to the list of ignored words."""
-        await self.generic_add(ctx, "(?i)" + msg, "ignore")
+        await self.generic_add_delete(ctx, "(?i)" + msg, "ignore", "added")
 
     @filter.group(name = "delete")
     async def delete(self, ctx: commands.Context):
@@ -140,35 +147,17 @@ class Regfilter(commands.Cog):
     @delete.command(name = "regex")
     async def delete_regex(self, ctx, *, msg):
         """Removes a regex from the list."""
-        try:
-            async with self.config.regex() as regex:
-                regex.remove(msg)
-                self.cache_regex = regex
-            await ctx.send("Regex removed successfully.")
-        except:
-            await ctx.send("Couldn't find that regex in the list.")
+        await self.generic_add_delete(ctx, msg, "regex", "deleted")
 
     @delete.command(name = "name")
     async def delete_name(self, ctx, *, msg):
         """Removes a name from the list."""
-        try:
-            async with self.config.names() as names:
-                names.remove(msg)
-                self.cache_names = names
-            await ctx.send("Name removed successfully.")
-        except:
-            await ctx.send("Couldn't find that name in the list.")
+        await self.generic_add_delete(ctx, msg, "names", "deleted")
 
     @delete.command(name = "ignore")
     async def delete_ignore(self, ctx, *, msg):
         """Removes an ignored word from the list."""
-        try:
-            async with self.config.ignore() as ignore:
-                ignore.remove( "(?i)" + msg )
-                self.cache_ignore = ignore
-            await ctx.send("Ignored word removed successfully.")
-        except:
-            await ctx.send("Couldn't find that word in the list.")
+        await self.generic_add_delete(ctx, msg, "ignore", "deleted")
 
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
@@ -176,7 +165,7 @@ class Regfilter(commands.Cog):
         pass
 
     async def generic_list(self, ctx, user, type: str):
-        # try:
+        try:
             await self.validate_cache()    
             list = await self.return_cache(type)
             if len(list) == 0:
@@ -186,8 +175,8 @@ class Regfilter(commands.Cog):
             if type == "regex":
                 prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
-        # except:
-        #     await ctx.send("ERROR: Open your DMs.")
+        except:
+            await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
