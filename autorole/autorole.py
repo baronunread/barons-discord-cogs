@@ -96,14 +96,17 @@ class Autorole(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         user = message.author
+        try:
+            if self.cache_remembered[user]:
+                return
+        except KeyError:
+            pass        
         userRoles = user.roles
         await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
         if role in userRoles or not role or user.bot:
             return
         try:
-            if self.cache_remembered[user]:
-                return
             self.cache_users[user] += 1 
             if self.cache_users[user] >= self.cache_messages:
                 self.cache_users.pop(user)
