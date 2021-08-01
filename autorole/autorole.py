@@ -9,13 +9,13 @@ class Autorole(commands.Cog):
         self.config = Config.get_conf(self, identifier = 343434651171161111099711610599971)
         default_global = {
                             "role": None,
-                            "messages": 100,
+                            "messages": 0,
                             "users": {},
                             "remembered": {}
                          }
         self.config.register_global(**default_global)
         self.cache_role = None
-        self.cache_messages = 100
+        self.cache_messages = 0
         self.cache_users = {}
         self.cache_remembered = {}
 
