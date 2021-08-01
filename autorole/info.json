@@ -1,0 +1,8 @@
+{
+    "author" : ["Baron Unread"],
+    "install_msg" : "I just hope it works",
+    "name" : "autorole",
+    "short" : "f*cking tasks",
+    "description" : "Sets up an automatic role given after a certain amount of messages.",
+    "tags" : ["tools"]
+}
