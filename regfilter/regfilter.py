@@ -98,6 +98,8 @@ class Regfilter(commands.Cog):
             await self.update_cache("regex")
             await self.update_cache("names")
             await self.update_cache("ignore")
+            await ctx.send("Reset complete.")
+            return
         else:
             await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORE or ALL.")
             return
