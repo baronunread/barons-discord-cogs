@@ -50,6 +50,10 @@ class Autorole(commands.Cog):
         try:
             if self.cache_remembered[user]:
                 role = get(user.guild.roles, id = self.cache_role)
+                userRoles = user.roles
+                if role in userRoles:
+                    await ctx.send("You already have that role.")
+                    return
                 await user.add_roles(role)
                 await ctx.send("Here you go!")
         except KeyError:
