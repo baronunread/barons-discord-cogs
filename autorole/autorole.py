@@ -62,7 +62,7 @@ class Autorole(commands.Cog):
     async def setup(self, ctx, roleID, messages):
         """Insert the ID of the role and the amount of messages that you'd want for it to be given."""
         await self.generic_add("role", int(roleID))
-        await self.generic_add("messages", messages)
+        await self.generic_add("messages", int(messages))
         await ctx.send("Setup complete.") 
 
     @autorole.group(name = "edit")
@@ -72,11 +72,11 @@ class Autorole(commands.Cog):
 
     @edit.command(name = "role")
     async def role(self, ctx, roleID):
-        await self.generic_add("role", roleID)
+        await self.generic_add("role", int(roleID))
 
     @edit.command(name = "messages")
     async def role(self, ctx, messages):
-        await self.generic_add("messages", messages)
+        await self.generic_add("messages", int(messages))
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
