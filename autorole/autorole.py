@@ -20,14 +20,15 @@ class Autorole(commands.Cog):
         self.cache_remembered = {}
 
     async def update_cache(self, type: str, content = None):
+        value = content if content else await self.config.get_raw(type)
         if type == "role":
-            self.cache_role = content if content else await self.config.get_raw(type)
+            self.cache_role = value
         elif type == "messages":
-            self.cache_messages = content if content else await self.config.messages()
+            self.cache_messages = value
         elif type == "users":
-            self.cache_users = content if content else await self.config.users()
+            self.cache_users = value
         elif type == "remembered":
-            self.cache_remembered = content if content else await self.config.remembered()
+            self.cache_remembered = value
         elif type == "all":
             await self.update_cache("role")
             await self.update_cache("messages")
