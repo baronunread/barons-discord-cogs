@@ -81,19 +81,17 @@ class Autorole(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         user = message.author
-        if user.bot:
-            return
         userRoles = user.roles
         await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
-        if role in userRoles:
+        if role in userRoles or not role or user.bot:
             return
         try:
-            self.cache_users[str(user)] += 1
+            self.cache_users[user] += 1
         except KeyError:
-            self.cache_users[str(user)] = 0
+            self.cache_users[user] = 0
         finally:
-            if self.cache_users[str(user)] >= self.cache_messages:
-                self.cache_users = self.cache_users.pop(str(user))
+            if self.cache_users[user] >= self.cache_messages:
+                self.cache_users = self.cache_users.pop(user)
                 await user.add_roles(role)
                 await self.generic_add("users", self.cache_users)
