@@ -1,5 +1,6 @@
 from redbot.core import commands, Config
 from discord.utils import get
+from math import floor
 import discord
 
 class Autorole(commands.Cog):
@@ -16,14 +17,7 @@ class Autorole(commands.Cog):
         self.cache_role = None
         self.cache_messages = 0
         self.cache_users = {}
-
-    async def return_cache(self, type: str):
-        if type == "role":
-            return self.cache_role
-        elif type == "messages":
-            return self.cache_messages
-        elif type == "users":
-            return self.cache_users
+        self.cache_remembered = {}
 
     async def update_cache(self, type: str, content = None):
         if type == "role":
@@ -32,6 +26,8 @@ class Autorole(commands.Cog):
             self.cache_messages = content if content else await self.config.messages()
         elif type == "users":
             self.cache_users = content if content else await self.config.users()
+        elif type == "remembered":
+            self.cache_remembered = content if content else await self.config.remembered()
         elif type == "all":
             await self.update_cache("role")
             await self.update_cache("messages")
@@ -40,10 +36,27 @@ class Autorole(commands.Cog):
     async def validate_cache(self):
         if self.cache_role == []: 
             await self.update_cache("role")
-        if self.cache_users == []:
+        if self.cache_messages == []:
             await self.update_cache("messages")    
         if self.cache_users == []:
             await self.update_cache("users")
+        if self.cache_remembered == []:
+            await self.update_cache("remembered")
+
+    @commands.command()
+    async def iamrole(self, ctx):
+        user = ctx.message.author
+        await self.validate_cache()
+        try:
+            if self.cache_remembered[user]:
+                await user.add_roles(self.cache_role)
+                await ctx.send("Here you go!")
+        except KeyError:
+            try:
+                percentage = self.cache_messages / self.cache_users[user]
+                await ctx.send( "You're level: " + floor(percentage * 10) )
+            except KeyError or ZeroDivisionError:
+                await ctx.send("Please send more messages.")
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -77,7 +90,7 @@ class Autorole(commands.Cog):
         await self.generic_add("role", int(roleID))
 
     @edit.command(name = "messages")
-    async def role(self, ctx, messages):
+    async def messages(self, ctx, messages):
         await self.generic_add("messages", int(messages))
 
     @commands.Cog.listener()
@@ -86,15 +99,16 @@ class Autorole(commands.Cog):
         userRoles = user.roles
         await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
-        if role in userRoles or not role or user.bot:
+        if role in userRoles or not role or user.bot or self.cache_remembered[user]:
             return
         try:
-            self.cache_users[user] += 0 if role in userRoles else 1 
+            self.cache_users[user] += 1 
             if self.cache_users[user] >= self.cache_messages:
+                self.cache_users.pop(user)
                 await user.add_roles(role)
-                async with self.config.remembered() as remembered:
-                    remembered[user] = True    
+                self.cache_remembered[user] = True
+                await self.config.set_raw("remembered", value = self.cache_remembered)
         except KeyError:
             self.cache_users[user] = 1
         finally:
-            await self.generic_add("users", self.cache_users)
+            await self.config.set_raw("users", value = self.cache_users)
