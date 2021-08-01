@@ -32,6 +32,7 @@ class Autorole(commands.Cog):
             await self.update_cache("role")
             await self.update_cache("messages")
             await self.update_cache("users")
+            await self.update_cache("remembered")
 
     async def validate_cache(self):
         if self.cache_role == []: 
@@ -72,6 +73,7 @@ class Autorole(commands.Cog):
     @autorole.command()
     async def reset(self, ctx):
         await self.config.clear_all()
+        await self.update_cache("all")
         await ctx.send("Done!")
 
     async def generic_add(self, type, content):
