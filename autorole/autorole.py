@@ -123,3 +123,23 @@ class Autorole(commands.Cog):
             self.cache_users[user] = 1
         finally:
             await self.config.set_raw("users", value = self.cache_users)
+
+    @commands.Cog.listener()
+    async def on_member_ban(self, guild, user):
+        await self.remove_user(user)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, user):
+        await self.remove_user(user)
+
+    async def remove_user(self, user):
+        try:
+            self.cache_users.pop(user)
+            await self.config.set_raw("users", value = self.cache_users)
+        except KeyError:
+            pass
+        try:
+            self.cache_remembered.pop(user)
+            await self.config.set_raw("remembered", value = self.cache_remembered)
+        except KeyError:
+            pass
