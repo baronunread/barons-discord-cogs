@@ -8,20 +8,20 @@ class Autorole(commands.Cog):
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 343434651171161111099711610599971)
         default_global = {
-                            "role": 0,
+                            "role": None,
                             "messages": 0,
                             "users": {},
                             "remembered": {}
                          }
         self.config.register_global(**default_global)
-        self.cache_role = 0
+        self.cache_role = None
         self.cache_messages = 0
         self.cache_users = {}
         self.cache_remembered = {}
 
     async def update_cache(self, type: str, content = None):
         if type == "role":
-            self.cache_role = content if content else await self.config.role()
+            self.cache_role = content if content else await self.config.get_raw(type)
         elif type == "messages":
             self.cache_messages = content if content else await self.config.messages()
         elif type == "users":
