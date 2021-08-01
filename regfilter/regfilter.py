@@ -65,12 +65,13 @@ class Regfilter(commands.Cog):
             return self.cache_ignore
 
     async def update_cache(self, type, content = None):
+        value = content if content else await self.config.get_raw(type)
         if type == "regex":
-            self.cache_regex = content if content else await self.config.regex()
+            self.cache_regex = value
         elif type == "names":
-            self.cache_names = content if content else await self.config.names()
+            self.cache_names = value
         elif type == "ignore":
-            self.cache_ignore = content if content else await self.config.ignore()
+            self.cache_ignore = value
         elif type == "all":
             await self.update_cache("regex")
             await self.update_cache("names")
