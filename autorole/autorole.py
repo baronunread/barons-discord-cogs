@@ -29,7 +29,7 @@ class Autorole(commands.Cog):
         elif type == "remembered":
             self.cache_remembered = content if content else await self.config.remembered()
         elif type == "all":
-            await self.update_cache("role")
+            #await self.update_cache("role")
             await self.update_cache("messages")
             await self.update_cache("users")
             await self.update_cache("remembered")
@@ -93,7 +93,7 @@ class Autorole(commands.Cog):
         pass
 
     @edit.command(name = "role")
-    async def _role(self, ctx, roleID):
+    async def role(self, ctx, roleID):
         await self.generic_add("role", int(roleID))
 
     @edit.command(name = "messages")
