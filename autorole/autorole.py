@@ -55,7 +55,7 @@ class Autorole(commands.Cog):
         await ctx.send("Done!")
 
     async def generic_add(self, type, content):
-        await self.config.set_raw(type, content)
+        await self.config.set_raw(type, value = content)
         await self.update_cache(type, content)
 
     @autorole.command(name = "setup")
