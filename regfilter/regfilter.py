@@ -72,11 +72,7 @@ class Regfilter(commands.Cog):
             self.cache_names = value
         elif type == "ignore":
             self.cache_ignore = value
-        elif type == "all":
-            await self.update_cache("regex")
-            await self.update_cache("names")
-            await self.update_cache("ignore")
-
+            
     async def validate_cache(self):
         if self.cache_regex == []: 
             await self.update_cache("regex")
@@ -98,7 +94,10 @@ class Regfilter(commands.Cog):
         if typed == "regex" or typed == "ignore" or typed == "names":
             await self.config.clear_raw(typed) 
         elif typed == "all":
-            await self.config.clear_all() 
+            await self.config.clear_all()
+            await self.update_cache("regex")
+            await self.update_cache("names")
+            await self.update_cache("ignore")
         else:
             await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORE or ALL.")
             return

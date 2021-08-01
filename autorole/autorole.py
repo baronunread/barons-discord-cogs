@@ -29,12 +29,7 @@ class Autorole(commands.Cog):
             self.cache_users = value
         elif type == "remembered":
             self.cache_remembered = value
-        elif type == "all":
-            await self.update_cache("role")
-            await self.update_cache("messages")
-            await self.update_cache("users")
-            await self.update_cache("remembered")
-
+        
     async def validate_cache(self):
         if self.cache_role == []: 
             await self.update_cache("role")
@@ -74,7 +69,10 @@ class Autorole(commands.Cog):
     @autorole.command()
     async def reset(self, ctx):
         await self.config.clear_all()
-        await self.update_cache("all")
+        await self.update_cache("role")
+        await self.update_cache("messages")
+        await self.update_cache("users")
+        await self.update_cache("remembered")
         await ctx.send("Done!")
 
     async def generic_add(self, type, content):
