@@ -89,11 +89,11 @@ class Autorole(commands.Cog):
         if role in userRoles:
             return
         try:
-            self.cache_users[user] += 1
+            self.cache_users[str(user)] += 1
         except KeyError:
-            self.cache_users[user] = 0
+            self.cache_users[str(user)] = 0
         finally:
-            if self.cache_users[user] >= self.cache_messages:
-                self.cache_users = self.cache_users.pop(user)
+            if self.cache_users[str(user)] >= self.cache_messages:
+                self.cache_users = self.cache_users.pop(str(user))
                 await user.add_roles(role)
                 await self.generic_add("users", self.cache_users)
