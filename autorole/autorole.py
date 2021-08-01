@@ -92,6 +92,6 @@ class Autorole(commands.Cog):
             self.cache_users[user] = 0
         finally:
             if self.cache_users[user] >= self.cache_messages:
-                self.cache_users = self.cache_users.pop(user)
+                self.cache_users.pop(user)
                 await user.add_roles(role)
                 await self.generic_add("users", self.cache_users)
