@@ -90,8 +90,8 @@ class Regfilter(commands.Cog):
         """Base command. Check the subcommands."""
         pass
 
-    @filter.group(name = "reset", invoke_without_command = True)
-    async def _reset(self, ctx: commands.Context, *, type):
+    @filter.command(name = "reset")
+    async def reset(self, ctx: commands.Context, *, type):
         """Reset regex, names, ignore or all by typing out what to reset."""
         typed = type.lower()
         if typed == "regex" or typed == "ignore" or typed == "names":
