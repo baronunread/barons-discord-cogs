@@ -99,9 +99,11 @@ class Autorole(commands.Cog):
         userRoles = user.roles
         await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
-        if role in userRoles or not role or user.bot or self.cache_remembered[user]:
+        if role in userRoles or not role or user.bot:
             return
         try:
+            if self.cache_remembered[user]:
+                return
             self.cache_users[user] += 1 
             if self.cache_users[user] >= self.cache_messages:
                 self.cache_users.pop(user)
