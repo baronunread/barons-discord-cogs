@@ -54,7 +54,7 @@ class Autorole(commands.Cog):
         except KeyError:
             try:
                 percentage = self.cache_messages / self.cache_users[user]
-                await ctx.send( "You're level: " + floor(percentage * 10) )
+                await ctx.send( "You're level: " + str(floor(percentage * 10)) )
             except KeyError or ZeroDivisionError:
                 await ctx.send("Please send more messages.")
 
