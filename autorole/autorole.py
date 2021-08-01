@@ -93,7 +93,7 @@ class Autorole(commands.Cog):
         pass
 
     @edit.command(name = "role")
-    async def role(self, ctx, roleID):
+    async def _role(self, ctx, roleID):
         await self.generic_add("role", int(roleID))
 
     @edit.command(name = "messages")
