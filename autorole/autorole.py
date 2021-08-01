@@ -7,7 +7,7 @@ class Autorole(commands.Cog):
         self.config = Config.get_conf(self, identifier = 343434651171161111099711610599971)
         default_global = {
                             "role": None,
-                            "messages": 100,
+                            "messages": 0,
                             "users": {}
                          }
         self.config.register_global(**default_global)
@@ -48,6 +48,11 @@ class Autorole(commands.Cog):
     async def autorole(self, ctx):
         """Base command. Check the subcommands."""
         pass
+
+    @autorole.command()
+    async def reset(self, ctx):
+        await self.config.clear_all()
+        await ctx.send("Done!")
 
     async def generic_add(self, type, content):
         await self.config.set_raw(type, content)
