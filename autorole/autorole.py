@@ -1,14 +1,16 @@
 from redbot.core import commands, Config
-import discord
 from discord.utils import get
+import discord
+
 class Autorole(commands.Cog):
-    """Automatically hands out a single role you can setup beforehand."""
+    """Automatically hands out a single role that you can setup beforehand."""
     def __init__(self):
         self.config = Config.get_conf(self, identifier = 343434651171161111099711610599971)
         default_global = {
                             "role": None,
                             "messages": 0,
-                            "users": {}
+                            "users": {},
+                            "remembered": {}
                          }
         self.config.register_global(**default_global)
         self.cache_role = None
@@ -87,11 +89,12 @@ class Autorole(commands.Cog):
         if role in userRoles or not role or user.bot:
             return
         try:
-            self.cache_users[user] += 1
-        except KeyError:
-            self.cache_users[user] = 0
-        finally:
+            self.cache_users[user] += 0 if role in userRoles else 1 
             if self.cache_users[user] >= self.cache_messages:
-                self.cache_users.pop(user)
                 await user.add_roles(role)
-                await self.generic_add("users", self.cache_users)
+                async with self.config.remembered() as remembered:
+                    remembered[user] = True    
+        except KeyError:
+            self.cache_users[user] = 1
+        finally:
+            await self.generic_add("users", self.cache_users)
