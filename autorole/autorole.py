@@ -12,7 +12,7 @@ class Autorole(commands.Cog):
                          }
         self.config.register_global(**default_global)
         self.cache_role = None
-        self.cache_messages = None
+        self.cache_messages = 0
         self.cache_users = {}
 
     async def return_cache(self, type: str):
