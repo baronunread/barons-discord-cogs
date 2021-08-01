@@ -31,13 +31,13 @@ class Autorole(commands.Cog):
             self.cache_remembered = value
         
     async def validate_cache(self):
-        if self.cache_role == []: 
+        if self.cache_role == None: 
             await self.update_cache("role")
-        if self.cache_messages == []:
+        if self.cache_messages == 0:
             await self.update_cache("messages")    
-        if self.cache_users == []:
+        if self.cache_users == {}:
             await self.update_cache("users")
-        if self.cache_remembered == []:
+        if self.cache_remembered == {}:
             await self.update_cache("remembered")
 
     @commands.command()
