@@ -66,7 +66,7 @@ class Autorole(commands.Cog):
         await ctx.send("Setup complete.") 
 
     @autorole.group(name = "edit")
-    async def edit(self, ctx, roleID, messages):
+    async def edit(self, ctx):
         """Edit the ID of the role or the amount of messages."""
         pass
 
