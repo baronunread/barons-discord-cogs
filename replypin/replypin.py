@@ -30,9 +30,9 @@ class Replypin(commands.Cog):
                     "type": "video",
                     "description": "test",
                     "url": ctx.message.jump_url,
-                    "footer": { "text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") },
-                    "video": { "url": msg },
-                    "author": { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
+                    #"footer": { "text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") },
+                    #"video": { "url": msg },
+                    #"author": { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
                 }
         json_data = json.dumps(data)
         embed = discord.Embed.from_dict(json_data)
@@ -46,4 +46,3 @@ class Replypin(commands.Cog):
 
     async def image_embed(self, msg):
         pass
-
