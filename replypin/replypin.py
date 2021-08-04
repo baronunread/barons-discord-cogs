@@ -23,18 +23,18 @@ class Replypin(commands.Cog):
         except:
             await ctx.send("Please reply to a post.")
 
-    async def find_link(self, msg):
+    async def find_links(self, msg):
         links = re.findall(r"(?i)\bhttp[^' ']*", msg)
         return links
 
     async def remove_links(self, msg, links):
         for link in links:
-            msg.replace(link, "")
+            msg = msg.replace(link, "")
         return msg
         
     @commands.command()
     async def test(self, ctx):
-        links = await self.find_link(ctx.message.clean_content)
+        links = await self.find_links(ctx.message.clean_content)
         data =  {
                     "title": "Click to jump to message!",
                     "url": ctx.message.jump_url,
@@ -43,16 +43,6 @@ class Replypin(commands.Cog):
                     "author": {"name": ctx.message.author.display_name, "icon_url": str(ctx.message.author.avatar_url)},
                 }
         embed = discord.Embed.from_dict(data)
+        await ctx.send(embed = embed)
         if links:
-            await ctx.send(content = links[0], embed = embed)
-        else:
-            await ctx.send(embed = embed)
-        
-    async def video_or_image(self, msg):
-        pass
-
-    async def video_embed(self, msg):
-        pass
-
-    async def image_embed(self, msg):
-        pass
+            await ctx.send(links[0])
