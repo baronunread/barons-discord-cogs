@@ -10,8 +10,13 @@ class Replypin(commands.Cog):
                                     r"tenor\.com",
                                     r"\.png",
                                     r"\.gif",
-                                    r"\.jpe?g",
-                                    r"youtube\.com"   
+                                    r"\.jpe?g" 
+                                }
+        self.videoTypesRegex =  {
+                                    r"youtube\.com",
+                                    r"\.mp4",
+                                    r"\.mov",
+                                    r"\.webm" 
                                 }
     # OLD VERSION
     # @commands.command()
@@ -45,7 +50,7 @@ class Replypin(commands.Cog):
         try:
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
-            video = await self.check_video(links[0]) if links else await self.check_video(msg.attachments[0].url) if msg.attachments else None
+            video = await self.check_type(links[0], self.videoTypesRegex) if links else await self.check_video(msg.attachments[0].url, self.videoTypesRegex) if msg.attachments else None
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
@@ -75,22 +80,22 @@ class Replypin(commands.Cog):
             msg = msg.replace(link, "")
         return msg
 
-    async def check_video(self, link):
+    async def check_type(self, link, regexs):
         list = []
-        for regex in self.imageTypesRegex:
+        for regex in regexs:
             list = list + re.findall(regex, link)
             if list:
-                return None
-        return link
+                return link
+        return None
 
     async def return_video(self, link1, link2):
         list1 = []
         list2 = []
-        for regex in self.imageTypesRegex:
+        for regex in self.videoTypesRegex:
             list1 = list1 + re.findall(regex, link1)
+            if list1:
+                return link1
             list2 = list2 + re.findall(regex, link2)
-        if not list1:
-            return link1
-        if not list2:
-            return link2
+            if list2:
+                return link2
         return None
