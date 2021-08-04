@@ -53,10 +53,13 @@ class Replypin(commands.Cog):
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
             video = await self.check_type(links[0], self.videoTypesRegex) if links else await self.check_type(msg.attachments[0].url, self.videoTypesRegex) if msg.attachments else None
+        finally:
+            content = msg.clean_content.replace(video, "") if video else msg.clean_content
+        content = msg.clean_content.replace(link, "") if link else content
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
-                    "description": msg.clean_content.replace(video, "") if video else msg.clean_content.replace(link, "") if link else msg.clean_content,
+                    "description": content,
                     "footer": {"text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
                 }
@@ -65,7 +68,7 @@ class Replypin(commands.Cog):
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
         if tenor:
             embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
-        if links and await self.check_type(link, self.imageTypesRegex) and not tenor:
+        if link and await self.check_type(link, self.imageTypesRegex) and not tenor:
             embed.set_image(url = link)    
         if msg.attachments:
             embed.set_image(url = msg.attachments[0].url)
