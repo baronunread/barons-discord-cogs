@@ -1,3 +1,4 @@
+from typing import overload
 from redbot.core import commands
 import discord
 import re
@@ -74,6 +75,7 @@ class Replypin(commands.Cog):
             msg = msg.replace(link, "")
         return msg
 
+    @overload
     async def return_video(self, link):
         list = []
         for regex in self.imageTypesRegex:
