@@ -63,6 +63,8 @@ class Replypin(commands.Cog):
         embed = discord.Embed.from_dict(data)
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
+        if tenor:
+            embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
         if links and await self.check_type(link, self.imageTypesRegex) and not tenor:
             embed.set_image(url = link)    
         if msg.attachments:
