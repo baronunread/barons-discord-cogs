@@ -28,14 +28,18 @@ class Replypin(commands.Cog):
         data =  {
                     "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": ctx.message.author.display_name, "icon_url": str(ctx.message.author.avatar_url)},
-                    "video" : {"url" : msg, "height": 300, "width": 700},
-                    "type": "video", 
                     "description": "test",
                     "url": ctx.message.jump_url,
                     "title": "Click to jump to message!"
                 }
+        data2 = {
+                    "video" : {"url" : msg, "height": 300, "width": 700},
+                    "type": "video"
+                }
         embed = discord.Embed.from_dict(data)
+        video = discord.Embed.from_dict(data2)
         await ctx.send(embed = embed)
+        await ctx.send(embed = video)
         
     async def video_or_image(self, msg):
         pass
