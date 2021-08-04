@@ -10,7 +10,8 @@ class Replypin(commands.Cog):
                                     r"tenor\.com",
                                     r"\.png",
                                     r"\.gif",
-                                    r"\.jpe?g"   
+                                    r"\.jpe?g",
+                                    r"youtube\.com"   
                                 }
     # OLD VERSION
     # @commands.command()
@@ -48,16 +49,16 @@ class Replypin(commands.Cog):
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
-                    "description": msg.clean_content,
+                    "description": msg.clean_content.replace(video, "") if video else msg.clean_content,
                     "footer": {"text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
                 }
         embed = discord.Embed.from_dict(data)
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
-        if links:
+        if links and not re.findall(r"youtube\.com"):
             embed.set_image(url = links[0])    
-        if ( len(msg.attachments) > 0 ):
+        if msg.attachments:
             embed.set_image(url = msg.attachments[0].url)
         await channel.send(embed = embed)
         if video:
@@ -66,7 +67,7 @@ class Replypin(commands.Cog):
         #     await ctx.send("Please reply to a post.")
 
     async def find_links(self, msg):
-        links = re.findall(r"(?i)\bhttp[^' ']*", msg)
+        links = re.findall(r"\bhttp[^' ']*", msg)
         return links
 
     async def remove_links(self, msg, links):
