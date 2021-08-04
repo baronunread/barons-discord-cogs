@@ -25,25 +25,13 @@ class Replypin(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, msg):
-
-        # footer = { "text":  }
-        # video = { "url": msg }
-        # author = { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
-        # data =  {
-        #             "title": "Click to jump to message!",
-        #             "type": "video",
-        #             "description": "test",
-        #             "url": ctx.message.jump_url,
-        #             "footer": discord.Embed.from_dict(footer),
-        #             "video": discord.Embed.from_dict(video),
-        #             "author": discord.Embed.from_dict(author)
-        #         }
         data =  {
                     "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
-                    "author": {"name": "Baron Unread", "icon_url": "https://cdn.discordapp.com/avatars/282971889062772747/0a535cbc3b664762d116615af2179ebe.webp?size=1024"},
+                    "author": {"name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url},
+                    "video":  {"url": msg},
                     "type": "rich", 
                     "description": "test",
-                    "url": msg,
+                    "url": ctx.message.jump_url,
                     "title": "Click to jump to message!"
                 }
         embed = discord.Embed.from_dict(data)
