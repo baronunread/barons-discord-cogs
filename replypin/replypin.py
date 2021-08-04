@@ -26,7 +26,7 @@ class Replypin(commands.Cog):
     @commands.command()
     async def test(self, ctx):
 
-        # footer = { "text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") }
+        # footer = { "text":  }
         # video = { "url": msg }
         # author = { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
         # data =  {
@@ -39,7 +39,7 @@ class Replypin(commands.Cog):
         #             "author": discord.Embed.from_dict(author)
         #         }
         data =  {
-                    "footer": {"text": "Posted on the 04/08/2021, at 14:32:06"},
+                    "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": "Baron Unread", "icon_url": "https://cdn.discordapp.com/avatars/282971889062772747/0a535cbc3b664762d116615af2179ebe.webp?size=1024"},
                     "type": "rich", 
                     "description": "!test https://www.youtube.com/watch?v=rudSWhe_KD0",
