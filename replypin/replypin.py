@@ -74,7 +74,7 @@ class Replypin(commands.Cog):
             embed.set_image(url = msg.attachments[0].url)
         await channel.send(embed = embed)
         if video or tenor:
-            await ctx.send(video if video else link)
+            await ctx.send(video if video else link if tenor else video + "\n" + link)
         # except:
         #     await ctx.send("Please reply to a post.")
 
