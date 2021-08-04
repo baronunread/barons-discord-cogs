@@ -1,6 +1,6 @@
 from redbot.core import commands
 import discord
-import json
+import re
 
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
@@ -23,22 +23,30 @@ class Replypin(commands.Cog):
         except:
             await ctx.send("Please reply to a post.")
 
+    async def find_link(self, msg):
+        links = re.findall(r"(?i)\bhttp[^' ']*", msg)
+        return links
+
+    async def remove_links(self, msg, links):
+        for link in links:
+            msg.replace(link, "")
+        return msg
+        
     @commands.command()
     async def test(self, ctx):
-        # data =  {
-        #             "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
-        #             "author": {"name": ctx.message.author.display_name, "icon_url": str(ctx.message.author.avatar_url)},
-        #             "description": "test",
-        #             "url": ctx.message.jump_url,
-        #             "title": "Click to jump to message!"
-        #         }
-        data2 = {
-                    "video" : {"url" : "https://www.youtube.com/watch?v=rudSWhe_KD0", "height": 1080, "width": 1920},
+        links = self.find_link(ctx.message.clean_content)
+        data =  {
+                    "title": "Click to jump to message!",
+                    "url": ctx.message.jump_url,
+                    "description": self.remove_links(ctx.message.clean_content, links),
+                    "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
+                    "author": {"name": ctx.message.author.display_name, "icon_url": str(ctx.message.author.avatar_url)},
                 }
-        # embed = discord.Embed.from_dict(data)
-        video = discord.Embed.from_dict(data2)
-        # await ctx.send(embed = embed)
-        await ctx.send(embed = video)
+        embed = discord.Embed.from_dict(data)
+        if links:
+            await ctx.send(content = links[0], embed = embed)
+        else:
+            await ctx.send(embed = embed)
         
     async def video_or_image(self, msg):
         pass
