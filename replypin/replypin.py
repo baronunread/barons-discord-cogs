@@ -34,11 +34,11 @@ class Replypin(commands.Cog):
         
     @commands.command()
     async def test(self, ctx):
-        links = self.find_link(ctx.message.clean_content)
+        links = await self.find_link(ctx.message.clean_content)
         data =  {
                     "title": "Click to jump to message!",
                     "url": ctx.message.jump_url,
-                    "description": self.remove_links(ctx.message.clean_content, links),
+                    "description": await self.remove_links(ctx.message.clean_content, links),
                     "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": ctx.message.author.display_name, "icon_url": str(ctx.message.author.avatar_url)},
                 }
