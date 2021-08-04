@@ -48,8 +48,8 @@ class Replypin(commands.Cog):
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
         link = links[0] if links else None
-        linkImage = await self.check_type(link, self.imageTypesRegex) if link else None
-        linkVideo = await self.check_type(link, self.videoTypesRegex) if link else None
+        linkImage = None if not link else await self.check_type(link, self.imageTypesRegex) 
+        linkVideo = None if not link else await self.check_type(link, self.videoTypesRegex)
         attachment = msg.attachments[0].url if msg.attachments else None
         attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
         attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
