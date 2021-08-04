@@ -34,15 +34,18 @@ class Replypin(commands.Cog):
         
     @commands.command()
     async def test(self, ctx):
-        links = await self.find_links(ctx.message.clean_content)
+        msg = ctx.message
+        links = await self.find_links(msg.clean_content)
         data =  {
                     "title": "Click to jump to message!",
-                    "url": ctx.message.jump_url,
-                    "description": await self.remove_links(ctx.message.clean_content, links),
-                    "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
-                    "author": {"name": ctx.message.author.display_name, "icon_url": str(ctx.message.author.avatar_url)},
+                    "url": msg.jump_url,
+                    "description": await self.remove_links(msg.clean_content, links),
+                    "footer": {"text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
+                    "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)},
                 }
         embed = discord.Embed.from_dict(data)
+        if ( len(msg.attachments) > 0 ):
+            embed.set_image(url = msg.attachments[0].url)
         await ctx.send(embed = embed)
         if links:
             await ctx.send(links[0])
