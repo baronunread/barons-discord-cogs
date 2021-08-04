@@ -54,9 +54,9 @@ class Replypin(commands.Cog):
         attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
         attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
         tenor = re.findall(r"tenor\.com", link) if link else None
-        video = linkVideo if link else attachVideo if attachment else None
+        video = link if linkVideo else attachment if attachVideo else None
         content = msg.clean_content.replace(video, "") if video else msg.clean_content
-        content = msg.clean_content.replace(link, "") if linkImage or linkVideo else content
+        content = content.replace(link, "") if linkImage or linkVideo else content
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
