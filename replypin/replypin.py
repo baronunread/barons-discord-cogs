@@ -70,7 +70,7 @@ class Replypin(commands.Cog):
             embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
         if link and await self.check_type(link, self.imageTypesRegex) and not tenor:
             embed.set_image(url = link)    
-        if msg.attachments:
+        if msg.attachments and not video == msg.attachments[0].url:
             embed.set_image(url = msg.attachments[0].url)
         await channel.send(embed = embed)
         if video or tenor:
