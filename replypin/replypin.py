@@ -52,6 +52,7 @@ class Replypin(commands.Cog):
         if video:
             embed.set_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
         if links:
+
             embed.set_image(url = links[0])    
         if ( len(msg.attachments) > 0 ):
             embed.set_image(url = msg.attachments[0].url)
@@ -83,7 +84,7 @@ class Replypin(commands.Cog):
             link2 = ".jpeg"
         for regex in self.imageTypesRegex:
             list1 = list1 + re.findall(regex, link1)
-            list2 = list1 + re.findall(regex, link2)
+            list2 = list2 + re.findall(regex, link2)
         if not list1:
             return link1
         if not list2:
