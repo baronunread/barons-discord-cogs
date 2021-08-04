@@ -28,6 +28,7 @@ class Replypin(commands.Cog):
             await ctx.send("Please reply to a post.")
             return
         channel = ctx.guild.get_channel(846357308060991558) 
+        channel = ctx.guild.get_channel(769609039977512960)
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
         link = links[0] if links else None
