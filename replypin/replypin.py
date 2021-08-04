@@ -47,6 +47,7 @@ class Replypin(commands.Cog):
         id = ctx.message.reference.message_id
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
+        link = links[0] if links else None
         try:
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
@@ -54,7 +55,7 @@ class Replypin(commands.Cog):
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
-                    "description": msg.clean_content.replace(video, "") if video else msg.clean_content,
+                    "description": msg.clean_content.replace(video, "") if video else msg.clean_content.replace(link, "") if link else msg.clean_content,
                     "footer": {"text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
                 }
