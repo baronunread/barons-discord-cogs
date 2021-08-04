@@ -33,7 +33,7 @@ class Replypin(commands.Cog):
         #             "title": "Click to jump to message!"
         #         }
         data2 = {
-                    "video" : {"url" : "https://www.youtube.com/watch?v=rudSWhe_KD0", "height": 300, "width": 700},
+                    "video" : {"url" : "https://www.youtube.com/watch?v=rudSWhe_KD0", "height": 1080, "width": 1920},
                 }
         # embed = discord.Embed.from_dict(data)
         video = discord.Embed.from_dict(data2)
