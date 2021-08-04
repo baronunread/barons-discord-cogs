@@ -44,7 +44,7 @@ class Replypin(commands.Cog):
         try:
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
-            video = await self.return_video(links[0]) if links else await self.return_video(msg.attachments[0].url) if msg.attachments else None
+            video = await self.check_video(links[0]) if links else await self.check_video(msg.attachments[0].url) if msg.attachments else None
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
@@ -75,8 +75,7 @@ class Replypin(commands.Cog):
             msg = msg.replace(link, "")
         return msg
 
-    @overload
-    async def return_video(self, link):
+    async def check_video(self, link):
         list = []
         for regex in self.imageTypesRegex:
             list = list + re.findall(regex, link)
