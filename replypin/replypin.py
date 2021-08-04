@@ -25,12 +25,16 @@ class Replypin(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, msg):
+        timeOfCreation = ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")
+        name = ctx.message.author.display_name
+        icon = ctx.message.author.avatar_url
+        messageLink = ctx.message.jump_url
         data =  {
-                    "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
-                    "author": {"name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url},
+                    "footer": {"text": timeOfCreation},
+                    "author": {"name": name, "icon_url": icon},
                     "type": "rich", 
                     "description": "test",
-                    "url": ctx.message.jump_url,
+                    "url": messageLink,
                     "title": "Click to jump to message!"
                 }
         embed = discord.Embed.from_dict(data)
