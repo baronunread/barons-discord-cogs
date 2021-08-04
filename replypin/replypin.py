@@ -61,7 +61,7 @@ class Replypin(commands.Cog):
         embed = discord.Embed.from_dict(data)
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
-        if links and not re.findall(r"youtube\.com", links[0]):
+        if links and await self.check_type(links[0], self.imageTypesRegex):
             embed.set_image(url = links[0])    
         if msg.attachments:
             embed.set_image(url = msg.attachments[0].url)
