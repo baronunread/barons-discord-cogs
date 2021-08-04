@@ -1,4 +1,3 @@
-from typing import overload
 from redbot.core import commands
 import discord
 import re
