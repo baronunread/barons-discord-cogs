@@ -33,7 +33,7 @@ class Replypin(commands.Cog):
                     "video": { "url": msg },
                     "author": { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
                 }
-        embed = discord.Embed.from_data(*data)
+        embed = discord.Embed.from_data(data)
         await ctx.send(embed = embed)
 
     async def video_or_image(self, msg):
