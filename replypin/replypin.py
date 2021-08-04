@@ -23,11 +23,11 @@ class Replypin(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def pinthatshit(self, ctx):
         """'Pins' the post by posting it to another channel. It supports one link and one attachment."""
-        # try:
-        id = ctx.message.reference.message_id
-        # except:
-        #     await ctx.send("Please reply to a post.")
-        #     return
+        try:
+            id = ctx.message.reference.message_id
+        except AttributeError:
+            await ctx.send("Please reply to a post.")
+            return
         channel = ctx.guild.get_channel(846357308060991558) 
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
