@@ -34,8 +34,8 @@ class Replypin(commands.Cog):
                     #"video": { "url": msg },
                     #"author": { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
                 }
-        json_data = json.dumps(data)
-        embed = discord.Embed.from_dict(json_data)
+        #json_data = json.dumps(data)
+        embed = discord.Embed.from_dict(data)
         await ctx.send(embed = embed)
 
     async def video_or_image(self, msg):
