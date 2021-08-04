@@ -20,4 +20,28 @@ class Replypin(commands.Cog):
             embed.set_footer(text = msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S"))
             await channel.send(embed = embed)
         except:
-            await ctx.send("Please reply to a post.")    
+            await ctx.send("Please reply to a post.")
+
+    @commands.command()
+    async def test(self, ctx, msg):
+        data =  {
+                    "title": "Click to jump to message!",
+                    "type": "video",
+                    "description": msg.clean_content,
+                    "url": msg.jump_url,
+                    "footer": { "text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") },
+                    "video": { "url": msg.clean.content },
+                    "author": { "name": msg.author.display_name, "icon_url": msg.author.avatar_url }
+                }
+        embed = discord.Embed.from_dict(data)
+        await ctx.send(embed = embed)
+
+    async def video_or_image(self, msg):
+        pass
+
+    async def video_embed(self, msg):
+        pass
+
+    async def image_embed(self, msg):
+        pass
+
