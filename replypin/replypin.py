@@ -50,7 +50,7 @@ class Replypin(commands.Cog):
         try:
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
-            video = await self.check_type(links[0], self.videoTypesRegex) if links else await self.check_video(msg.attachments[0].url, self.videoTypesRegex) if msg.attachments else None
+            video = await self.check_type(links[0], self.videoTypesRegex) if links else await self.check_type(msg.attachments[0].url, self.videoTypesRegex) if msg.attachments else None
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
