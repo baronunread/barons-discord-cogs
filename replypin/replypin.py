@@ -27,11 +27,11 @@ class Replypin(commands.Cog):
         data =  {
                     "title": "Click to jump to message!",
                     "type": "video",
-                    "description": msg.clean_content,
-                    "url": msg.jump_url,
-                    "footer": { "text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") },
-                    "video": { "url": msg.clean.content },
-                    "author": { "name": msg.author.display_name, "icon_url": msg.author.avatar_url }
+                    "description": "test",
+                    "url": ctx.message.jump_url,
+                    "footer": { "text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") },
+                    "video": { "url": msg },
+                    "author": { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
                 }
         embed = discord.Embed.from_dict(data)
         await ctx.send(embed = embed)
