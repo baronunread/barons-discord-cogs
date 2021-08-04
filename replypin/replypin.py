@@ -50,7 +50,7 @@ class Replypin(commands.Cog):
         link = links[0] if links else None
         linkImage = await self.check_type(link, self.imageTypesRegex) if link else None
         linkVideo = await self.check_type(link, self.videoTypesRegex) if link else None
-        attachment = msg.attachments[0] if msg.attachments else None
+        attachment = msg.attachments[0].url if msg.attachments else None
         attachImage = await self.check_type(attachment, self.imageTypesRegex) if attachment else None
         attachVideo = await self.check_type(attachment, self.videoTypesRegex) if attachment else None
         tenor = re.findall(r"tenor\.com", link) if link else None
