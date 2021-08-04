@@ -48,7 +48,7 @@ class Replypin(commands.Cog):
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
         link = links[0] if links else None
-        tenor = re.findall(r"tenor\.com", link)
+        tenor = re.findall(r"tenor\.com", link) if link else None
         try:
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
