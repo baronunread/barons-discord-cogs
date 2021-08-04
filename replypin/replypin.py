@@ -48,14 +48,15 @@ class Replypin(commands.Cog):
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
         link = links[0] if links else None
+        linkImage = await self.check_type(link, self.imageTypesRegex) if link else None
+        linkVideo = await self.check_type(link, self.videoTypesRegex) if link else None
+        attachment = msg.attachments[0] if msg.attachments else None
+        attachImage = await self.check_type(attachment, self.imageTypesRegex) if attachment else None
+        attachVideo = await self.check_type(attachment, self.videoTypesRegex) if attachment else None
         tenor = re.findall(r"tenor\.com", link) if link else None
-        try:
-            video = await self.return_video(links[0], msg.attachments[0].url)
-        except:
-            video = await self.check_type(links[0], self.videoTypesRegex) if links else await self.check_type(msg.attachments[0].url, self.videoTypesRegex) if msg.attachments else None
-        finally:
-            content = msg.clean_content.replace(video, "") if video else msg.clean_content
-        content = msg.clean_content.replace(link, "") if link else content
+        video = linkVideo if link else attachVideo if attachment else None
+        content = msg.clean_content.replace(video, "") if video else msg.clean_content
+        content = msg.clean_content.replace(link, "") if linkImage or linkVideo else content
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
@@ -68,10 +69,10 @@ class Replypin(commands.Cog):
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
         if tenor:
             embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
-        if link and await self.check_type(link, self.imageTypesRegex) and not tenor:
+        if linkImage and not tenor:
             embed.set_image(url = link)    
-        if msg.attachments and not video == msg.attachments[0].url:
-            embed.set_image(url = msg.attachments[0].url)
+        if attachImage:
+            embed.set_image(url = attachment)
         await channel.send(embed = embed)
         if video or tenor:
             await ctx.send(video + "\n" + link if video and tenor else video if video else link)
