@@ -48,6 +48,7 @@ class Replypin(commands.Cog):
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
         link = links[0] if links else None
+        tenor = re.findall(r"tenor\.com", link)
         try:
             video = await self.return_video(links[0], msg.attachments[0].url)
         except:
@@ -62,13 +63,13 @@ class Replypin(commands.Cog):
         embed = discord.Embed.from_dict(data)
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
-        if links and await self.check_type(links[0], self.imageTypesRegex):
-            embed.set_image(url = links[0])    
+        if links and await self.check_type(link, self.imageTypesRegex):
+            embed.set_image(url = link)    
         if msg.attachments:
             embed.set_image(url = msg.attachments[0].url)
         await channel.send(embed = embed)
-        if video:
-            await ctx.send(video)
+        if video or tenor:
+            await ctx.send(video if video else tenor)
         # except:
         #     await ctx.send("Please reply to a post.")
 
