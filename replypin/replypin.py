@@ -28,7 +28,6 @@ class Replypin(commands.Cog):
         data =  {
                     "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url},
-                    #"video":  {"url": msg},
                     "type": "rich", 
                     "description": "test",
                     "url": ctx.message.jump_url,
