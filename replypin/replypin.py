@@ -4,7 +4,13 @@ import re
 
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
-
+    def __init__(self):
+        self.imageTypesRegex =  {
+                                    r"tenor\.com",
+                                    r"\.png",
+                                    r"\.gif",
+                                    r"\.jpe?g"   
+                                }
     # OLD VERSION
     # @commands.command()
     # @commands.has_permissions(manage_messages = True)
@@ -34,22 +40,24 @@ class Replypin(commands.Cog):
             id = ctx.message.reference.message_id
             msg = await ctx.fetch_message(id)
             links = await self.find_links(msg.clean_content)
-            content = msg.clean_content if not links else await self.remove_links(msg.clean_content, links)
-            if not content:
-                content = msg.author.display_name + " has sent a video. Please look below this embed to watch it!"
+            video = await self.return_video(links[0], msg.attachments[0].url)
             data =  {
                         "title": "Click to jump to message!",
                         "url": msg.jump_url,
-                        "description": content,
+                        "description": msg.clean_content,
                         "footer": {"text": msg.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                         "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
                     }
             embed = discord.Embed.from_dict(data)
+            if video:
+                embed.set_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
+            if links:
+                embed.set_image(url = links[0])    
             if ( len(msg.attachments) > 0 ):
                 embed.set_image(url = msg.attachments[0].url)
             await channel.send(embed = embed)
-            if links:
-                await ctx.send(links[0])
+            if video:
+                await ctx.send(video)
         except:
             await ctx.send("Please reply to a post.")
 
@@ -62,5 +70,13 @@ class Replypin(commands.Cog):
             msg = msg.replace(link, "")
         return msg
 
-    async def is_link_image(self, link):
-        pass
+    async def return_video(self, link1, link2):
+        list1 = []
+        list2 = []
+        for regex in self.imageTypesRegex:
+            list1 = list1 + re.findall(regex, link1)
+            list2 = list1 + re.findall(regex, list2)
+        if not list1:
+            return link1
+        if not list2:
+            return link2
