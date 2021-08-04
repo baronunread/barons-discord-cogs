@@ -24,7 +24,7 @@ class Replypin(commands.Cog):
             await ctx.send("Please reply to a post.")
 
     @commands.command()
-    async def test(self, ctx):
+    async def test(self, ctx, msg):
 
         # footer = { "text":  }
         # video = { "url": msg }
@@ -42,8 +42,8 @@ class Replypin(commands.Cog):
                     "footer": {"text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S")},
                     "author": {"name": "Baron Unread", "icon_url": "https://cdn.discordapp.com/avatars/282971889062772747/0a535cbc3b664762d116615af2179ebe.webp?size=1024"},
                     "type": "rich", 
-                    "description": "!test https://www.youtube.com/watch?v=rudSWhe_KD0",
-                    "url": "https://discord.com/channels/347702375068467200/769609039977512960/872487066796187679",
+                    "description": "test",
+                    "url": msg,
                     "title": "Click to jump to message!"
                 }
         embed = discord.Embed.from_dict(data)
