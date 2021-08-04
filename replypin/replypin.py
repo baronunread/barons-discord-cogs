@@ -1,6 +1,5 @@
 from redbot.core import commands
 import discord
-import json
 
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
@@ -25,16 +24,18 @@ class Replypin(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, msg):
+        footer = { "text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") }
+        video = { "url": msg }
+        author = { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
         data =  {
                     "title": "Click to jump to message!",
                     "type": "video",
                     "description": "test",
                     "url": ctx.message.jump_url,
-                    #"footer": { "text": ctx.message.created_at.strftime("Posted on the %d/%m/%Y, at %H:%M:%S") },
-                    #"video": { "url": msg },
-                    #"author": { "name": ctx.message.author.display_name, "icon_url": ctx.message.author.avatar_url }
+                    "footer": discord.Embed.from_dict(footer),
+                    "video": discord.Embed.from_dict(video),
+                    "author": discord.Embed.from_dict(author)
                 }
-        #json_data = json.dumps(data)
         embed = discord.Embed.from_dict(data)
         await ctx.send(embed = embed)
 
