@@ -89,6 +89,8 @@ class Replypin(commands.Cog):
         return msg
 
     async def check_type(self, link, regexs):
+        if not link:
+            return None
         list = []
         for regex in regexs:
             list = list + re.findall(regex, link)
