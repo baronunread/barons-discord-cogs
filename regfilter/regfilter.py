@@ -11,50 +11,60 @@ class Regfilter(commands.Cog):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
-                                        r"(?i)\bj+\s*a+[\sa]*p+[\sp]*s?\b",
-                                        r"(?i)\bf+\s*a+[\sa]*g|\b\w*f+a+g",
-                                        r"(?i)\bs+\s*p+[\sp]*i+[\si]*c+[\sc]*s?\b",
-                                        r"(?i)\bg+\s*o+\s*o+[\so]*k|\b\w*g+o{2,}k",
-                                        r"(?i)\bk+\s*i+[\si]*k+[\sk]*e|\b\w*k+i+k+e",
-                                        r"(?i)\bn+\s*e+[\se]*g+[\sg]*r+[\sr]*o|\b\w*n+e+g+r+o",
-                                        r"(?i)\bc+\s*h+[\sh]*i+[\si]*n+[\sn]*k|\b\w*c+h+i+n+k",
-                                        r"(?i)\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*e+[\se]*r|\b\w*n+[il]+g{2,}e+r",
-                                        r"(?i)\bt+\s*r+[\sr]*a+[\sa]*n+\s*n+[\sn]*[iy]|\b\w*t+r+a+n{2,}[iy]"
+                                        r"\bj+\s*a+[\sa]*p+[\sp]*s?\b",
+                                        r"\bf+\s*a+[\sa]*g|\b\w*f+a+g",
+                                        r"\bs+\s*p+[\sp]*i+[\si]*c+[\sc]*s?\b",
+                                        r"\bg+\s*o+\s*o+[\so]*k|\b\w*g+o{2,}k",
+                                        r"\bk+\s*i+[\si]*k+[\sk]*e|\b\w*k+i+k+e",
+                                        r"\bn+\s*e+[\se]*g+[\sg]*r+[\sr]*o|\b\w*n+e+g+r+o",
+                                        r"\bc+\s*h+[\sh]*i+[\si]*n+[\sn]*k|\b\w*c+h+i+n+k",
+                                        r"\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*e+[\se]*r|\b\w*n+[il]+g{2,}e+r",
+                                        r"\bt+\s*r+[\sr]*a+[\sa]*n+\s*n+[\sn]*[iy]|\b\w*t+r+a+n{2,}[iy]"
                                      ],
                             "names": [],
                             "ignore":[
-                                        r"(?i)\bhttp[^' ']*"
+                                        r"\bhttp[^' ']*"
                                      ]
                          }
         self.config.register_global(**default_global)
         self.cache_regex = []
         self.cache_names = []
         self.cache_ignore = []
-        self.leet_dict =    {
-                                "@":"a",
-                                "4":"a",
-                                "æ":"a", 
-                                "Æ":"a",
-                                "3":"e",
-                                "Ε":"e", #Greek E
-                                "1":"i",
-                                "!":"i",
-                                "ø":"o",
-                                "0":"o",
-                                "ο":"o", #Greek o
-                                "η":"n",
-                                "ϟ":"s"
+        self.mapping =    {   #add with stroke/hook/bar/descender characters, they don't get cleaned
+                                "a": ["ⱥ","@","4","æ","α","λ","ƛ","δ","σ","а","ҩ"],                                             
+                                "c": ["ȼ","с","¢","ƈ","ϲ","ͼ","ҫ"], 
+                                "e": ["ɇ","£","€","ҽ","ҿ","ə","з","ӡ","ʒ","3","ҙ","е","э","ε","є","ξ"],
+                                "f": ["ꞙ","ƒ","₣","ꬵ","ӻ","ғ"],      
+                                "g": ["ǥ","ɠ"],                                          
+                                "i": ["1","!","|","ӏ","ι","ł","ƚ","ɨ","і"], 
+                                "j": ["ɉ","ј"],
+                                "k": ["ƙ","ĸ","κ","к","ӄ","ҝ","ҟ","ҡ","қ"],                                                                     
+                                "n": ["η","π","п","л","ɲ","ν","и","ȵ","ŋ"],
+                                "o": ["ø","0","ο","ө","о","ѳ"],
+                                "p": ["р","ƥ"],
+                                "r": ["ɍ","г","ӷ","я"],
+                                "s": ["ѕ","ϟ","$","ß"],
+                                "t": ["ⱦ","ŧ","ϯ","т","ҭ","ʈ","ƭ","ƫ"],
+                                "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
                             }
+        self.leet_dict = {}
+        for key in self.mapping:
+            keyDict = dict.fromkeys(self.mapping[key], key)
+            self.leet_dict.update(keyDict)
 
     async def replace(self, msg):
-        nfkd_form = unicodedata.normalize('NFKD', msg)
-        cleaned = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
+        nfkd_form = unicodedata.normalize('NFKD', msg.lower())                              # NFKD form
+        noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # cleans the rest of the diacritics
+        noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
+        alpha = ''.join(c for c in noLookAlikes if c.isalpha() or c == ' ')                 # remove anything that isn't an alphabetic character or a space
+        for ignore in self.cache_ignore:
+            alpha = re.sub(ignore, '', alpha)                                               # remove ignored words as they are not important
+        return alpha
+
+    async def clean(self, cleaned):
         for toReplace in self.leet_dict:
             cleaned = cleaned.replace(toReplace, self.leet_dict[toReplace])
-        alpha = ''.join(c for c in cleaned if c.isalpha() or c == ' ')
-        for ignore in self.cache_ignore:
-            alpha = re.sub(ignore, '', alpha)
-        return alpha
+        return cleaned
 
     async def return_cache(self, type: str):
         if type == "regex":
@@ -139,7 +149,7 @@ class Regfilter(commands.Cog):
     @add.command(name = "ignore")
     async def add_ignore(self, ctx, *, msg):
         """Adds a word to ignore to the list of ignored words."""
-        await self.generic_add_delete(ctx, "(?i)" + msg, "ignore", "added")
+        await self.generic_add_delete(ctx, msg, "ignore", "added")
 
     @filter.group(name = "delete")
     async def delete(self, ctx: commands.Context):
@@ -159,7 +169,7 @@ class Regfilter(commands.Cog):
     @delete.command(name = "ignore")
     async def delete_ignore(self, ctx, *, msg):
         """Removes an ignored word from the list."""
-        await self.generic_add_delete(ctx, "(?i)" + msg, "ignore", "deleted")
+        await self.generic_add_delete(ctx, msg, "ignore", "deleted")
 
     @filter.group(name = "list")
     async def listThings(self, ctx: commands.Context):
