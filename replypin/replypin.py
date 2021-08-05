@@ -58,7 +58,7 @@ class Replypin(commands.Cog):
             embed.set_image(url = attachment)
         await channel.send(embed = embed)
         if video or tenor:
-            await ctx.send(video + "\n" + link if video and tenor else video if video else link)
+            await channel.send(video + "\n" + link if video and tenor else video if video else link)
        
     async def find_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
