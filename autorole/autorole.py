@@ -102,15 +102,17 @@ class Autorole(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         user = message.author
+        if user.bot:
+            return
+        await self.validate_cache()
         try:
             if self.cache_remembered[user]:
                 return
         except KeyError:
             pass        
         userRoles = user.roles
-        await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
-        if role in userRoles or not role or user.bot:
+        if role in userRoles or not role:
             return
         try:
             self.cache_users[user] += 1 
@@ -133,6 +135,7 @@ class Autorole(commands.Cog):
         await self.remove_user(user)
 
     async def remove_user(self, user):
+        await self.validate_cache()
         try:
             self.cache_users.pop(user)
             await self.config.set_raw("users", value = self.cache_users)
