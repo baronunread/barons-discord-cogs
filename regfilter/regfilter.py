@@ -22,20 +22,14 @@ class Regfilter(commands.Cog):
                                         r"\bt+\s*r+[\sr]*a+[\sa]*n+\s*n+[\sn]*[iy]|\b\w*t+r+a+n{2,}[iy]"
                                      ],
                             "names": [],
-                            "ignore":[
-                                        r"\bhttp[^' ']*"
-                                     ]
-                         }
-        self.config.register_global(**default_global)
-        self.cache_regex = []
-        self.cache_names = []
-        self.cache_ignore = []
-        self.mapping =  {   
+                            "ignore":[ r"\bhttp[^' ']*" ],
+                            "letters":["a","c","e","f","g","h","i","j","k","n","o","p","r","s","t","y"],
                             "a": ["ⱥ","@","4","æ","α","λ","ƛ","δ","σ","а","ҩ"],                                             
                             "c": ["ȼ","с","¢","ƈ","ϲ","ͼ","ҫ"], 
                             "e": ["ɇ","£","€","ҽ","ҿ","ə","з","ӡ","ʒ","3","ҙ","е","э","ε","є","ξ"],
                             "f": ["ꞙ","ƒ","₣","ꬵ","ӻ","ғ"],      
                             "g": ["ǥ","ɠ"],                                          
+                            "h": ["ħ"],
                             "i": ["1","!","|","ӏ","ι","ł","ƚ","ɨ","і"], 
                             "j": ["ɉ","ј"],
                             "k": ["ƙ","ĸ","κ","к","ӄ","ҝ","ҟ","ҡ","қ"],                                                                     
@@ -46,23 +40,20 @@ class Regfilter(commands.Cog):
                             "s": ["ѕ","ϟ","$","ß"],
                             "t": ["ⱦ","ŧ","ϯ","т","ҭ","ʈ","ƭ","ƫ"],
                             "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
-                        }
+                         }
+        self.config.register_global(**default_global)
+        self.cache_regex = []
+        self.cache_names = []
+        self.cache_ignore = []
         self.leet_dict = {}
-        for key in self.mapping:
-            keyDict = dict.fromkeys(self.mapping[key], key)
+        for key in default_global["letters"]:
+            keyDict = dict.fromkeys(default_global[key], key)
             self.leet_dict.update(keyDict)
-
-    @commands.command()
-    async def test(self, ctx):
-        remove = "||"
-        message = ctx.message.clean_content
-        message = message.replace(remove, "")
-        await ctx.send(message)
 
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
-        nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                              # NFKD form
-        noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # cleans the rest of the diacritics
+        nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                               # NFKD form
+        noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # removes most of the diacritics TODO #1 better diacritic remover
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
         alpha = ''.join(c for c in noLookAlikes if c.isalpha() or c == ' ')                 # remove anything that isn't an alphabetic character or a space
         for ignore in self.cache_ignore:

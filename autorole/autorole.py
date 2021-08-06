@@ -86,9 +86,9 @@ class Autorole(commands.Cog):
     async def on_message(self, message: discord.Message):
         await self.validate_cache() 
         user = message.author
-        role = get(user.guild.roles, id = self.cache_role)
-        if user.bot or not role:
+        if user.bot or not self.cache_role:
             return
+        role = get(user.guild.roles, id = self.cache_role)
         userRoles = user.roles
         messages = await self.config.member(user).messages()
         remembered = await self.config.member(user).remembered() 
