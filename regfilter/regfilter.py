@@ -50,6 +50,10 @@ class Regfilter(commands.Cog):
             keyDict = dict.fromkeys(default_global[key], key)
             self.leet_dict.update(keyDict)
 
+    async def rebuild_dict(self, letterList, key):
+        keyDict = dict.fromkeys(letterList, key)
+        self.leet_dict.update(keyDict)
+
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
         nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                               # NFKD form
@@ -120,6 +124,18 @@ class Regfilter(commands.Cog):
         """Base command. Can add a regex, a name for replacing or a word to ignore."""
         pass
 
+    @add.command(name = "letter")
+    async def add_letter(self, ctx, keyLetter, badLetter):
+        """Adds a foreign letter to the list of normal letters."""
+        letterList = await self.config.get_raw(keyLetter)
+        if badLetter not in letterList:
+            letterList.append(badLetter)
+            await self.config.set_raw(keyLetter, value = letterList)
+            await self.rebuild_dict(letterList, keyLetter)
+            await ctx.send("Letter successfully added.")
+        else:
+            await ctx.send("That letter is already there.")
+        
     async def generic_add_delete(self, ctx, msg, type: str, operation: str):
         await self.validate_cache()
         list = await self.return_cache(type)
@@ -155,6 +171,18 @@ class Regfilter(commands.Cog):
         """Base command. Can either remove a regex, name or ignored word."""
         pass
 
+    @delete.command(name = "letter")
+    async def delete_letter(self, ctx, keyLetter, badLetter):
+        """Deletes a foreign letter from the list of normal letters."""
+        letterList = await self.config.get_raw(keyLetter)
+        if badLetter in letterList:
+            letterList.remove(badLetter)
+            await self.config.set_raw(keyLetter, value = letterList)
+            await self.rebuild_dict(letterList, keyLetter)
+            await ctx.send("Letter successfully removed.")
+        else:
+            await ctx.send("That letter isn't there.")
+
     @delete.command(name = "regex")
     async def delete_regex(self, ctx, *, msg):
         """Removes a regex from the list."""
@@ -175,6 +203,19 @@ class Regfilter(commands.Cog):
         """Base command. Can either send the list of regex, names or ignored words."""
         pass
 
+    @listThings.command(name = "letters")
+    async def list_letters(self, ctx):
+        """Sends the letter list through DMs."""
+        try:
+            letters = await self.config.letters()
+            prettyList = ""
+            for letter in letters:
+                list = await self.config.get_raw(letter)
+                prettyList = prettyList.append(letter + " : " + str(list))
+            await ctx.message.author.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
+            
     async def generic_list(self, ctx, user, type: str):
         try:
             await self.validate_cache()    
