@@ -61,7 +61,7 @@ class Regfilter(commands.Cog):
 
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
-        nfkd_form = unicodedata.normalize('NFKD', msg.lower())                              # NFKD form
+        nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                              # NFKD form
         noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # cleans the rest of the diacritics
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
         alpha = ''.join(c for c in noLookAlikes if c.isalpha() or c == ' ')                 # remove anything that isn't an alphabetic character or a space
