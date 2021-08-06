@@ -45,22 +45,22 @@ class Regfilter(commands.Cog):
                             "r": ["ɍ","г","ӷ","я"],
                             "s": ["ѕ","ϟ","$","ß"],
                             "t": ["ⱦ","ŧ","ϯ","т","ҭ","ʈ","ƭ","ƫ"],
-                            "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"],
-                            "":  ["||"]
+                            "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
                         }
         self.leet_dict = {}
         for key in self.mapping:
             keyDict = dict.fromkeys(self.mapping[key], key)
             self.leet_dict.update(keyDict)
 
-    @commands.command()
-    async def test(self, ctx):
-        remove = "||"
-        message = ctx.message.clean_content
-        message = message.replace(remove, "")
-        await ctx.send(message)
+    # @commands.command()
+    # async def test(self, ctx):
+    #     remove = "||"
+    #     message = ctx.message.clean_content
+    #     message = message.replace(remove, "")
+    #     await ctx.send(message)
 
     async def replace(self, msg):
+        noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
         nfkd_form = unicodedata.normalize('NFKD', msg.lower())                              # NFKD form
         noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # cleans the rest of the diacritics
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
