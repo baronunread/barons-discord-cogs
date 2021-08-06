@@ -55,7 +55,7 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await ctx.send( await discord.utils.remove_markdown(ctx.message) )
+        await ctx.send( await discord.utils.remove_markdown(ctx.message.clean_content) )
 
     async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg.lower())                              # NFKD form
