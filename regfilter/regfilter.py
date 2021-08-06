@@ -211,7 +211,7 @@ class Regfilter(commands.Cog):
         prettyList = ""
         for letter in letters:
             list = await self.config.get_raw(letter)
-            prettyList = prettyList.append(letter + " : " + str(list))
+            prettyList = prettyList + (letter + " : " + str(list))
         await ctx.message.author.send(prettyList)
         # except:
         #     await ctx.send("ERROR: Open your DMs.")
