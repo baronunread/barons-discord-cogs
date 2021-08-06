@@ -121,8 +121,8 @@ class Autorole(commands.Cog):
             self.cache_users.pop(user)
             await user.add_roles(role)
             self.cache_remembered[user] = True
-        await self.config.set_raw("remembered", value = self.cache_remembered)
-        await self.config.set_raw("users", value = self.cache_users)
+        await self.config.remembered.set_raw(value = self.cache_remembered)
+        await self.config.users.set_raw(value = self.cache_users)
    
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
