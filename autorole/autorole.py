@@ -115,15 +115,14 @@ class Autorole(commands.Cog):
             return
         try:
             self.cache_users[user] += 1 
-            if self.cache_users[user] >= self.cache_messages:
-                self.cache_users.pop(user)
-                await user.add_roles(role)
-                self.cache_remembered[user] = True
-                await self.config.set_raw("remembered", value = self.cache_remembered)
         except KeyError:
             self.cache_users[user] = 1
-        finally:
-            await self.config.set_raw("users", value = self.cache_users)
+        if self.cache_users[user] >= self.cache_messages:
+            self.cache_users.pop(user)
+            await user.add_roles(role)
+            self.cache_remembered[user] = True
+        await self.config.set_raw("remembered", value = self.cache_remembered)
+        await self.config.set_raw("users", value = self.cache_users)
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
