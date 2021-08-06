@@ -10,15 +10,11 @@ class Autorole(commands.Cog):
         default_global = {
                             "role": None,
                             "messages": 0,
-                            # "users": {},
-                            # "remembered": {}
                          }
         self.config.register_global(**default_global)
         self.config.register_member(messages = 0, remembered = False)
         self.cache_role = None
         self.cache_messages = 0
-        # self.cache_users = {}
-        # self.cache_remembered = {}
 
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
@@ -26,20 +22,12 @@ class Autorole(commands.Cog):
             self.cache_role = value
         elif type == "messages":
             self.cache_messages = value
-        # elif type == "users":
-        #     self.cache_users = value
-        # elif type == "remembered":
-        #     self.cache_remembered = value
         
     async def validate_cache(self):
         if self.cache_role == None: 
             await self.update_cache("role")
         if self.cache_messages == 0:
             await self.update_cache("messages")    
-        # if not self.cache_users:
-        #     await self.update_cache("users")
-        # if not self.cache_remembered:
-        #     await self.update_cache("remembered")
 
     @commands.command()
     async def iamrole(self, ctx):
@@ -48,23 +36,20 @@ class Autorole(commands.Cog):
         remembered = await self.config.member(user).remembered()
         await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
-        userRoles = user.roles
         if not role:
             await ctx.send("I've not been set up yet. Sorry!")
             return
+        userRoles = user.roles    
         if role in userRoles:
             await ctx.send("You already have that role.")
             return
-        try:
-            if remembered:
-                await user.add_roles(role)
-                await ctx.send("Here you go!")
-        except KeyError:
-            try:
-                percentage = messages / self.cache_messages
-                await ctx.send( "You're level: " + str(floor(percentage * 10)) )
-            except KeyError or ZeroDivisionError:
-                await ctx.send("Please send more messages.")
+        if remembered:
+            await user.add_roles(role)
+            await ctx.send("Here you go!")
+        else:
+            percentage = messages / self.cache_messages
+            await ctx.send( "You're level: " + str(floor(percentage * 10)) )
+
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -77,8 +62,11 @@ class Autorole(commands.Cog):
         await self.config.clear_all()
         await self.update_cache("role")
         await self.update_cache("messages")
-        # await self.update_cache("users")
-        # await self.update_cache("remembered")
+        await ctx.send("Done!")
+    
+    @autorole.command()
+    async def resetMe(self, ctx):
+        await self.config.member(ctx.message.author).clear()
         await ctx.send("Done!")
 
     async def generic_add(self, type, content):
