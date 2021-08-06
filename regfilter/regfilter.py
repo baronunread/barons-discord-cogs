@@ -217,18 +217,18 @@ class Regfilter(commands.Cog):
             await ctx.send("ERROR: Open your DMs.")
             
     async def generic_list(self, ctx, user, type: str):
-        try:
-            await self.validate_cache()    
-            list = await self.return_cache(type)
-            if len(list) == 0:
-                await user.send("There's nothing in that list.")
-                return
-            prettyList = "\n".join(list)
-            if type == "regex":
-                prettyList = "```" + prettyList + "```"
-            await user.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+    #try:
+        await self.validate_cache()    
+        list = await self.return_cache(type)
+        if len(list) == 0:
+            await user.send("There's nothing in that list.")
+            return
+        prettyList = "\n".join(list)
+        if type == "regex":
+            prettyList = "```" + prettyList + "```"
+        await user.send(prettyList)
+    #except:
+        await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
