@@ -105,5 +105,4 @@ class Autorole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
-        await self.config.member(user).clear()
-        
+        await self.config.member(user).clear()  
