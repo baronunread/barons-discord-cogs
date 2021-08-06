@@ -113,17 +113,23 @@ class Autorole(commands.Cog):
         role = get(user.guild.roles, id = self.cache_role)
         if role in userRoles or not role or remembered:
             return
-        try:
-            self.cache_users[user] += 1 
-        except KeyError:
-            self.cache_users[user] = 1
-        if self.cache_users[user] >= self.cache_messages:
-            self.cache_users.pop(user)
-            await user.add_roles(role)
-            self.cache_remembered[user] = True
-            await self.generic_add("remembered", self.cache_remembered)
-        await self.generic_add("users", self.cache_users)
-   
+        async with self.config.users() as users: 
+            try:
+                users[user] += 1         
+                #self.cache_users[user] += 1 
+            except KeyError:
+                users[user] = 1
+                #self.cache_users[user] = 1
+            self.cache_users = users
+            if users[user] >= self.cache_messages:
+                users.pop(user)
+                await user.add_roles(role)
+                async with self.config.remembered() as remembered:
+                    remembered[user] = True
+                    self.cache_remembered = remembered
+            #await self.generic_add("remembered", self.cache_remembered)
+        #await self.generic_add("users", self.cache_users)
+
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         await self.validate_cache()
