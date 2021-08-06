@@ -35,9 +35,9 @@ class Autorole(commands.Cog):
             await self.update_cache("role")
         if self.cache_messages == 0:
             await self.update_cache("messages")    
-        if self.cache_users == {}:
+        if not self.cache_users:
             await self.update_cache("users")
-        if self.cache_remembered == {}:
+        if not self.cache_remembered:
             await self.update_cache("remembered")
 
     @commands.command()
