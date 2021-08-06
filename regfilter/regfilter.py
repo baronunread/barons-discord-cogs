@@ -36,7 +36,7 @@ class Regfilter(commands.Cog):
                             "e": ["ɇ","£","€","ҽ","ҿ","ə","з","ӡ","ʒ","3","ҙ","е","э","ε","є","ξ"],
                             "f": ["ꞙ","ƒ","₣","ꬵ","ӻ","ғ"],      
                             "g": ["ǥ","ɠ"],                                          
-                            "i": ["1","!","|","ӏ","ι","ł","ƚ","ɨ","і"], 
+                            "i": ["1","!","ӏ","ι","ł","ƚ","ɨ","і"], 
                             "j": ["ɉ","ј"],
                             "k": ["ƙ","ĸ","κ","к","ӄ","ҝ","ҟ","ҡ","қ"],                                                                     
                             "n": ["η","ƞ","π","п","л","ɲ","ν","и","ȵ","ŋ"],
@@ -52,9 +52,10 @@ class Regfilter(commands.Cog):
             keyDict = dict.fromkeys(self.mapping[key], key)
             self.leet_dict.update(keyDict)
 
+
     @commands.command()
-    async def test(self, ctx, msg):
-        await ctx.send( await self.replace(msg) )
+    async def test(self, ctx):
+        await ctx.send( await discord.utils.remove_markdown(ctx.message) )
 
     async def replace(self, msg):
         nfkd_form = unicodedata.normalize('NFKD', msg.lower())                              # NFKD form
