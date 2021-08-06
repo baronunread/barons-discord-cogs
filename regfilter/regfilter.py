@@ -206,15 +206,15 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "letters")
     async def list_letters(self, ctx):
         """Sends the letter list through DMs."""
-        #try:
-        letters = await self.config.letters()
-        prettyList = ""
-        for letter in letters:
-            list = await self.config.get_raw(letter)
-            prettyList = prettyList + letter + " : " + str(list) + "\n"
-        await ctx.message.author.send(prettyList)
-        # except:
-        #     await ctx.send("ERROR: Open your DMs.")
+        try:
+            letters = await self.config.letters()
+            prettyList = ""
+            for letter in letters:
+                list = await self.config.get_raw(letter)
+                prettyList = prettyList + letter + " : " + str(list) + "\n"
+            await ctx.message.author.send("```" + prettyList + "```")
+        except:
+            await ctx.send("ERROR: Open your DMs.")
             
     async def generic_list(self, ctx, user, type: str):
         try:
