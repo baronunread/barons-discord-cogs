@@ -46,9 +46,11 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-        for key in default_global["letters"]:
-            keyDict = dict.fromkeys(default_global[key], key)
-            self.leet_dict.update(keyDict)
+
+    async def build_dict(self):
+        for key in await self.config.letters():
+            list = await self.config.get_raw(key)
+            await self.rebuild_dict(list, key)
 
     async def rebuild_dict(self, letterList, key):
         keyDict = dict.fromkeys(letterList, key)
@@ -85,6 +87,8 @@ class Regfilter(commands.Cog):
             self.cache_names = value
         elif type == "ignore":
             self.cache_ignore = value
+        elif type == "leet":
+            await self.build_dict()
             
     async def validate_cache(self):
         if self.cache_regex == []: 
@@ -93,6 +97,8 @@ class Regfilter(commands.Cog):
             await self.update_cache("names")    
         if self.cache_ignore == []:
             await self.update_cache("ignore")
+        if not self.leet_dict:
+            await self.update_cache("leet") 
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
