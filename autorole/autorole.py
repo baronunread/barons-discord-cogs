@@ -31,10 +31,10 @@ class Autorole(commands.Cog):
 
     @commands.command()
     async def iamrole(self, ctx):
+        await self.validate_cache()
         user = ctx.message.author
         messages = await self.config.member(user).messages()
         remembered = await self.config.member(user).remembered()
-        await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
         if not role:
             await ctx.send("I've not been set up yet. Sorry!")
@@ -50,24 +50,11 @@ class Autorole(commands.Cog):
             percentage = messages / self.cache_messages
             await ctx.send( "You're level: " + str(floor(percentage * 10)) )
 
-
     @commands.group()
     @commands.has_permissions(manage_messages = True)
     async def autorole(self, ctx):
         """Base command. Check the subcommands."""
         pass
-
-    @autorole.command()
-    async def reset(self, ctx):
-        await self.config.clear_all()
-        await self.update_cache("role")
-        await self.update_cache("messages")
-        await ctx.send("Done!")
-    
-    @autorole.command()
-    async def resetMe(self, ctx):
-        await self.config.member(ctx.message.author).clear()
-        await ctx.send("Done!")
 
     async def generic_add(self, type, content):
         await self.config.set_raw(type, value = content)
@@ -88,22 +75,27 @@ class Autorole(commands.Cog):
     @edit.command(name = "role")
     async def role(self, ctx, roleID):
         await self.generic_add("role", int(roleID))
+        await ctx.send("Edited the role successfully.")
 
     @edit.command(name = "messages")
     async def messages(self, ctx, messages):
         await self.generic_add("messages", int(messages))
-
+        await ctx.send("Edited the message amount successfully.")
+    
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
+        await self.validate_cache() 
         user = message.author
-        if user.bot:
-            return
-        remembered = await self.config.member(user).remembered()
-        messages = await self.config.member(user).messages()
-        await self.validate_cache()    
-        userRoles = user.roles
         role = get(user.guild.roles, id = self.cache_role)
-        if role in userRoles or not role or remembered:
+        if user.bot or not role:
+            return
+        userRoles = user.roles
+        messages = await self.config.member(user).messages()
+        remembered = await self.config.member(user).remembered() 
+        if role in userRoles and not remembered:
+            await self.config.member(user).remembered.set(True)
+            remembered = True 
+        if remembered:
             return
         messages += 1
         await self.config.member(user).messages.set(messages)
