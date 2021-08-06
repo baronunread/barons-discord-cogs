@@ -87,9 +87,7 @@ class Regfilter(commands.Cog):
             self.cache_names = value
         elif type == "ignore":
             self.cache_ignore = value
-        elif type == "leet":
-            await self.build_dict()
-            
+                     
     async def validate_cache(self):
         if self.cache_regex == []: 
             await self.update_cache("regex")
@@ -98,7 +96,7 @@ class Regfilter(commands.Cog):
         if self.cache_ignore == []:
             await self.update_cache("ignore")
         if not self.leet_dict:
-            await self.update_cache("leet") 
+            await self.build_dict()
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
