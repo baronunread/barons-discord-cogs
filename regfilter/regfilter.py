@@ -206,29 +206,29 @@ class Regfilter(commands.Cog):
     @listThings.command(name = "letters")
     async def list_letters(self, ctx):
         """Sends the letter list through DMs."""
-        try:
-            letters = await self.config.letters()
-            prettyList = ""
-            for letter in letters:
-                list = await self.config.get_raw(letter)
-                prettyList = prettyList.append(letter + " : " + str(list))
-            await ctx.message.author.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+        #try:
+        letters = await self.config.letters()
+        prettyList = ""
+        for letter in letters:
+            list = await self.config.get_raw(letter)
+            prettyList = prettyList.append(letter + " : " + str(list))
+        await ctx.message.author.send(prettyList)
+        # except:
+        #     await ctx.send("ERROR: Open your DMs.")
             
     async def generic_list(self, ctx, user, type: str):
-    #try:
-        await self.validate_cache()    
-        list = await self.return_cache(type)
-        if len(list) == 0:
-            await user.send("There's nothing in that list.")
-            return
-        prettyList = "\n".join(list)
-        if type == "regex":
-            prettyList = "```" + prettyList + "```"
-        await user.send(prettyList)
-    #except:
-        await ctx.send("ERROR: Open your DMs.")
+        try:
+            await self.validate_cache()    
+            list = await self.return_cache(type)
+            if len(list) == 0:
+                await user.send("There's nothing in that list.")
+                return
+            prettyList = "\n".join(list)
+            if type == "regex":
+                prettyList = "```" + prettyList + "```"
+            await user.send(prettyList)
+        except:
+            await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
