@@ -106,13 +106,12 @@ class Autorole(commands.Cog):
             return
         await self.validate_cache()
         try:
-            if self.cache_remembered[user]:
-                return
+            remembered = self.cache_remembered[user] 
         except KeyError:
-            pass        
+            remembered = False        
         userRoles = user.roles
         role = get(user.guild.roles, id = self.cache_role)
-        if role in userRoles or not role:
+        if role in userRoles or not role or remembered:
             return
         try:
             self.cache_users[user] += 1 
@@ -128,10 +127,6 @@ class Autorole(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
-        await self.remove_user(user)
-
-    @commands.Cog.listener()
-    async def on_member_remove(self, user):
         await self.remove_user(user)
 
     async def remove_user(self, user):
