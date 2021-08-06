@@ -108,13 +108,14 @@ class Autorole(commands.Cog):
         if user.bot:
             return
         remembered = await self.config.member(user).remembered()
+        messages = await self.config.member(user).messages()
         await self.validate_cache()    
         userRoles = user.roles
         role = get(user.guild.roles, id = self.cache_role)
         if role in userRoles or not role or remembered:
             return
-        async with self.config.member(user).messages() as messages:
-            messages += 1
+        messages += 1
+        await self.config.member(user).messages.set(messages)
         if messages >= self.cache_messages:
             await user.add_roles(role)
             await self.config.member(user).remembered.set(True)
