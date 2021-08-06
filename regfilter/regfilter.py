@@ -52,12 +52,12 @@ class Regfilter(commands.Cog):
             keyDict = dict.fromkeys(self.mapping[key], key)
             self.leet_dict.update(keyDict)
 
-    # @commands.command()
-    # async def test(self, ctx):
-    #     remove = "||"
-    #     message = ctx.message.clean_content
-    #     message = message.replace(remove, "")
-    #     await ctx.send(message)
+    @commands.command()
+    async def test(self, ctx):
+        remove = "||"
+        message = ctx.message.clean_content
+        message = message.replace(remove, "")
+        await ctx.send(message)
 
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
