@@ -49,6 +49,9 @@ class Autorole(commands.Cog):
         await self.validate_cache()
         role = get(user.guild.roles, id = self.cache_role)
         userRoles = user.roles
+        if not role:
+            await ctx.send("I've not been set up yet. Sorry!")
+            return
         if role in userRoles:
             await ctx.send("You already have that role.")
             return
