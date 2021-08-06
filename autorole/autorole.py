@@ -2,7 +2,6 @@ from redbot.core import commands, Config
 from discord.utils import get
 from math import floor
 import discord
-import json
 
 class Autorole(commands.Cog):
     """Automatically hands out a single role that you can setup beforehand."""
@@ -124,10 +123,6 @@ class Autorole(commands.Cog):
             self.cache_remembered[user] = True
         await self.config.set_raw("remembered", value = self.cache_remembered)
         await self.config.set_raw("users", value = self.cache_users)
-        #testing code
-        test = await self.config.get_raw("users")
-        dump = json.dumps(test)
-        await user.send(dump)
    
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
