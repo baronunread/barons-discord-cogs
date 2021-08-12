@@ -11,24 +11,24 @@ class Regfilter(commands.Cog):
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
-                                        r"\bj+\s*a+[\sa]*p+[\sp]*s?\b",
-                                        r"\bf+\s*a+[\sa]*g|\b\w*f+a+g",
+                                        r"\bj+\s*[aæ]+[\saæ]*p+[\sp]*s?\b",
+                                        r"\bf+\s*[aæ]+[\saæ]*g|\b\w*f+[aæ]+g",
                                         r"\bs+\s*p+[\sp]*i+[\si]*c+[\sc]*s?\b",
                                         r"\bg+\s*o+\s*o+[\so]*k|\b\w*g+o{2,}k",
-                                        r"\bk+\s*i+[\si]*k+[\sk]*e|\b\w*k+i+k+e",
-                                        r"\bn+\s*e+[\se]*g+[\sg]*r+[\sr]*o|\b\w*n+e+g+r+o",
+                                        r"\bk+\s*i+[\si]*k+[\sk]*[eæ]|\b\w*k+i+k+[eæ]",
+                                        r"\bn+\s*[eæ]+[\seæ]*g+[\sg]*r+[\sr]*o|\b\w*n+[eæ]+g+r+o",
                                         r"\bc+\s*h+[\sh]*i+[\si]*n+[\sn]*k|\b\w*c+h+i+n+k",
-                                        r"\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*e+[\se]*r|\b\w*n+[il]+g{2,}e+r",
-                                        r"\bt+\s*r+[\sr]*a+[\sa]*n+\s*n+[\sn]*[iy]|\b\w*t+r+a+n{2,}[iy]"
+                                        r"\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*[eæ]+[\seæ]*r|\b\w*n+[il]+g{2,}[eæ]+r",
+                                        r"\bt+\s*r+[\sr]*[aæ]+[\saæ]*n+\s*n+[\sn]*[iy]|\b\w*t+r+[aæ]+n{2,}[iy]"
                                      ],
                             "names": [],
                             "ignore":[ r"\bhttp[^' ']*" ],
                             "letters":["a","c","e","f","g","h","i","j","k","n","o","p","r","s","t","y"],
-                            "a": ["ⱥ","@","4","æ","α","λ","ƛ","δ","σ","а","ҩ"],                                             
+                            "a": ["ⱥ","@","4","α","λ","ƛ","δ","σ","а","ҩ"],                                             
                             "c": ["ȼ","с","¢","ƈ","ϲ","ͼ","ҫ"], 
                             "e": ["ɇ","£","€","ҽ","ҿ","ə","з","ӡ","ʒ","3","ҙ","е","э","ε","є","ξ"],
                             "f": ["ꞙ","ƒ","₣","ꬵ","ӻ","ғ"],      
-                            "g": ["ǥ","ɠ"],                                          
+                            "g": ["ǥ","ɠ","غ","ع"],                                          
                             "h": ["ħ"],
                             "i": ["1","!","|","ӏ","ι","ł","ƚ","ɨ","і"], 
                             "j": ["ɉ","ј"],
