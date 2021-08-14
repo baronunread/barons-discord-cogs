@@ -294,6 +294,7 @@ class Regfilter(commands.Cog):
             for i in range(processes):
                 if result.get():
                     return True
+        pool.close()
         return False
 
     async def triggered_filter(self, content, regexs):
