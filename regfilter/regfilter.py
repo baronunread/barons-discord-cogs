@@ -285,7 +285,7 @@ class Regfilter(commands.Cog):
         with mp.ThreadPoolExecutor(max_workers = threads) as executor:
             result = executor.map(self.thread_regex, threadItemList)
             for i in range(threads):
-                if result.get():
+                if next(result):
                     return True
         # with Pool(processes = processes) as pool:
         #     result = pool.starmap_async(self.process_regex, processItemList) 
