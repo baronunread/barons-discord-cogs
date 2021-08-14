@@ -6,6 +6,12 @@ import random
 from time import perf_counter
 import re
 
+def thread_regex(pair):
+        result = re.findall(pair[0], pair[1])
+        if result != []:
+            return True
+        return False
+
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
@@ -283,7 +289,7 @@ class Regfilter(commands.Cog):
         for regex in regexs:
             threadItemList.append( (content, regex) )
         with mp.ThreadPoolExecutor(max_workers = threads) as executor:
-            result = executor.map(self.thread_regex, threadItemList)
+            result = executor.map(thread_regex, threadItemList)
             for i in range(threads):
                 if next(result):
                     return True
@@ -293,12 +299,6 @@ class Regfilter(commands.Cog):
         #         if result.get():
         #             return True
         # pool.close()
-        return False
-
-    def thread_regex(pair):
-        result = re.findall(pair[0], pair[1])
-        if result != []:
-            return True
         return False
 
     async def triggered_filter(self, content, regexs):
