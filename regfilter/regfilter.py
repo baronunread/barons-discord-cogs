@@ -1,6 +1,6 @@
 from typing import Text
 from redbot.core import commands, Config
-from pathos import Pool
+from pathos import ProcessPool as Pool
 import unicodedata
 import discord
 import random
