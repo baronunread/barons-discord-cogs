@@ -1,6 +1,6 @@
 from typing import Text
 from redbot.core import commands, Config
-from multiprocessing import Pool
+from pathos import Pool
 import unicodedata
 import discord
 import random
@@ -284,7 +284,7 @@ class Regfilter(commands.Cog):
         for regex in regexs:
             processItemList.append( (content, regex) )
         with Pool(processes = processes) as pool:
-            result = pool.starmap_async(self.process_regex, processItemList) 
+            result = pool.amap(self.process_regex, processItemList) 
             for i in range(processes):
                 if result.get():
                     return True
