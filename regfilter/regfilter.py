@@ -7,7 +7,7 @@ class Processing:
             for regex in regexs:
                 processItemList.append( (content, regex) )
             with Pool(processes = processes) as pool:
-                result = pool.starmap_async(process_regex, processItemList) 
+                result = pool.starmap_async(Processing.process_regex, processItemList) 
                 for i in range(processes):
                     if result.get():
                         return True
