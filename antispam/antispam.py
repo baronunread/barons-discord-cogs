@@ -61,7 +61,7 @@ class Antispam(commands.Cog):
 
     @edit.command(name = "channel")
     async def channel(self, ctx, channelID):
-        await self.generic_add("messages", int(messages))
+        await self.generic_add("channel", int(channelID))
         await ctx.send("Edited the channel successfully.")
     
     @commands.Cog.listener()
@@ -71,7 +71,7 @@ class Antispam(commands.Cog):
         if user.bot or not self.cache_role or not self.cache_channel:
             return
         role = get(user.guild.roles, id = self.cache_role)
-        channel = ctx.guild.get_channel(self.cache_channel) 
+        channel = message.guild.get_channel(self.cache_channel) 
         messages = await self.config.member(user).messages()
         timePrevious = await self.config.member(user).timePrevious() 
         previousMessageHash = await self.config.member(user).previousMessageHash()
@@ -91,7 +91,7 @@ class Antispam(commands.Cog):
                 await user.add_roles(role)
                 await self.config.member(user).messages.set(0)
                 await channel.send("I have muted the user: " + user.mention + "for spamming.")
-            else
+            else:
                 await self.config.member(user).messages.set(messages)
         else:
             await self.config.member(user).messages.set(0)
