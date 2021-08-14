@@ -3,7 +3,6 @@ import unicodedata
 import discord
 import random
 import re
-from time import perf_counter
 
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
@@ -47,20 +46,6 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-
-    @commands.command()
-    async def test(self, ctx):
-        tMax = 0
-        tAvg = 0
-        for i in range(100):
-            message = await ctx.send("Testing!")
-            t1 = perf_counter()
-            await message.delete()
-            t2 = perf_counter()
-            t = t2 - t1
-            tAvg += t
-            tMax = t if t > tMax else tMax
-        await ctx.send("The avg time was: " + str(tAvg/100) + " the max time was: " + str(tMax))
 
     async def build_dict(self):
         for key in await self.config.letters():
