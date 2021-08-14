@@ -288,13 +288,19 @@ class Regfilter(commands.Cog):
     async def thread_triggered_filter(self, content, regexs):
         threadItemList = []
         threads = len(self.cache_regex)
-        for regex in regexs:
-            threadItemList.append( (content, regex) )
+        # for regex in regexs:
+        #     threadItemList.append( (content, regex) )
         with mp.ThreadPoolExecutor(max_workers = threads) as executor:
-            result = executor.map(thread_regex, threadItemList)
-            for i in range(threads):
-                if next(result):
+            futures = []
+            for regex in regexs:
+                futures.append(executor.submit(thread_regex,(content, regex)))
+            for future in mp.as_completed(futures):
+                if future.result():
                     return True
+            # result = executor.map(thread_regex, threadItemList)
+            # for i in range(threads):
+            #     if next(result):
+            #         return True
         return False
 
     async def triggered_filter(self, content, regexs):
