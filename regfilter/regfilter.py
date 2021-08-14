@@ -68,7 +68,7 @@ class Regfilter(commands.Cog):
         await self.thread_triggered_filter(content, regexs)
         timeProcessEnd = perf_counter()
         timeProcess = timeProcessEnd - timeProcessBegin
-        await ctx.send("The normal time was: " + timeNormal + ", while the multiprocess time was: " + timeProcess)
+        await ctx.send( "The normal time was: " + str(timeNormal) + ", while the multiprocess time was: " + str(timeProcess) )
 
     async def build_dict(self):
         for key in await self.config.letters():
@@ -293,12 +293,6 @@ class Regfilter(commands.Cog):
             for i in range(threads):
                 if next(result):
                     return True
-        # with Pool(processes = processes) as pool:
-        #     result = pool.starmap_async(self.process_regex, processItemList) 
-        #     for i in range(processes):
-        #         if result.get():
-        #             return True
-        # pool.close()
         return False
 
     async def triggered_filter(self, content, regexs):
