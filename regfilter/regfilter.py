@@ -1,7 +1,10 @@
+from typing import Text
 from redbot.core import commands, Config
-import discord
+from multiprocessing import Pool
 import unicodedata
+import discord
 import random
+from time import perf_counter
 import re
 
 class Regfilter(commands.Cog):
@@ -46,6 +49,21 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
+
+    @commands.command()
+    async def test(self, ctx):
+        await self.validate_cache()
+        content = await self.replace(ctx.message)
+        regexs = await self.return_cache("regex")
+        timeNormalBegin = perf_counter()
+        await self.triggered_filter(content, regexs)
+        timeNormalEnd = perf_counter()
+        timeNormal = timeNormalEnd - timeNormalBegin
+        timeProcessBegin = perf_counter()
+        await self.process_triggered_filter(content, regexs)
+        timeProcessEnd = perf_counter()
+        timeProcess = timeProcessEnd - timeProcessBegin
+        await ctx.send("The normal time was: " + timeNormal + ", while the multiprocess time was: " + timeProcess)
 
     async def build_dict(self):
         for key in await self.config.letters():
@@ -105,7 +123,7 @@ class Regfilter(commands.Cog):
         pass
 
     @filter.command(name = "reset")
-    async def reset(self, ctx: commands.Context, *, type):
+    async def reset(self, ctx: commands.Context, type):
         """Reset regex, names, ignore or all by typing out what to reset."""
         typed = type.lower()
         if typed == "regex" or typed == "ignore" or typed == "names":
@@ -260,6 +278,24 @@ class Regfilter(commands.Cog):
         if await self.triggered_filter(content, regexs):
             await message.delete()
     
+    async def process_triggered_filter(self, content, regexs):
+        processItemList = []
+        processes = len(self.cache_regex)
+        for regex in regexs:
+            processItemList.append( (content, regex) )
+        with Pool(processes = processes) as pool:
+            result = pool.starmap_async(self.process_regex, processItemList) 
+            for i in range(processes):
+                if result.get():
+                    return True
+        return False
+
+    def process_regex(pair):
+        result = re.findall(pair[0], pair[1])
+        if result != []:
+            return True
+        return False
+
     async def triggered_filter(self, content, regexs):
         for regex in regexs:
             result = re.findall(regex, content)
