@@ -61,14 +61,16 @@ class Regfilter(commands.Cog):
         content = await self.replace(ctx.message.clean_content)
         regexs = await self.return_cache("regex")
         timeNormalBegin = perf_counter()
-        await self.triggered_filter(content, regexs)
+        for i in range(100):
+            await self.triggered_filter(content, regexs)
         timeNormalEnd = perf_counter()
         timeNormal = timeNormalEnd - timeNormalBegin
         timeProcessBegin = perf_counter()
-        await self.thread_triggered_filter(content, regexs)
+        for i in range(100):
+            await self.thread_triggered_filter(content, regexs)
         timeProcessEnd = perf_counter()
         timeProcess = timeProcessEnd - timeProcessBegin
-        await ctx.send( "The normal time was: " + str(timeNormal) + ", while the multiprocess time was: " + str(timeProcess) )
+        await ctx.send( "The normal time was: " + str(timeNormal) + ", while the multithread time was: " + str(timeProcess) )
 
     async def build_dict(self):
         for key in await self.config.letters():
