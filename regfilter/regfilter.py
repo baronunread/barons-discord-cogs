@@ -1,16 +1,9 @@
 from redbot.core import commands, Config
-import concurrent.futures as mp
 import unicodedata
 import discord
 import random
-from time import perf_counter
 import re
-
-def thread_regex(pair):
-        result = re.findall(pair[0], pair[1])
-        if result != []:
-            return True
-        return False
+from time import perf_counter
 
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
@@ -57,20 +50,17 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await self.validate_cache()
-        content = await self.replace(ctx.message.clean_content)
-        regexs = await self.return_cache("regex")
-        timeNormalBegin = perf_counter()
+        tMax = 0
+        tAvg = 0
         for i in range(100):
-            await self.triggered_filter(content, regexs)
-        timeNormalEnd = perf_counter()
-        timeNormal = timeNormalEnd - timeNormalBegin
-        timeProcessBegin = perf_counter()
-        for i in range(100):
-            await self.thread_triggered_filter(content, regexs)
-        timeProcessEnd = perf_counter()
-        timeProcess = timeProcessEnd - timeProcessBegin
-        await ctx.send( "The normal time was: " + str(timeNormal/100) + ", while the multithread time was: " + str(timeProcess/100) )
+            message = await ctx.send("Testing!")
+            t1 = perf_counter()
+            await message.delete()
+            t2 = perf_counter()
+            t = t2 - t1
+            tAvg += t
+            tMax = t if t > tMax else tMax
+        await ctx.send("The avg time was: " + str(tAvg/100) + " the max time was: " + str(tMax))
 
     async def build_dict(self):
         for key in await self.config.letters():
@@ -284,24 +274,6 @@ class Regfilter(commands.Cog):
         regexs = await self.return_cache("regex")
         if await self.triggered_filter(content, regexs):
             await message.delete()
-    
-    async def thread_triggered_filter(self, content, regexs):
-        threadItemList = []
-        threads = len(self.cache_regex)
-        # for regex in regexs:
-        #     threadItemList.append( (content, regex) )
-        with mp.ThreadPoolExecutor(max_workers = threads) as executor:
-            futures = []
-            for regex in regexs:
-                futures.append(executor.submit(thread_regex,(content, regex)))
-            for future in mp.as_completed(futures):
-                if future.result():
-                    return True
-            # result = executor.map(thread_regex, threadItemList)
-            # for i in range(threads):
-            #     if next(result):
-            #         return True
-        return False
 
     async def triggered_filter(self, content, regexs):
         for regex in regexs:
