@@ -1,25 +1,3 @@
-import re
-
-class Processing:
-
-    async def process_triggered_filter(processes ,content, regexs):
-            processItemList = []
-            for regex in regexs:
-                processItemList.append( (content, regex) )
-            with Pool(processes = processes) as pool:
-                result = pool.starmap_async(Processing.process_regex, processItemList) 
-                for i in range(processes):
-                    if result.get():
-                        return True
-            pool.close()
-            return False
-
-    def process_regex(pair):
-        result = re.findall(pair[0], pair[1])
-        if result != []:
-            return True
-        return False
-
 from typing import Text
 from redbot.core import commands, Config
 from multiprocessing import Pool
@@ -27,6 +5,14 @@ import unicodedata
 import discord
 import random
 from time import perf_counter
+import re
+
+def process_regex(pair):
+    import re
+    result = re.findall(pair[0], pair[1])
+    if result != []:
+        return True
+    return False
 
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
@@ -81,7 +67,7 @@ class Regfilter(commands.Cog):
         timeNormalEnd = perf_counter()
         timeNormal = timeNormalEnd - timeNormalBegin
         timeProcessBegin = perf_counter()
-        await Processing.process_triggered_filter(len(self.cache_regex), content, regexs)
+        await self.process_triggered_filter(content, regexs)
         timeProcessEnd = perf_counter()
         timeProcess = timeProcessEnd - timeProcessBegin
         await ctx.send("The normal time was: " + timeNormal + ", while the multiprocess time was: " + timeProcess)
@@ -299,6 +285,19 @@ class Regfilter(commands.Cog):
         if await self.triggered_filter(content, regexs):
             await message.delete()
     
+    async def process_triggered_filter(self, content, regexs):
+        processItemList = []
+        processes = len(self.cache_regex)
+        for regex in regexs:
+            processItemList.append( (content, regex) )
+        with Pool(processes = processes) as pool:
+            result = pool.starmap_async(process_regex, processItemList) 
+            for i in range(processes):
+                if result.get():
+                    return True
+        pool.close()
+        return False
+
     async def triggered_filter(self, content, regexs):
         for regex in regexs:
             result = re.findall(regex, content)
