@@ -78,7 +78,7 @@ class Regfilter(commands.Cog):
         timeNormalEnd = perf_counter()
         timeNormal = timeNormalEnd - timeNormalBegin
         timeProcessBegin = perf_counter()
-        await self.process_triggered_filter(len(self.cache_regex), content, regexs)
+        await process_triggered_filter(len(self.cache_regex), content, regexs)
         timeProcessEnd = perf_counter()
         timeProcess = timeProcessEnd - timeProcessBegin
         await ctx.send("The normal time was: " + timeNormal + ", while the multiprocess time was: " + timeProcess)
