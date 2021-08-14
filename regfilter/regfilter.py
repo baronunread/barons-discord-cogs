@@ -7,6 +7,12 @@ import random
 from time import perf_counter
 import re
 
+def process_regex(pair):
+    result = re.findall(pair[0], pair[1])
+    if result != []:
+        return True
+    return False
+
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
@@ -284,16 +290,10 @@ class Regfilter(commands.Cog):
         for regex in regexs:
             processItemList.append( (content, regex) )
         with Pool(processes = processes) as pool:
-            result = pool.starmap_async(self.process_regex, processItemList) 
+            result = pool.starmap_async(process_regex, processItemList) 
             for i in range(processes):
                 if result.get():
                     return True
-        return False
-
-    def process_regex(pair):
-        result = re.findall(pair[0], pair[1])
-        if result != []:
-            return True
         return False
 
     async def triggered_filter(self, content, regexs):
