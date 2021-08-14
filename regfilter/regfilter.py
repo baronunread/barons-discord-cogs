@@ -70,7 +70,7 @@ class Regfilter(commands.Cog):
             await self.thread_triggered_filter(content, regexs)
         timeProcessEnd = perf_counter()
         timeProcess = timeProcessEnd - timeProcessBegin
-        await ctx.send( "The normal time was: " + str(timeNormal) + ", while the multithread time was: " + str(timeProcess) )
+        await ctx.send( "The normal time was: " + str(timeNormal/100) + ", while the multithread time was: " + str(timeProcess/100) )
 
     async def build_dict(self):
         for key in await self.config.letters():
