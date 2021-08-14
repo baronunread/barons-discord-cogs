@@ -53,7 +53,7 @@ class Regfilter(commands.Cog):
     @commands.command()
     async def test(self, ctx):
         await self.validate_cache()
-        content = await self.replace(ctx.message)
+        content = await self.replace(ctx.message.clean_content)
         regexs = await self.return_cache("regex")
         timeNormalBegin = perf_counter()
         await self.triggered_filter(content, regexs)
