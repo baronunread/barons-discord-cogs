@@ -76,7 +76,7 @@ class Antispam(commands.Cog):
         channel = message.guild.get_channel(self.cache_channel) 
         messages = await self.config.member(user).messages()
         timePrevious = await self.config.member(user).timePrevious() 
-        timePrevious = datetime.strptime(timePrevious, format)
+        timePrevious = datetime.strptime(timePrevious, format) if timePrevious else None
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at  
         timeSaved = timeCurrent.strftime(format)
