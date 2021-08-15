@@ -125,9 +125,9 @@ class Antispam(commands.Cog):
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime < 2 or not differentHash:
             messages += 1
-            if messages == 3:
+            if messages == 2:
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
-            elif messages >= 6:
+            elif messages >= 4:
                 await self.mute(message.channel, user, role, modChannel, False)
                 return
             await self.config.member(user).messages.set(messages)
