@@ -148,8 +148,8 @@ class Antispam(commands.Cog):
         await user.add_roles(role)
         toDelete = await self.config.member(user).messageList()
         for pair in toDelete:
-            #channel = user.guild.get_channel(pair[0])
-            message = await user.fetch_message(pair[1])
+            channel = user.guild.get_channel(pair[0])
+            message = await channel.fetch_message(pair[1])
             await message.delete()
         await self.config.member(user).clear()
         # def is_user(msg):
