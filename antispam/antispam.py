@@ -143,6 +143,8 @@ class Antispam(commands.Cog):
                 pass
         await user.add_roles(role)
         toDelete = await user.history(limit = 5).flatten()
+        if not toDelete:
+            await modChannel.send("There's nothing to delete!")
         for message in toDelete:    
             await message.delete()
         # def is_user(message):
