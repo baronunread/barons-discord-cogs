@@ -14,7 +14,7 @@ class Antispam(commands.Cog):
                             "messages": ["has been muted."]
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(messages = 0, timePrevious = None, previousMessageHash = None)
+        self.config.register_member(messages = 0, timePrevious = None, previousMessageHash = None, messageList = [])
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
@@ -105,6 +105,7 @@ class Antispam(commands.Cog):
         user = message.author
         if user.bot or not self.cache_role or not self.cache_channel:
             return
+        msgList = await self.config.member(user).messageList()
         format = "%m/%d/%Y, %H:%M:%S"
         role = get(user.guild.roles, id = self.cache_role)
         modChannel = message.guild.get_channel(self.cache_channel) 
@@ -124,6 +125,7 @@ class Antispam(commands.Cog):
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime < 2 or not differentHash:
             messages += 1
+            msgList.append(message)
             if messages == 3:
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
             elif messages >= 5:
@@ -145,23 +147,14 @@ class Antispam(commands.Cog):
             except:
                 pass
         await user.add_roles(role)
-        await self.config.member(user).messages.set(0)
-        def is_user(msg):
-            return msg.author is user
-        for channel in user.guild.text_channels:
-            if channel.id is 347702375068467201:
-                pass
-            else:
-                await channel.purge(limit = 5, check = is_user)      
-        # toDelete = await user.history(limit = 5).flatten()
-        # if not toDelete:
-        #     await modChannel.send("There's nothing to delete!")
-        # for message in toDelete:    
-        #     await message.delete()
-        # def is_user(message):
-        #     return message.author == user 
-        # await user.guild.purge(limit = 5, check = is_user)
-        
+        toDelete = await self.config.member(user).messageList()
+        for message in toDelete:
+            await message.delete()
+        await self.config.member(user).clear()
+        # def is_user(msg):
+        #     return msg.author is user
+        # for channel in user.guild.text_channels:
+        #     await channel.purge(limit = 5, check = is_user)      
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
