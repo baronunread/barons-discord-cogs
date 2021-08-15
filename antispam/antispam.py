@@ -40,6 +40,7 @@ class Antispam(commands.Cog):
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx):
+        """Manually mutes someone."""
         await self.validate_cache()
         try:
             id = ctx.message.reference.message_id
@@ -71,6 +72,7 @@ class Antispam(commands.Cog):
 
     @antispam.command(name = "add mute message")
     async def add_mute(self, ctx, *, msg):
+        """Adds a message that randomly gets sent when muting someone."""
         await self.validate_cache()
         list = self.cache_messages
         list.append(msg)
@@ -79,14 +81,14 @@ class Antispam(commands.Cog):
 
     @antispam.command(name = "setup")
     async def setup(self, ctx, roleID, channelID):
-        """Insert the ID of the role and the amount of messages that you'd want for it to be given."""
+        """Insert the ID of the role that mutes people and the ID of the mod channel that you'd want to use for the notifications."""
         await self.generic_add("role", int(roleID))
         await self.generic_add("channel", int(channelID))
         await ctx.send("Setup complete.") 
 
     @antispam.group(name = "edit")
     async def edit(self, ctx):
-        """Edit the ID of the role or the amount of messages."""
+        """Edit the ID of the role or the ID of the mod channel."""
         pass
 
     @edit.command(name = "role")
@@ -124,13 +126,13 @@ class Antispam(commands.Cog):
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime < 2 or not differentHash:
             msgList.append( (message.channel.id, message.id) )
+            await self.config.member(user).messageList.set(msgList)    
             messages = len(msgList)
             if messages == 3:
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
             elif messages >= 5:
                 await self.mute(message.channel, user, role, modChannel, False)
                 return
-            await self.config.member(user).messageList.set(msgList)
         else:
             await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
 
@@ -151,11 +153,7 @@ class Antispam(commands.Cog):
             channel = user.guild.get_channel(pair[0])
             message = await channel.fetch_message(pair[1])
             await message.delete()
-        await self.config.member(user).clear()
-        # def is_user(msg):
-        #     return msg.author is user
-        # for channel in user.guild.text_channels:
-        #     await channel.purge(limit = 5, check = is_user)      
+        await self.config.member(user).clear()   
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
