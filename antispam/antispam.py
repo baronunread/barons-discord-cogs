@@ -116,9 +116,8 @@ class Antispam(commands.Cog):
         timeSaved = timeCurrent.strftime(format)
         currentMessageHash = hash(message.clean_content) if message.clean_content else hash(message.attachments[0].filename)
         if not timePrevious:
-            await self.config.member(user).timePrevious.set(timeSaved)
-            await self.config.member(user).previousMessageHash.set(currentMessageHash)
-            return
+            timePrevious = timeCurrent
+            previousMessageHash = currentMessageHash
         deltaTime = (timeCurrent - timePrevious).seconds
         differentHash = currentMessageHash - previousMessageHash
         await self.config.member(user).timePrevious.set(timeSaved)
