@@ -131,7 +131,7 @@ class Antispam(commands.Cog):
             messages = len(msgList)
             if messages == 3:
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
-            elif messages >= 5:
+            elif messages == 5:
                 await self.mute(message.channel, user, role, modChannel, False)
                 return
         else:
