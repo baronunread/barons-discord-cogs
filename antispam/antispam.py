@@ -131,7 +131,7 @@ class Antispam(commands.Cog):
                 return
             await self.config.member(user).messages.set(messages)
         else:
-            await self.config.member(user).messages.set(0)
+            await self.config.member(user).messages.set(1)
 
     async def mute(self, msgChannel, user, role, modChannel, manual):
         reason = " for spamming." if not manual else ""
@@ -145,6 +145,11 @@ class Antispam(commands.Cog):
             except:
                 pass
         await user.add_roles(role)
+        await self.config.member(user).messages.set(0)
+        def is_user(msg):
+            return msg.author is user
+        for channel in user.guild.text_channels:
+            await channel.purge(limit = 5, check = is_user)      
         # toDelete = await user.history(limit = 5).flatten()
         # if not toDelete:
         #     await modChannel.send("There's nothing to delete!")
@@ -153,7 +158,7 @@ class Antispam(commands.Cog):
         # def is_user(message):
         #     return message.author == user 
         # await user.guild.purge(limit = 5, check = is_user)
-        await self.config.member(user).messages.set(0)
+        
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
