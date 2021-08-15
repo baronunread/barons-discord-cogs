@@ -136,9 +136,9 @@ class Antispam(commands.Cog):
 
     async def mute(self, msgChannel, user, role, modChannel, manual):
         reason = " for spamming." if not manual else ""
-        for role in user.roles:
+        for userRole in user.roles:
             try:
-                await user.remove_roles(role)
+                await user.remove_roles(userRole)
             except:
                 pass
         await user.add_roles(role)
