@@ -135,6 +135,10 @@ class Antispam(commands.Cog):
 
     async def mute(self, msgChannel, user, role, modChannel, manual):
         reason = " for spamming." if not manual else ""
+        random.seed(random.random())
+        selected = random.choice(self.cache_messages)
+        await msgChannel.send(user.mention + " " + selected)
+        await modChannel.send("I have muted the user: " + user.mention + reason)
         for userRole in user.roles:
             try:
                 await user.remove_roles(userRole)
@@ -150,10 +154,6 @@ class Antispam(commands.Cog):
         #     return message.author == user 
         # await user.guild.purge(limit = 5, check = is_user)
         await self.config.member(user).messages.set(0)
-        random.seed(random.random())
-        selected = random.choice(self.cache_messages)
-        await msgChannel.send(user.mention + " " + selected)
-        await modChannel.send("I have muted the user: " + user.mention + reason)
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
