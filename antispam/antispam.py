@@ -148,9 +148,10 @@ class Antispam(commands.Cog):
         await self.config.member(user).messages.set(0)
         def is_user(msg):
             return msg.author is user
-        channel = user.guild.get_channel(769609039977512960)
-        #for channel in user.guild.text_channels:
-        await channel.purge(limit = 5, check = is_user)      
+        for channel in user.guild.text_channels:
+            if channel.id is 347702375068467201:
+                pass
+            await channel.purge(limit = 5, check = is_user)      
         # toDelete = await user.history(limit = 5).flatten()
         # if not toDelete:
         #     await modChannel.send("There's nothing to delete!")
