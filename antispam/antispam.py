@@ -19,13 +19,13 @@ class Antispam(commands.Cog):
         value = content if content else await self.config.get_raw(type)
         if type == "role":
             self.cache_role = value
-        elif type == "messages":
-            self.cache_messages = value
+        elif type == "channel":
+            self.cache_channel = value
         
     async def validate_cache(self):
         if self.cache_role == None: 
             await self.update_cache("role")
-        if self.cache_messages == None:
+        if self.cache_channel == None:
             await self.update_cache("channel")    
 
     @commands.command()
