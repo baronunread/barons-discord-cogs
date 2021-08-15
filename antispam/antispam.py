@@ -76,7 +76,8 @@ class Antispam(commands.Cog):
         await self.validate_cache()
         list = self.cache_messages
         list.append(msg)
-        await self.generic_add("messages", list)
+        await self.config.messages.set(list)
+        await self.update_cache("messages", list)
         await ctx.send("Successfully added the new mute message.")
 
     @antispam.command(name = "setup")
