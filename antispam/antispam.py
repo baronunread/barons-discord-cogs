@@ -14,7 +14,7 @@ class Antispam(commands.Cog):
                             "messages": ["has been muted."]
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(messages = 0, timePrevious = None, previousMessageHash = None, messageList = [])
+        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [])
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
@@ -109,7 +109,6 @@ class Antispam(commands.Cog):
         format = "%m/%d/%Y, %H:%M:%S"
         role = get(user.guild.roles, id = self.cache_role)
         modChannel = message.guild.get_channel(self.cache_channel) 
-        messages = await self.config.member(user).messages()
         timePrevious = await self.config.member(user).timePrevious() 
         timePrevious = datetime.strptime(timePrevious, format) if timePrevious else None
         previousMessageHash = await self.config.member(user).previousMessageHash()
@@ -124,16 +123,16 @@ class Antispam(commands.Cog):
         await self.config.member(user).timePrevious.set(timeSaved)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime < 2 or not differentHash:
-            messages += 1
             msgList.append(message)
+            messages = len(msgList)
             if messages == 3:
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
             elif messages >= 5:
                 await self.mute(message.channel, user, role, modChannel, False)
                 return
-            await self.config.member(user).messages.set(messages)
+            await self.config.member(user).messageList.set(msgList)
         else:
-            await self.config.member(user).messages.set(1)
+            await self.config.member(user).messageList.set([message])
 
     async def mute(self, msgChannel, user, role, modChannel, manual):
         reason = " for spamming." if not manual else ""
