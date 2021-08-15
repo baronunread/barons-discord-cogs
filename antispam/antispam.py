@@ -123,7 +123,7 @@ class Antispam(commands.Cog):
         await self.config.member(user).timePrevious.set(timeSaved)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime < 2 or not differentHash:
-            msgList.append(message)
+            msgList.append( (message.channel, message.id) )
             messages = len(msgList)
             if messages == 3:
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
@@ -132,7 +132,7 @@ class Antispam(commands.Cog):
                 return
             await self.config.member(user).messageList.set(msgList)
         else:
-            await self.config.member(user).messageList.set([message])
+            await self.config.member(user).messageList.set( [ (message.channel, message.id) ] )
 
     async def mute(self, msgChannel, user, role, modChannel, manual):
         reason = " for spamming." if not manual else ""
@@ -147,7 +147,8 @@ class Antispam(commands.Cog):
                 pass
         await user.add_roles(role)
         toDelete = await self.config.member(user).messageList()
-        for message in toDelete:
+        for pair in toDelete:
+            message = await pair[0].fetch(pair[1])
             await message.delete()
         await self.config.member(user).clear()
         # def is_user(msg):
