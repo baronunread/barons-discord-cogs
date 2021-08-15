@@ -1,5 +1,6 @@
 from redbot.core import commands, Config
 from discord.utils import get
+from datetime import datetime
 import discord
 
 class Antispam(commands.Cog):
@@ -70,20 +71,23 @@ class Antispam(commands.Cog):
         user = message.author
         if user.bot or not self.cache_role or not self.cache_channel:
             return
+        format = "%m/%d/%Y, %H:%M:%S"
         role = get(user.guild.roles, id = self.cache_role)
         channel = message.guild.get_channel(self.cache_channel) 
         messages = await self.config.member(user).messages()
         timePrevious = await self.config.member(user).timePrevious() 
+        timePrevious = datetime.strptime(timePrevious, format)
         previousMessageHash = await self.config.member(user).previousMessageHash()
-        timeCurrent = message.created_at
+        timeCurrent = message.created_at  
+        timeSaved = timeCurrent.strftime(format)
         currentMessageHash = hash(message.clean_content) if message.clean_content else hash(message.attachments[0].url)
         if not timePrevious:
-            await self.config.member(user).timePrevious.set(timeCurrent)
+            await self.config.member(user).timePrevious.set(timeSaved)
             await self.config.member(user).previousMessageHash.set(currentMessageHash)
             return
         deltaTime = (timeCurrent - timePrevious).seconds
         differentHash = currentMessageHash - previousMessageHash
-        await self.config.member(user).timePrevious.set(timeCurrent)
+        await self.config.member(user).timePrevious.set(timeSaved)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime < 1 or not differentHash:
             messages += 1
