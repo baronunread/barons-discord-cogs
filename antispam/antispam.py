@@ -142,6 +142,9 @@ class Antispam(commands.Cog):
             except:
                 pass
         await user.add_roles(role)
+        def is_user(message):
+            return message.author == user 
+        await user.guild.purge(limit = 5)
         await self.config.member(user).messages.set(0)
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
