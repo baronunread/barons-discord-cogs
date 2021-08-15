@@ -126,7 +126,7 @@ class Antispam(commands.Cog):
         if deltaTime < 2 or not differentHash:
             messages += 1
             if messages >= 3:
-                await message.channel.send(user + " stop spamming or you'll be muted.")
+                await message.channel.send(user.mention + " stop spamming or you'll be muted.")
             elif messages >= 6:
                 await self.mute(message.channel, user, role, modChannel, False)
             else:
@@ -140,7 +140,7 @@ class Antispam(commands.Cog):
         await self.config.member(user).messages.set(0)
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
-        await msgChannel.send(user + " " + selected)
+        await msgChannel.send(user.mention + " " + selected)
         await modChannel.send("I have muted the user: " + user.mention + reason)
 
     @commands.Cog.listener()
