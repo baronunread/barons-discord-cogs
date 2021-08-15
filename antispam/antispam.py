@@ -143,7 +143,8 @@ class Antispam(commands.Cog):
                 pass
         await user.add_roles(role)
         toDelete = await user.history(limit = 5).flatten()
-        await discord.delete_messages(toDelete)
+        for message in toDelete:    
+            await message.channel.delete(message)
         # def is_user(message):
         #     return message.author == user 
         # await user.guild.purge(limit = 5, check = is_user)
