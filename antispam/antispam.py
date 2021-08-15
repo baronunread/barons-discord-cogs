@@ -70,7 +70,7 @@ class Antispam(commands.Cog):
         await self.config.set_raw(type, value = content)
         await self.update_cache(type, content)
 
-    @antispam.command(name = "add mute message")
+    @antispam.command(name = "addMuteMessage")
     async def add_mute(self, ctx, *, msg):
         """Adds a message that randomly gets sent when muting someone."""
         await self.validate_cache()
