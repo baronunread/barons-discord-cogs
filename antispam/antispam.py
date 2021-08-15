@@ -129,8 +129,8 @@ class Antispam(commands.Cog):
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
             elif messages >= 6:
                 await self.mute(message.channel, user, role, modChannel, False)
-            else:
-                await self.config.member(user).messages.set(messages)
+                return
+            await self.config.member(user).messages.set(messages)
         else:
             await self.config.member(user).messages.set(0)
 
