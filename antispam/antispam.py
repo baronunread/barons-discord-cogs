@@ -142,11 +142,11 @@ class Antispam(commands.Cog):
             except:
                 pass
         await user.add_roles(role)
-        toDelete = await user.history(limit = 5).flatten()
-        if not toDelete:
-            await modChannel.send("There's nothing to delete!")
-        for message in toDelete:    
-            await message.delete()
+        # toDelete = await user.history(limit = 5).flatten()
+        # if not toDelete:
+        #     await modChannel.send("There's nothing to delete!")
+        # for message in toDelete:    
+        #     await message.delete()
         # def is_user(message):
         #     return message.author == user 
         # await user.guild.purge(limit = 5, check = is_user)
