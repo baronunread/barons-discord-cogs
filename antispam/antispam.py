@@ -141,8 +141,19 @@ class Antispam(commands.Cog):
         reason = " for spamming." if not manual else ""
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
-        await msgChannel.send(user.mention + " " + selected)
-        await modChannel.send("I have muted the user: " + user.mention + reason)
+        data =  {
+                    "author": {"name": "MUTED", "icon_url": str(user.avatar_url)}
+                }
+        msgDict = data
+        modDict = data
+        msgDict["description"] = user.mention + " " + selected
+        modDict["description"] = "I have muted the user: " + user.mention + reason
+        msgEmbed = discord.Embed.from_dict(msgDict)
+        modEmbed = discord.Embed.from_dict(modDict)
+        await msgChannel.send(embed = msgEmbed)
+        await msgChannel.send(embed = modEmbed)
+        #await msgChannel.send(user.mention + " " + selected)
+        #await modChannel.send("I have muted the user: " + user.mention + reason)
         for userRole in user.roles:
             try:
                 await user.remove_roles(userRole)
