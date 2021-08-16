@@ -142,7 +142,8 @@ class Antispam(commands.Cog):
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
         data =  {
-                    "author": {"name": "MUTED", "icon_url": str(user.avatar_url)}
+                    "author": {"name": "MUTED", "icon_url": str(user.avatar_url)},
+                    "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
                 }
         msgDict = data.copy()
         modDict = data.copy()
