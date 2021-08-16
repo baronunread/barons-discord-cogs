@@ -144,14 +144,14 @@ class Antispam(commands.Cog):
         data =  {
                     "author": {"name": "MUTED", "icon_url": str(user.avatar_url)}
                 }
-        msgDict = data
-        modDict = data
+        msgDict = data.copy()
+        modDict = data.copy()
         msgDict["description"] = user.mention + " " + selected
         modDict["description"] = "I have muted the user: " + user.mention + reason
         msgEmbed = discord.Embed.from_dict(msgDict)
         modEmbed = discord.Embed.from_dict(modDict)
         await msgChannel.send(embed = msgEmbed)
-        await msgChannel.send(embed = modEmbed)
+        await modChannel.send(embed = modEmbed)
         #await msgChannel.send(user.mention + " " + selected)
         #await modChannel.send("I have muted the user: " + user.mention + reason)
         for userRole in user.roles:
