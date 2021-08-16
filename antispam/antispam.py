@@ -80,6 +80,19 @@ class Antispam(commands.Cog):
         await self.update_cache("messages", list)
         await ctx.send("Successfully added the new mute message.")
 
+    @antispam.command(name = "delMuteMessage")
+    async def del_mute(self, ctx, *, msg):
+        """Removes a message from the list of messages."""
+        await self.validate_cache()
+        list = self.cache_messages
+        if msg not in list:
+            await ctx.send("There's no such message in that list!")
+            return
+        list.pop(msg)
+        await self.config.messages.set(list)
+        await self.update_cache("messages", list)
+        await ctx.send("Successfully removed the mute message.")
+
     @antispam.command(name = "setup")
     async def setup(self, ctx, roleID, channelID):
         """Insert the ID of the role that mutes people and the ID of the mod channel that you'd want to use for the notifications."""
@@ -148,13 +161,13 @@ class Antispam(commands.Cog):
         msgDict = data.copy()
         modDict = data.copy()
         msgDict["description"] = user.mention + " " + selected
-        modDict["description"] = "I have muted the user: " + user.mention + reason
+        modDict["description"] = "I have muted the user " + user.mention + reason
         msgEmbed = discord.Embed.from_dict(msgDict)
         modEmbed = discord.Embed.from_dict(modDict)
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
         #await msgChannel.send(user.mention + " " + selected)
-        #await modChannel.send("I have muted the user: " + user.mention + reason)
+        #await modChannel.send("I have muted the user " + user.mention + reason)
         for userRole in user.roles:
             try:
                 await user.remove_roles(userRole)
