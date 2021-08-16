@@ -19,7 +19,6 @@ class Antispam(commands.Cog):
         self.cache_channel = None
         self.cache_messages = []
         
-
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
         if type == "role":
