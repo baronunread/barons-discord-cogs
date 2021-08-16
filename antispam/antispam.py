@@ -173,8 +173,6 @@ class Antispam(commands.Cog):
         modEmbed = discord.Embed.from_dict(modDict)
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
-        #await msgChannel.send(user.mention + " " + selected)
-        #await modChannel.send("I have muted the user " + user.mention + reason)
         for userRole in user.roles:
             try:
                 await user.remove_roles(userRole)
