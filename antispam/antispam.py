@@ -88,11 +88,18 @@ class Antispam(commands.Cog):
         if msg not in list:
             await ctx.send("There's no such message in that list!")
             return
-        list.pop(msg)
+        list.remove(msg)
         await self.config.messages.set(list)
         await self.update_cache("messages", list)
         await ctx.send("Successfully removed the mute message.")
 
+    @antispam.command(name = "listMuteMessage")
+    async def list_mute(self, ctx):
+        """Sends the list of messages through DMs"""
+        await self.validate_cache()
+        list = self.cache_messages
+        await ctx.send("```" + str(list) +  "```") 
+       
     @antispam.command(name = "setup")
     async def setup(self, ctx, roleID, channelID):
         """Insert the ID of the role that mutes people and the ID of the mod channel that you'd want to use for the notifications."""
