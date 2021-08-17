@@ -1,4 +1,3 @@
-import voicerole
 from redbot.core import commands, Config
 from discord.utils import get
 import json
