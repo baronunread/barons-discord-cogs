@@ -157,7 +157,7 @@ class Antispam(commands.Cog):
             await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
 
     async def mute(self, msgChannel, user, role, modChannel, manual):
-        reason = " for spamming." if not manual else ""
+        reason = " for spamming" if not manual else ""
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
         data =  {
