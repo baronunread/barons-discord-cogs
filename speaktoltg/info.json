@@ -1,8 +1,0 @@
-{
-    "author" : ["Baron Unread"],
-    "install_msg" : "I just hope it works",
-    "name" : "speaktoltg",
-    "short" : "f*cking tasks",
-    "description" : "AI generated text from a model trained on LTG's stories",
-    "tags" : ["tools"]
-}
