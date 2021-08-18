@@ -136,7 +136,7 @@ class Antispam(commands.Cog):
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at  
         timeSaved = timeCurrent.strftime(format)
-        currentMessageHash = hash(message.clean_content) if message.clean_content else hash(message.attachments[0].filename)
+        currentMessageHash = hash(message.clean_content) if message.clean_content else hash(message.attachments[0])
         if not timePrevious:
             timePrevious = timeCurrent
             previousMessageHash = currentMessageHash
