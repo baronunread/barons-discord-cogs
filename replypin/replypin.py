@@ -75,7 +75,7 @@ class Replypin(commands.Cog):
             if "tenor" in link:
                 links.append(link)
                 links[i] = await self.get_tenor(link)
-        return links  
+                return links  
 
     async def remove_links(self, msg, links):
         for link in links:
