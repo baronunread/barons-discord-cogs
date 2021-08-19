@@ -1,7 +1,12 @@
 from redbot.core import commands
 import discord
 import aiohttp
+import platform
+import asyncio
 import re
+
+if platform.system() == 'Windows':
+	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
