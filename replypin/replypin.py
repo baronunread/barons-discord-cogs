@@ -33,7 +33,6 @@ class Replypin(commands.Cog):
         channel = ctx.guild.get_channel(876484551977893908) 
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
-        await ctx.send(str(links))
         link = links[0] if links else None
         linkImage = None if not link else await self.check_type(link, self.imageTypesRegex) 
         linkVideo = None if not link else await self.check_type(link, self.videoTypesRegex)
@@ -67,7 +66,7 @@ class Replypin(commands.Cog):
             async with session.get(tenorUrl) as resp:
                 tenorGif = None
                 if resp.status == 200 or resp.status == 202:
-                    tenorGif = resp.url
+                    tenorGif = resp.url.human_repr()
         return tenorGif       
     
     async def find_links(self, msg):
