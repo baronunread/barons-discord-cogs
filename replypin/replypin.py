@@ -1,12 +1,8 @@
 from redbot.core import commands
 import discord
 import aiohttp
-import platform
 import asyncio
 import re
-
-if platform.system() == 'Windows':
-	asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
@@ -82,11 +78,12 @@ class Replypin(commands.Cog):
         return tenorGif       
     
     async def find_media_links(self, msg):
+        loop = asyncio.get_event_loop()
         links = re.findall(r"\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
             if "tenor" in link.lower() and i == 0:
                 toRemove = link
-                links[i] = await self.get_tenor(link)
+                links[i] = loop.run_until_complete(self.get_tenor(link))
                 links.append(toRemove)
             linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
             if linkType.lower() not in self.mediaTypesList:
