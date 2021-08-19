@@ -22,7 +22,7 @@ class Replypin(commands.Cog):
         self.mediaTypesList = self.imageTypesList + self.videoTypesList
 
     def cog_unload(self):
-        self.bot.loop.create_task(self.session.close())
+        self.session.detach()
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
