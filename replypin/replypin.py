@@ -29,7 +29,8 @@ class Replypin(commands.Cog):
         except AttributeError:
             await ctx.send("Please reply to a post.")
             return
-        channel = ctx.guild.get_channel(846357308060991558) 
+        # channel = ctx.guild.get_channel(846357308060991558)
+        channel = ctx.guild.get_channel(876484551977893908) 
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
         link = links[0] if links else None
@@ -73,9 +74,9 @@ class Replypin(commands.Cog):
     
     async def find_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
-        # for i, link in enumerate(links):
-        #     if "tenor" in link:
-        #         links[i] = await self.get_tenor(link)
+        for i, link in enumerate(links):
+            if "tenor" in link:
+                links[i] = await self.get_tenor(link)
         return links  
 
     async def remove_links(self, msg, links):
