@@ -27,7 +27,8 @@ class Replypin(commands.Cog):
         async with aiohttp.ClientSession() as session:
             tenorUrl = msg + ".gif"
             async with session.get(tenorUrl) as resp:
-                await ctx.send(resp.url)      
+                data = await resp.json(content_type='text/html')
+                await ctx.send(data)      
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
