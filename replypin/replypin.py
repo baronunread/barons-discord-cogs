@@ -22,7 +22,6 @@ class Replypin(commands.Cog):
         self.mediaTypesList = self.imageTypesList + self.videoTypesList
 
     def cog_unload(self):
-        self.session.close()
         self.session.detach()
 
     @commands.command()
