@@ -77,7 +77,9 @@ class Replypin(commands.Cog):
         links = re.findall(r"(?i)\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
             if "tenor" in link.lower():
+                toRemove = link
                 links[i] = await self.get_tenor(link)
+        links.append(toRemove)
         return links  
 
     async def check_type(self, link, regexs):
