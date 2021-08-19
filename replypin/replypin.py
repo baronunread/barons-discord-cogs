@@ -85,7 +85,10 @@ class Replypin(commands.Cog):
                 toRemove = link
                 task = loop.create_task(self.get_tenor(link))
                 while not task.done() or not task.cancelled():
-                    links[i] = await task.result()
+                    try:
+                        links[i] = await task.result()
+                    except:
+                        pass
                 links.append(toRemove)
             linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
             if linkType.lower() not in self.mediaTypesList:
