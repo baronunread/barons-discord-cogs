@@ -28,7 +28,7 @@ class Replypin(commands.Cog):
             tenorUrl = msg + ".gif"
             async with session.get(tenorUrl) as resp:
                 if resp.status == 200 or 202:
-                    data = resp.content
+                    data = resp.url
                     await ctx.send(data)      
 
     @commands.command()
