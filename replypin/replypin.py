@@ -73,6 +73,7 @@ class Replypin(commands.Cog):
         links = re.findall(r"(?i)\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
             if "tenor" in link:
+                links.append(link)
                 links[i] = await self.get_tenor(link)
         return links  
 
