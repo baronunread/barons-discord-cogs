@@ -63,7 +63,7 @@ class Replypin(commands.Cog):
 
     async def remove_links(self, content):
         for regex in self.imageTypesRegex | self.videoTypesRegex:
-            content = re.sub(regex, content)
+            content = re.sub(regex, "", content)
         return content
        
     async def get_tenor(self, url):
