@@ -1,11 +1,13 @@
 from redbot.core import commands
 import discord
 import aiohttp
+import asyncio
 import re
 
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
     def __init__(self):
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
         self.imageTypesList =   [
                                     "png",
                                     "gif",
@@ -65,14 +67,13 @@ class Replypin(commands.Cog):
         return content
        
     async def get_tenor(self, url):
-        async with aiohttp.ClientSession() as session:
-            tenorUrl = url + ".gif"
-            async with session.get(tenorUrl) as resp:
+        async with aiohttp.ClientSession() as session:  # <- The addition of this client session 
+            tenorUrl = url + ".gif"                     # makes the bot throw an exception on
+            async with session.get(tenorUrl) as resp:   # shutdown... Whatever
                 tenorGif = None
                 if resp.status == 200 or resp.status == 202:
                     tenorGif = resp.url.human_repr()
         await session.close()
-        await resp.close()
         return tenorGif       
     
     async def find_media_links(self, msg):
