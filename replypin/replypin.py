@@ -1,5 +1,7 @@
 from redbot.core import commands
 import discord
+import aiohttp
+import json
 import re
 
 class Replypin(commands.Cog):
@@ -7,16 +9,26 @@ class Replypin(commands.Cog):
     def __init__(self):
         self.imageTypesRegex =  {
                                     r"tenor\.com",
-                                    r"\.png",
-                                    r"\.gif",
-                                    r"\.jpe?g" 
+                                    r"(?i)\.png\b",
+                                    r"(?i)\.gif\b",
+                                    r"(?i)\.jpe?g\b",
+                                    r"(?i)\.webp\b" 
                                 }
         self.videoTypesRegex =  {
                                     r"youtube\.com",
-                                    r"\.mp4",
-                                    r"\.mov",
-                                    r"\.webm" 
+                                    r"(?i)\.mp4\b",
+                                    r"(?i)\.mov\b",
+                                    r"(?i)\.webm\b" 
                                 }
+
+    @commands.command()
+    @commands.has_permissions(manage_messages = True)
+    async def test(self, ctx, *, msg):
+        async with aiohttp.ClientSession() as session:
+            tenorUrl = msg + ".gif"
+            async with session.get(tenorUrl) as resp:
+                tenorJSON = await resp.json()
+        await ctx.send(tenorJSON)       
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
