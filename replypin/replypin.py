@@ -6,6 +6,7 @@ import re
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
     def __init__(self):
+        self.session = aiohttp.ClientSession()
         self.imageTypesList =   [
                                     "png",
                                     "gif",
@@ -19,6 +20,9 @@ class Replypin(commands.Cog):
                                     "webm" 
                                 ]
         self.mediaTypesList = self.imageTypesList + self.videoTypesList
+
+    def __unload(self):
+        self.session.detach()
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
@@ -65,13 +69,11 @@ class Replypin(commands.Cog):
         return content
        
     async def get_tenor(self, url):
-        session = aiohttp.ClientSession()  # <- The addition of this client session 
-        tenorUrl = url + ".gif"                     # makes the bot throw an exception on
-        async with session.get(tenorUrl) as resp:   # shutdown... Whatever, it's fine
+        tenorUrl = url + ".gif"                     
+        async with self.session.get(tenorUrl) as resp:   
             tenorGif = None
             if resp.status == 200 or resp.status == 202:
                 tenorGif = resp.url.human_repr()
-        await session.close()
         return tenorGif       
     
     async def find_media_links(self, msg):
