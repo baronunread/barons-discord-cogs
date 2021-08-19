@@ -77,7 +77,7 @@ class Replypin(commands.Cog):
     async def find_media_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
-            None, linkType = (link.split('/')[-1].split('.'))
+            none, linkType = (link.split('/')[-1].split('.'))
             if linkType not in self.mediaTypesList:
                 links.remove(link)
             elif "tenor" in link.lower():
@@ -87,5 +87,5 @@ class Replypin(commands.Cog):
         return links  
 
     async def check_type(self, link, typeList):
-        None, linkType = (link.split('/')[-1].split('.'))
+        none, linkType = (link.split('/')[-1].split('.'))
         return linkType in typeList
