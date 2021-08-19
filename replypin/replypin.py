@@ -32,7 +32,8 @@ class Replypin(commands.Cog):
         # channel = ctx.guild.get_channel(846357308060991558) #Tojo, sorry for hardcoding!!
         channel = ctx.guild.get_channel(876484551977893908) 
         msg = await ctx.fetch_message(id)
-        links = await self.find_links(msg.clean_content)
+        links = await self.find_media_links(msg.clean_content)
+        content = await self.remove_links(msg.clean_content, links)
         link = links[0] if links else None
         linkImage = None if not link else await self.check_type(link, self.imageTypesRegex) 
         linkVideo = None if not link else await self.check_type(link, self.videoTypesRegex)
@@ -40,9 +41,6 @@ class Replypin(commands.Cog):
         attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
         attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
         video = link if linkVideo else attachment if attachVideo else None
-        content = await self.remove_links(msg.clean_content)
-        # content = msg.clean_content.replace(video, "") if video else msg.clean_content
-        # content = content.replace(link, "") if linkImage or linkVideo else content
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
@@ -61,9 +59,9 @@ class Replypin(commands.Cog):
         if video:
             await channel.send(video)
 
-    async def remove_links(self, content):
-        for regex in self.imageTypesRegex | self.videoTypesRegex:
-            content = re.sub(regex, "", content)
+    async def remove_links(self, content, links):
+        for link in links:
+            content.replace(link, "")
         return content
        
     async def get_tenor(self, url):
@@ -75,12 +73,12 @@ class Replypin(commands.Cog):
                     tenorGif = resp.url.human_repr()
         return tenorGif       
     
-    async def find_links(self, msg):
+    async def find_media_links(self, msg):
         links = re.findall(r"(?i)\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
-            if "tenor" in link:
+            if "tenor" in link.lower():
                 links[i] = await self.get_tenor(link)
-                return links  
+        return links  
 
     async def check_type(self, link, regexs):
         if not link:
