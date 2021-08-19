@@ -83,7 +83,8 @@ class Replypin(commands.Cog):
         for i, link in enumerate(links):
             if "tenor" in link.lower() and i == 0:
                 toRemove = link
-                links[i] = loop.run_until_complete(self.get_tenor(link))
+                task = asyncio.create_task(self.get_tenor(link))
+                links[i] = loop.run_until_complete(task)
                 links.append(toRemove)
             linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
             if linkType.lower() not in self.mediaTypesList:
