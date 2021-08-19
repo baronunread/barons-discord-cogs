@@ -6,19 +6,19 @@ import re
 class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
     def __init__(self):
-        self.imageTypesRegex =  {
-                                    r"(?i)tenor\.com",
-                                    r"(?i)\.png\b",
-                                    r"(?i)\.gif\b",
-                                    r"(?i)\.jpe?g\b",
-                                    r"(?i)\.webp\b" 
-                                }
-        self.videoTypesRegex =  {
-                                    r"(?i)youtube\.com",
-                                    r"(?i)\.mp4\b",
-                                    r"(?i)\.mov\b",
-                                    r"(?i)\.webm\b" 
-                                }
+        self.imageTypesList =   [
+                                    ".png",
+                                    ".gif",
+                                    ".jpg",
+                                    ".jpeg",
+                                    ".webp" 
+                                ]
+        self.videoTypesList =   [
+                                    ".mp4",
+                                    ".mov",
+                                    ".webm" 
+                                ]
+        self.mediaTypesList = self.imageTypesList + self.videoTypesList
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
@@ -35,11 +35,11 @@ class Replypin(commands.Cog):
         links = await self.find_media_links(msg.clean_content)
         content = await self.remove_links(msg.clean_content, links)
         link = links[0] if links else None
-        linkImage = None if not link else await self.check_type(link, self.imageTypesRegex) 
-        linkVideo = None if not link else await self.check_type(link, self.videoTypesRegex)
+        linkImage = None if not link else await self.check_type(link, self.imageTypesList) 
+        linkVideo = None if not link else await self.check_type(link, self.videoTypesList)
         attachment = msg.attachments[0].url if msg.attachments else None
-        attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
-        attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
+        attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesList) 
+        attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesList)
         video = link if linkVideo else attachment if attachVideo else None
         data =  {
                     "title": "Click to jump to message!",
@@ -71,35 +71,21 @@ class Replypin(commands.Cog):
                 tenorGif = None
                 if resp.status == 200 or resp.status == 202:
                     tenorGif = resp.url.human_repr()
+        await session.close()
         return tenorGif       
     
     async def find_media_links(self, msg):
-        links = re.findall(r"(?i)\bhttp[^' ']*", msg)
+        links = re.findall(r"\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
-            if "tenor" in link.lower():
+            None, linkType = (link.split('/')[-1].split('.'))
+            if linkType not in self.mediaTypesList:
+                links.remove(link)
+            elif "tenor" in link.lower():
                 toRemove = link
                 links[i] = await self.get_tenor(link)
         links.append(toRemove)
         return links  
 
-    async def check_type(self, link, regexs):
-        if not link:
-            return None
-        list = []
-        for regex in regexs:
-            list = list + re.findall(regex, link)
-            if list:
-                return link
-        return None
-
-    async def return_video(self, link1, link2):
-        list1 = []
-        list2 = []
-        for regex in self.videoTypesRegex:
-            list1 = list1 + re.findall(regex, link1)
-            if list1:
-                return link1
-            list2 = list2 + re.findall(regex, link2)
-            if list2:
-                return link2
-        return None
+    async def check_type(self, link, typeList):
+        None, linkType = (link.split('/')[-1].split('.'))
+        return linkType in typeList
