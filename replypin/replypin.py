@@ -80,10 +80,10 @@ class Replypin(commands.Cog):
             if "tenor" in link.lower() and i == 0:
                 toRemove = link
                 links[i] = await self.get_tenor(link)
-                links.append(toRemove)
             linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else ".gif"
-            if linkType not in self.mediaTypesList:
+            if linkType.lower() not in self.mediaTypesList:
                 links.remove(link)
+        links.append(toRemove)
         return links  
 
     async def check_type(self, link, typeList):
