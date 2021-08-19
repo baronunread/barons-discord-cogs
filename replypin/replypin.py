@@ -61,7 +61,7 @@ class Replypin(commands.Cog):
 
     async def remove_links(self, content, links):
         for link in links:
-            content.replace(link, "")
+            content = content.replace(link, "")
         return content
        
     async def get_tenor(self, url):
