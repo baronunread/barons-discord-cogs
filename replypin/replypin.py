@@ -80,7 +80,7 @@ class Replypin(commands.Cog):
             if "tenor" in link.lower() and i == 0:
                 toRemove = link
                 links[i] = await self.get_tenor(link)
-            linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else ".gif"
+            linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
             if linkType.lower() not in self.mediaTypesList:
                 links.remove(link)
         links.append(toRemove)
