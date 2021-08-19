@@ -40,8 +40,9 @@ class Replypin(commands.Cog):
         attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
         attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
         video = link if linkVideo else attachment if attachVideo else None
-        content = msg.clean_content.replace(video, "") if video else msg.clean_content
-        content = content.replace(link, "") if linkImage or linkVideo else content
+        content = await self.remove_links(msg.clean_content)
+        # content = msg.clean_content.replace(video, "") if video else msg.clean_content
+        # content = content.replace(link, "") if linkImage or linkVideo else content
         data =  {
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
@@ -59,6 +60,11 @@ class Replypin(commands.Cog):
         await channel.send(embed = embed)
         if video:
             await channel.send(video)
+
+    async def remove_links(self, content):
+        for regex in self.imageTypesRegex | self.videoTypesRegex:
+            content = re.sub(regex, content)
+        return content
        
     async def get_tenor(self, url):
         async with aiohttp.ClientSession() as session:
@@ -73,14 +79,8 @@ class Replypin(commands.Cog):
         links = re.findall(r"(?i)\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
             if "tenor" in link:
-                links.append(link)
                 links[i] = await self.get_tenor(link)
                 return links  
-
-    async def remove_links(self, msg, links):
-        for link in links:
-            msg = msg.replace(link, "")
-        return msg
 
     async def check_type(self, link, regexs):
         if not link:
