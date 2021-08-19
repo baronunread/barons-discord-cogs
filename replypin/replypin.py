@@ -7,14 +7,14 @@ class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
     def __init__(self):
         self.imageTypesRegex =  {
-                                    r"tenor\.com",
+                                    r"(?i)tenor\.com",
                                     r"(?i)\.png\b",
                                     r"(?i)\.gif\b",
                                     r"(?i)\.jpe?g\b",
                                     r"(?i)\.webp\b" 
                                 }
         self.videoTypesRegex =  {
-                                    r"youtube\.com",
+                                    r"(?i)youtube\.com",
                                     r"(?i)\.mp4\b",
                                     r"(?i)\.mov\b",
                                     r"(?i)\.webm\b" 
@@ -29,17 +29,17 @@ class Replypin(commands.Cog):
         except AttributeError:
             await ctx.send("Please reply to a post.")
             return
-        # channel = ctx.guild.get_channel(846357308060991558)
+        # channel = ctx.guild.get_channel(846357308060991558) #Tojo, sorry for hardcoding!!
         channel = ctx.guild.get_channel(876484551977893908) 
         msg = await ctx.fetch_message(id)
         links = await self.find_links(msg.clean_content)
+        await ctx.send(str(links))
         link = links[0] if links else None
         linkImage = None if not link else await self.check_type(link, self.imageTypesRegex) 
         linkVideo = None if not link else await self.check_type(link, self.videoTypesRegex)
         attachment = msg.attachments[0].url if msg.attachments else None
         attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
         attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
-        #tenor = re.findall(r"tenor\.com", link) if link else None
         video = link if linkVideo else attachment if attachVideo else None
         content = msg.clean_content.replace(video, "") if video else msg.clean_content
         content = content.replace(link, "") if linkImage or linkVideo else content
@@ -53,14 +53,12 @@ class Replypin(commands.Cog):
         embed = discord.Embed.from_dict(data)
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
-        # if tenor:
-        #     embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
-        if linkImage:# and not tenor:
+        if linkImage:
             embed.set_image(url = link)    
         if attachImage:
             embed.set_image(url = attachment)
         await channel.send(embed = embed)
-        if video:# or tenor:
+        if video:
             await channel.send(video)
        
     async def get_tenor(self, url):
@@ -73,7 +71,7 @@ class Replypin(commands.Cog):
         return tenorGif       
     
     async def find_links(self, msg):
-        links = re.findall(r"\bhttp[^' ']*", msg)
+        links = re.findall(r"(?i)\bhttp[^' ']*", msg)
         for i, link in enumerate(links):
             if "tenor" in link:
                 links[i] = await self.get_tenor(link)
