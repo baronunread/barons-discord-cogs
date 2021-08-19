@@ -1,7 +1,6 @@
 from redbot.core import commands
 import discord
 import aiohttp
-import json
 import re
 
 class Replypin(commands.Cog):
@@ -23,16 +22,6 @@ class Replypin(commands.Cog):
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
-    async def test(self, ctx, *, msg):
-        async with aiohttp.ClientSession() as session:
-            tenorUrl = msg + ".gif"
-            async with session.get(tenorUrl) as resp:
-                if resp.status == 200 or 202:
-                    data = resp.url
-                    await ctx.send(data)      
-
-    @commands.command()
-    @commands.has_permissions(manage_messages = True)
     async def pinthatshit(self, ctx):
         """'Pins' the post by posting it to another channel. It supports one link and one attachment."""
         try:
@@ -49,7 +38,7 @@ class Replypin(commands.Cog):
         attachment = msg.attachments[0].url if msg.attachments else None
         attachImage = None if not attachment else await self.check_type(attachment, self.imageTypesRegex) 
         attachVideo = None if not attachment else await self.check_type(attachment, self.videoTypesRegex)
-        tenor = re.findall(r"tenor\.com", link) if link else None
+        #tenor = re.findall(r"tenor\.com", link) if link else None
         video = link if linkVideo else attachment if attachVideo else None
         content = msg.clean_content.replace(video, "") if video else msg.clean_content
         content = content.replace(link, "") if linkImage or linkVideo else content
@@ -63,19 +52,31 @@ class Replypin(commands.Cog):
         embed = discord.Embed.from_dict(data)
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
-        if tenor:
-            embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
-        if linkImage and not tenor:
+        # if tenor:
+        #     embed.add_field(name = "Quentin's thought:", value = "Tenor gifs don't work inside embeds so I've posted it below this embed!")
+        if linkImage:# and not tenor:
             embed.set_image(url = link)    
         if attachImage:
             embed.set_image(url = attachment)
         await channel.send(embed = embed)
-        if video or tenor:
-            await channel.send(video + "\n" + link if video and tenor else video if video else link)
+        if video:# or tenor:
+            await channel.send(video)
        
+    async def get_tenor(self, url):
+        async with aiohttp.ClientSession() as session:
+            tenorUrl = url + ".gif"
+            async with session.get(tenorUrl) as resp:
+                tenorGif = None
+                if resp.status == 200 or resp.status == 202:
+                    tenorGif = resp.url
+        return tenorGif       
+    
     async def find_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
-        return links
+        for i, link in enumerate(links):
+            if "tenor" in link:
+                links[i] = await self.get_tenor(link)
+        return links  
 
     async def remove_links(self, msg, links):
         for link in links:
