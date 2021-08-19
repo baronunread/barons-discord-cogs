@@ -7,16 +7,16 @@ class Replypin(commands.Cog):
     """When called 'pins' the message that was replied to. """
     def __init__(self):
         self.imageTypesList =   [
-                                    ".png",
-                                    ".gif",
-                                    ".jpg",
-                                    ".jpeg",
-                                    ".webp" 
+                                    "png",
+                                    "gif",
+                                    "jpg",
+                                    "jpeg",
+                                    "webp" 
                                 ]
         self.videoTypesList =   [
-                                    ".mp4",
-                                    ".mov",
-                                    ".webm" 
+                                    "mp4",
+                                    "mov",
+                                    "webm" 
                                 ]
         self.mediaTypesList = self.imageTypesList + self.videoTypesList
 
