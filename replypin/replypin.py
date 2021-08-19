@@ -73,9 +73,9 @@ class Replypin(commands.Cog):
     
     async def find_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
-        for i, link in enumerate(links):
-            if "tenor" in link:
-                links[i] = await self.get_tenor(link)
+        # for i, link in enumerate(links):
+        #     if "tenor" in link:
+        #         links[i] = await self.get_tenor(link)
         return links  
 
     async def remove_links(self, msg, links):
