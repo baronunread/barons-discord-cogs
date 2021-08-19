@@ -72,6 +72,7 @@ class Replypin(commands.Cog):
                 if resp.status == 200 or resp.status == 202:
                     tenorGif = resp.url.human_repr()
         await session.close()
+        await resp.close()
         return tenorGif       
     
     async def find_media_links(self, msg):
