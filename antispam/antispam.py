@@ -40,22 +40,27 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx):
         """Manually mutes someone."""
-        msgChannel, user = await self.try_get_user_and_channel(ctx)
+        msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
             return
-        role = get(user.guild.roles, id = self.cache_role)
-        modChannel = user.guild.get_channel(self.cache_channel)
         await self.mute(msgChannel, user, role, modChannel, True)
 
     @commands.command(name = "speakup")
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
-        msgChannel, user = await self.try_get_user_and_channel(ctx.message)
+        msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
             return
+        await self.unmute(msgChannel, user, role, modChannel)
+
+    async def get_context_data(self, ctx):
+        msgChannel, user = await self.try_get_user_and_channel(ctx.message)
+        if not user:
+            return None, None, None, None
+        role = get(user.guild.roles, id = self.cache_role)
         modChannel = user.guild.get_channel(self.cache_channel)
-        await self.unmute(msgChannel, user, modChannel)
+        return msgChannel, user, role, modChannel
 
     async def try_get_user_and_channel(self, msg):
         await self.validate_cache()
@@ -204,7 +209,7 @@ class Antispam(commands.Cog):
             await message.delete()
         await self.config.member(user).clear()   
 
-    async def unmute(self, msgChannel, user, modChannel):
+    async def unmute(self, msgChannel, user, role, modChannel):
         msgDict =   {
                         "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
                         "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")},
@@ -215,6 +220,7 @@ class Antispam(commands.Cog):
         await modChannel.send(embed = msgEmbed)
         roles = await self.config.member(user).roles()
         roles = [get(user.guild.roles, id = roleID) for roleID in roles]
+        await user.remove_roles(role)
         try:
             await user.add_roles(roles)
         except:
