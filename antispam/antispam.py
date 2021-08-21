@@ -65,6 +65,9 @@ class Antispam(commands.Cog):
     async def try_get_user_and_channel(self, msg):
         await self.validate_cache()
         msgChannel = msg.channel
+        if not self.cache_role or not self.cache_channel:
+            await msgChannel.send("I have not been set up yet!")
+            return None, None
         try:
             id = msg.reference.message_id
             msg = await msgChannel.fetch_message(id)
@@ -74,9 +77,9 @@ class Antispam(commands.Cog):
                 user = msg.mentions[0]
             else:
                 await msgChannel.send("I need either a reply or mention to mute someone.")
-                user = None
-        if user.bot or not self.cache_role or not self.cache_channel:
-            await msgChannel.send("I have not been set up yet!")
+                return None, None
+        if user.bot:
+            await msgChannel.send("I can't edit the roles of a bot!")
             user = None
         return msgChannel, user
 
