@@ -210,7 +210,6 @@ class Antispam(commands.Cog):
             channel = user.guild.get_channel(pair[0])
             message = await channel.fetch_message(pair[1])
             await message.delete()
-        await self.config.member(user).clear()   
 
     async def unmute(self, msgChannel, user, role, modChannel):
         msgDict =   {
