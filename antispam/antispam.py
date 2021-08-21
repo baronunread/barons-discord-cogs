@@ -51,7 +51,7 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
-        msgChannel, user = await self.try_get_user_and_channel(ctx)
+        msgChannel, user = await self.try_get_user_and_channel(ctx.message)
         if not user:
             return
         modChannel = user.guild.get_channel(self.cache_channel)
