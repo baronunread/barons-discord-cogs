@@ -223,7 +223,7 @@ class Antispam(commands.Cog):
                     await user.add_roles(userRole)
                 except:
                     pass
-        await self.config.member(user.clear())
+        await self.config.member(user).clear()
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
