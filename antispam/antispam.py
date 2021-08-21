@@ -40,19 +40,33 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx):
         """Manually mutes someone."""
+        await self.validate_cache()
+        if not self.cache_role or not self.cache_channel:
+            await ctx.send("I have not been set up yet!")
+            return
         msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
-            return
-        await self.mute(msgChannel, user, role, modChannel, True)
+            await ctx.send("I need either a reply or mention to mute someone.")
+        elif user.bot:
+            await ctx.send("I can't edit the roles of a bot!")
+        elif role in user.roles:
+            await self.mute(msgChannel, user, role, modChannel, True)
 
     @commands.command(name = "speakup")
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
+        await self.validate_cache()
+        if not self.cache_role or not self.cache_channel:
+            await ctx.send("I have not been set up yet!")
+            return
         msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
-            return
-        await self.unmute(msgChannel, user, role, modChannel)
+            await ctx.send("I need either a reply or mention to mute someone.")    
+        elif user.bot:
+            await ctx.send("I can't edit the roles of a bot!")  
+        elif role in user.roles:
+            await self.unmute(msgChannel, user, role, modChannel)
 
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
@@ -63,11 +77,7 @@ class Antispam(commands.Cog):
         return msgChannel, user, role, modChannel
 
     async def try_get_user_and_channel(self, msg):
-        await self.validate_cache()
         msgChannel = msg.channel
-        if not self.cache_role or not self.cache_channel:
-            await msgChannel.send("I have not been set up yet!")
-            return None, None
         try:
             id = msg.reference.message_id
             msg = await msgChannel.fetch_message(id)
@@ -76,11 +86,7 @@ class Antispam(commands.Cog):
             if msg.mentions:
                 user = msg.mentions[0]
             else:
-                await msgChannel.send("I need either a reply or mention to mute someone.")
-                return None, None
-        if user.bot:
-            await msgChannel.send("I can't edit the roles of a bot!")
-            user = None
+                user = None
         return msgChannel, user
 
     @commands.group()
@@ -223,14 +229,11 @@ class Antispam(commands.Cog):
         roles = await self.config.member(user).roles()
         roles = [get(user.guild.roles, id = roleID) for roleID in roles]
         await user.remove_roles(role)
-        try:
-            await user.add_roles(roles)
-        except:
-            for userRole in roles:
-                try:
-                    await user.add_roles(userRole)
-                except:
-                    pass
+        for userRole in roles:
+            try:
+                await user.add_roles(userRole)
+            except:
+                pass
         await self.config.member(user).clear()
 
     @commands.Cog.listener()
