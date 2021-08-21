@@ -50,6 +50,8 @@ class Antispam(commands.Cog):
         elif user.bot:
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles:
+            await ctx.send("The user is already muted.")
+        else:   
             await self.mute(msgChannel, user, role, modChannel, True)
 
     @commands.command(name = "speakup")
@@ -67,6 +69,8 @@ class Antispam(commands.Cog):
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
             await self.unmute(msgChannel, user, role, modChannel)
+        else:
+            await ctx.send("The user isn't muted.")
 
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
