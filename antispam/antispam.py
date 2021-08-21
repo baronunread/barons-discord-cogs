@@ -14,7 +14,7 @@ class Antispam(commands.Cog):
                             "messages": ["has been muted."]
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [])
+        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [])
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
@@ -40,24 +40,40 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx):
         """Manually mutes someone."""
-        await self.validate_cache()
-        try:
-            id = ctx.message.reference.message_id
-            msg = await ctx.fetch_message(id)
-            user = msg.author
-            msgChannel = msg.channel
-        except AttributeError:
-            if ctx.message.mentions:
-                user = ctx.message.mentions[0]
-                msgChannel = ctx.message.channel
-            else:
-                await ctx.send("I need either a reply or mention to mute someone.")
-                return
-        if user.bot or not self.cache_role or not self.cache_channel:
-            return 
+        msgChannel, user = await self.try_get_user_and_channel(ctx)
+        if not user:
+            return
         role = get(user.guild.roles, id = self.cache_role)
-        modChannel = ctx.message.guild.get_channel(self.cache_channel)
+        modChannel = user.guild.get_channel(self.cache_channel)
         await self.mute(msgChannel, user, role, modChannel, True)
+
+    @commands.command(name = "speakup")
+    @commands.has_permissions(manage_messages = True)
+    async def manual_unmute(self, ctx):
+        """Manually unmutes someone."""
+        msgChannel, user = await self.try_get_user_and_channel(ctx)
+        if not user:
+            return
+        modChannel = user.guild.get_channel(self.cache_channel)
+        await self.unmute(msgChannel, user, modChannel)
+
+    async def try_get_user_and_channel(self, msg):
+        await self.validate_cache()
+        msgChannel = msg.channel
+        try:
+            id = msg.reference.message_id
+            msg = await msgChannel.fetch_message(id)
+            user = msg.author
+        except AttributeError:
+            if msg.mentions:
+                user = msg.mentions[0]
+            else:
+                await msgChannel.send("I need either a reply or mention to mute someone.")
+                user = None
+        if user.bot or not self.cache_role or not self.cache_channel:
+            await msgChannel.send("I have not been set up yet!")
+            user = None
+        return msgChannel, user
 
     @commands.group()
     @commands.has_permissions(manage_messages = True)
@@ -172,6 +188,7 @@ class Antispam(commands.Cog):
         modEmbed = discord.Embed.from_dict(modDict)
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
+        await self.config.member(user).roles.set([role.id for role in user.roles])
         for userRole in user.roles:
             try:
                 await user.remove_roles(userRole)
@@ -186,6 +203,27 @@ class Antispam(commands.Cog):
             message = await channel.fetch_message(pair[1])
             await message.delete()
         await self.config.member(user).clear()   
+
+    async def unmute(self, msgChannel, user, modChannel):
+        msgDict =   {
+                        "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
+                        "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")},
+                        "description" : user.mention + " has been unmuted"
+                    }
+        msgEmbed = discord.Embed.from_dict(msgDict)
+        await msgChannel.send(embed = msgEmbed)
+        await modChannel.send(embed = msgEmbed)
+        roles = await self.config.member(user).roles()
+        roles = [get(user.guild.roles, id = roleID) for roleID in roles]
+        try:
+            await user.add_roles(roles)
+        except:
+            for userRole in roles:
+                try:
+                    await user.add_roles(userRole)
+                except:
+                    pass
+        await self.config.member(user.clear())
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
