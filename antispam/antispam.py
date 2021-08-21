@@ -64,7 +64,7 @@ class Antispam(commands.Cog):
             return
         msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
-            await ctx.send("I need either a reply or mention to mute someone.")    
+            await ctx.send("I need either a reply or mention to unmute someone.")    
         elif user.bot:
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
@@ -228,7 +228,6 @@ class Antispam(commands.Cog):
                         "description" : user.mention + " has been unmuted"
                     }
         msgEmbed = discord.Embed.from_dict(msgDict)
-        await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = msgEmbed)
         roles = await self.config.member(user).roles()
         roles = [get(user.guild.roles, id = roleID) for roleID in roles]
@@ -238,6 +237,7 @@ class Antispam(commands.Cog):
                 await user.add_roles(userRole)
             except:
                 pass
+        await msgChannel.send(user.mention + " you've been unmuted!")
         await self.config.member(user).clear()
 
     @commands.Cog.listener()
