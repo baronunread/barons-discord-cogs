@@ -66,9 +66,9 @@ class Replypin(commands.Cog):
     async def check_if_tenor_and_maybe_get_link(self, link):
         toReturn = link
         if "tenor" in link.lower():
-            toReturn = await self.get_tenor(link)
             if "gif" in self.get_linkType(link).lower():
                 toReturn = await self.get_tenor(toReturn)
+            toReturn = await self.get_tenor(toReturn + ".gif")
         return toReturn
             
     async def remove_links(self, content, links):
@@ -76,9 +76,8 @@ class Replypin(commands.Cog):
             content = content.replace(link, "")
         return content
        
-    async def get_tenor(self, url):
-        tenorUrl = url + ".gif"                     
-        async with self.session.get(tenorUrl) as resp:   
+    async def get_tenor(self, url):                     
+        async with self.session.get(url) as resp:   
             tenorGif = None
             if resp.status == 200 or resp.status == 202:
                 tenorGif = resp.url.human_repr()
