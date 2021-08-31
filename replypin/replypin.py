@@ -65,8 +65,10 @@ class Replypin(commands.Cog):
 
     async def check_if_tenor_and_maybe_get_link(self, link):
         toReturn = link
-        if "tenor" in link.lower() and "gif" not in self.get_linkType(link).lower():
+        if "tenor" in link.lower():
             toReturn = await self.get_tenor(link)
+            if "gif" in self.get_linkType(link).lower():
+                toReturn = await self.get_tenor(toReturn)
         return toReturn
             
     async def remove_links(self, content, links):
