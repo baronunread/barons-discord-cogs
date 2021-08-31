@@ -65,7 +65,7 @@ class Replypin(commands.Cog):
 
     async def check_if_tenor_and_maybe_get_link(self, link):
         toReturn = link
-        if "tenor" in link.lower() and "gif" not in await self.get_linkType(link).lower():
+        if "tenor" in link.lower() and "gif" not in self.get_linkType(link).lower():
             toReturn = await self.get_tenor(link)
         return toReturn
             
@@ -84,11 +84,11 @@ class Replypin(commands.Cog):
     
     async def find_media_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
-        return [link for link in links if await self.get_linkType(link).lower() in self.mediaTypesList]  
+        return [link for link in links if self.get_linkType(link).lower() in self.mediaTypesList]  
 
-    async def get_linkType(self, link):
+    def get_linkType(self, link):
         return link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
     
     async def check_type(self, link, typeList):
-        linkType = await self.get_linkType(link)
+        linkType = self.get_linkType(link)
         return linkType in typeList
