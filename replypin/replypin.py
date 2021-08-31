@@ -33,8 +33,7 @@ class Replypin(commands.Cog):
         except AttributeError:
             await ctx.send("Please reply to a post.")
             return
-        #channel = ctx.guild.get_channel(846357308060991558) #Tojo, sorry for hardcoding!!
-        channel = ctx.guild.get_channel(876484551977893908)
+        channel = ctx.guild.get_channel(846357308060991558) #Tojo, sorry for hardcoding!!
         msg = await ctx.fetch_message(id)
         links = await self.find_media_links(msg.clean_content)
         content = await self.remove_links(msg.clean_content, links)
