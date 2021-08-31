@@ -38,7 +38,7 @@ class Replypin(commands.Cog):
         msg = await ctx.fetch_message(id)
         links = await self.find_media_links(msg.clean_content)
         content = await self.remove_links(msg.clean_content, links)
-        link = links[0] if links else None
+        link = await self.check_if_tenor_and_maybe_get_link(links[0]) if links else None
         linkImage = None if not link else await self.check_type(link, self.imageTypesList) 
         linkVideo = None if not link else await self.check_type(link, self.videoTypesList)
         attachment = msg.attachments[0].url if msg.attachments else None
@@ -63,6 +63,12 @@ class Replypin(commands.Cog):
         if video:
             await channel.send(video)
 
+    async def check_if_tenor_and_maybe_get_link(self, link):
+        toReturn = link
+        if "tenor" in link.lower() and "gif" not in await self.get_linkType(link).lower():
+            toReturn = await self.get_tenor(link)
+        return toReturn
+            
     async def remove_links(self, content, links):
         for link in links:
             content = content.replace(link, "")
@@ -78,16 +84,11 @@ class Replypin(commands.Cog):
     
     async def find_media_links(self, msg):
         links = re.findall(r"\bhttp[^' ']*", msg)
-        for i, link in enumerate(links):
-            if "tenor" in link.lower() and i == 0:
-                toRemove = link
-                links[i] = await self.get_tenor(link)
-                links.append(toRemove)
-            linkType = link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
-            if linkType.lower() not in self.mediaTypesList:
-                links.remove(link)
-        return links  
+        return [link for link in links if await self.get_linkType(link).lower() in self.mediaTypesList]  
 
+    async def get_linkType(self, link):
+        return link.split('/')[-1].split('.')[-1] if "tenor" not in link.lower() else "gif"
+    
     async def check_type(self, link, typeList):
-        linkType = link.split('/')[-1].split('.')[-1]
+        linkType = await self.get_linkType(link)
         return linkType in typeList
