@@ -1,5 +1,6 @@
 from redbot.core import commands, Config
 from discord.utils import get
+from discord.ext.commands.Bot import get_context
 from datetime import datetime
 import discord
 import random
@@ -158,7 +159,7 @@ class Antispam(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         await self.validate_cache() 
-        ctx = await commands.Bot.get_context(message)
+        ctx = await get_context(message)
         user = message.author
         if user.bot or ctx.valid or not self.cache_role or not self.cache_channel:
             return
