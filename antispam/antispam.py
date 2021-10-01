@@ -159,7 +159,7 @@ class Antispam(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         await self.validate_cache() 
-        ctx = await self.bot.get_context(self, message)
+        ctx = await self.bot.get_context(message)
         user = message.author
         if user.bot or ctx.valid or not self.cache_role or not self.cache_channel:
             return
