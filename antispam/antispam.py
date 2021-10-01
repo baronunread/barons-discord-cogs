@@ -1,6 +1,6 @@
 from redbot.core import commands, Config
 from discord.utils import get
-from discord.Embed import from_dict
+from discord import Embed 
 from datetime import datetime
 import random
 
@@ -204,8 +204,8 @@ class Antispam(commands.Cog):
         modDict = data.copy()
         msgDict["description"] = user.mention + " " + selected
         modDict["description"] = "I have muted the user " + user.mention + reason
-        msgEmbed = from_dict(msgDict)
-        modEmbed = from_dict(modDict)
+        msgEmbed = Embed.from_dict(msgDict)
+        modEmbed = Embed.from_dict(modDict)
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
         await self.config.member(user).roles.set([role.id for role in user.roles])
@@ -229,7 +229,7 @@ class Antispam(commands.Cog):
                         "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")},
                         "description" : user.mention + " has been unmuted"
                     }
-        msgEmbed = from_dict(msgDict)
+        msgEmbed = Embed.from_dict(msgDict)
         await modChannel.send(embed = msgEmbed)
         roles = await self.config.member(user).roles()
         roles = [get(user.guild.roles, id = roleID) for roleID in roles]
