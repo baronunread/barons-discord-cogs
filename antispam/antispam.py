@@ -1,6 +1,6 @@
 from redbot.core import commands, Config
 from discord.utils import get
-from discord.ext.commands.Bot import get_context
+from discord.ext.commands import Bot
 from datetime import datetime
 import discord
 import random
