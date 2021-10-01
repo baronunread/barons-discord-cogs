@@ -61,9 +61,9 @@ class Regfilter(commands.Cog):
         nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                               # NFKD form
         noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # removes most of the diacritics TODO #1 better diacritic remover
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
-        alphanum = ''.join(c for c in noLookAlikes if c.isalnum() or c == ' ')                 # remove anything that isn't an alphabetic character or a space
+        alphanum = ''.join(c for c in noLookAlikes if c.isalnum() or c == ' ')              # remove anything that isn't an alphabetic character or a space
         for ignore in self.cache_ignore:
-            alphanum = re.sub(ignore, '', alphanum)                                               # remove ignored words as they are not important
+            alphanum = re.sub(ignore, '', alphanum)                                         # remove ignored words as they are not important
         return alphanum
 
     async def clean(self, cleaned):
