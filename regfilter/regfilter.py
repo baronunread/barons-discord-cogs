@@ -75,7 +75,7 @@ class Regfilter(commands.Cog):
         elif type == "ignore":
             return self.cache_ignore
         else:
-            return self.config.get_raw(type)
+            return await self.config.get_raw(type)
 
     async def update_cache(self, type, content = None):
         value = content if content else await self.config.get_raw(type)
