@@ -144,7 +144,7 @@ class Regfilter(commands.Cog):
     @add.command(name = "letter")
     async def add_letter(self, ctx, keyLetter, badLetter):
         """Adds a foreign letter to the list of normal letters."""
-        await self.generic_add_delete(self, ctx, item = badLetter, type = keyLetter, add = True)
+        await self.generic_add_delete(self, ctx, badLetter, keyLetter, add = True)
 
     @add.command(name = "regex")
     async def add_regex(self, ctx, *, msg):
