@@ -52,6 +52,9 @@ class Regfilter(commands.Cog):
             keyDict = dict.fromkeys(await self.config.get_raw(key), key)
             self.leet_dict.update(keyDict)
 
+    async def update_dict(self, badLetter, letter, add: bool):
+        self.leet_dict[badLetter] = letter if add else self.leet_dict.pop(badLetter)
+
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
         nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                               # NFKD form
@@ -77,16 +80,14 @@ class Regfilter(commands.Cog):
         else:
             return await self.config.get_raw(type)
 
-    async def update_cache(self, type, content = None, letterAdd = True):
+    async def update_cache(self, type, content = None):
         value = content if content else await self.config.get_raw(type)
         if type == "regex":
             self.cache_regex = value
         elif type == "names":
             self.cache_names = value
         elif type == "ignore":
-            self.cache_ignore = value
-        else:
-            self.leet_dict[content] = type if letterAdd else self.leet_dict.pop(content)
+            self.cache_ignore = value        
                      
     async def validate_cache(self):
         if self.cache_regex == []: 
@@ -136,7 +137,7 @@ class Regfilter(commands.Cog):
         if found:
             list.append(item) if add else list.remove(item)
             await self.config.set_raw(type, value = list)
-            await self.update_cache(type, content = item, letterAdd = add) if letterType else await self.update_cache(type, content = list)
+            await self.update_dict(item, type, add) if letterType else await self.update_cache(type, content = list)
             message = "Operation completed successfully."
         else:
             message = "That item is already there." if add else "Couldn't find that item."
