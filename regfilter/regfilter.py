@@ -116,7 +116,6 @@ class Regfilter(commands.Cog):
         pass
 
     async def generic_add_delete(self, ctx, item, type: str, add: bool):
-        #await self.validate_cache()
         list = await self.return_cache(type)
         found = not item in list if add else item in list
         letterType = type in await self.config.get_raw("letters")
@@ -193,7 +192,6 @@ class Regfilter(commands.Cog):
             
     async def generic_list(self, ctx, user, type: str):
         try:
-            #await self.validate_cache()    
             list = await self.return_cache(type)
             if len(list) == 0:
                 await user.send("There's nothing in that list.")
@@ -225,7 +223,6 @@ class Regfilter(commands.Cog):
         author = message.author
         if author.bot:
             return
-        #await self.validate_cache()    
         content = await self.replace(message.clean_content)
         regexs = await self.return_cache("regex")
         if await self.triggered_filter(content, regexs):
@@ -252,7 +249,6 @@ class Regfilter(commands.Cog):
         await self.maybe_filter_name(member)
 
     async def maybe_filter_name(self, member: discord.Member):
-        #await self.validate_cache()
         content = await self.replace(member.display_name)
         regex = await self.return_cache("regex")
         if await self.triggered_filter(content, regex):
