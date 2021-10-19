@@ -49,12 +49,8 @@ class Regfilter(commands.Cog):
 
     async def build_dict(self):
         for key in await self.config.letters():
-            list = await self.config.get_raw(key)
-            await self.rebuild_dict(list, key)
-
-    async def rebuild_dict(self, letterList, key):
-        keyDict = dict.fromkeys(letterList, key)
-        self.leet_dict.update(keyDict)
+            keyDict = dict.fromkeys(await self.config.get_raw(key), key)
+            self.leet_dict.update(keyDict)
 
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
@@ -78,6 +74,8 @@ class Regfilter(commands.Cog):
             return self.cache_names
         elif type == "ignore":
             return self.cache_ignore
+        else:
+            return self.config.get_raw(type)
 
     async def update_cache(self, type, content = None):
         value = content if content else await self.config.get_raw(type)
@@ -87,6 +85,8 @@ class Regfilter(commands.Cog):
             self.cache_names = value
         elif type == "ignore":
             self.cache_ignore = value
+        else:
+            await self.build_dict()
                      
     async def validate_cache(self):
         if self.cache_regex == []: 
@@ -124,86 +124,69 @@ class Regfilter(commands.Cog):
         await ctx.send("Reset complete.")
 
     @filter.group(name = "add")
-    async def add(self, ctx: commands.Context):
+    async def add(self, ctx):
         """Base command. Can add a regex, a name for replacing or a word to ignore."""
         pass
+
+    async def generic_add_delete(self, ctx, item, type: str, add: bool):
+        await self.validate_cache()
+        list = await self.return_cache(type)
+        found = not item in list if add else item in list
+        if found:
+            list.append(item) if add else list.remove(item)
+            await self.config.set_raw(type, value = list)
+            await self.update_cache(type, content = list)
+            message = "Operation completed successfully."
+        else:
+            message = "That item is already there." if add else "Couldn't find that item."
+        await ctx.send(message)
 
     @add.command(name = "letter")
     async def add_letter(self, ctx, keyLetter, badLetter):
         """Adds a foreign letter to the list of normal letters."""
-        letterList = await self.config.get_raw(keyLetter)
-        if badLetter not in letterList:
-            letterList.append(badLetter)
-            await self.config.set_raw(keyLetter, value = letterList)
-            await self.rebuild_dict(letterList, keyLetter)
-            await ctx.send("Letter successfully added.")
-        else:
-            await ctx.send("That letter is already there.")
-        
-    async def generic_add_delete(self, ctx, msg, type: str, operation: str):
-        await self.validate_cache()
-        list = await self.return_cache(type)
-        if operation == "added":
-            list.append(msg)
-        elif operation == "deleted":
-            try:
-                list.remove(msg)
-            except:
-                await ctx.send("Couldn't find that item in the list.")
-                return
-        await self.config.set_raw(type, value = list)
-        await self.update_cache(type, content = list)
-        await ctx.send("The new item has been " + operation + ".")
+        await self.generic_add_delete(self, ctx, item = badLetter, type = keyLetter, add = True)
 
     @add.command(name = "regex")
     async def add_regex(self, ctx, *, msg):
         """Adds a regex to the list."""
-        await self.generic_add_delete(ctx, msg, "regex", "added")
+        await self.generic_add_delete(ctx, msg, "regex", add = True)
         
     @add.command(name = "name")
     async def add_name(self, ctx, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
-        await self.generic_add_delete(ctx, msg, "names", "added")
+        await self.generic_add_delete(ctx, msg, "names", add = True)
 
     @add.command(name = "ignore")
     async def add_ignore(self, ctx, *, msg):
         """Adds a word to ignore to the list of ignored words."""
-        await self.generic_add_delete(ctx, msg, "ignore", "added")
+        await self.generic_add_delete(ctx, msg, "ignore", add = True)
 
     @filter.group(name = "delete")
-    async def delete(self, ctx: commands.Context):
+    async def delete(self, ctx):
         """Base command. Can either remove a regex, name or ignored word."""
         pass
 
     @delete.command(name = "letter")
     async def delete_letter(self, ctx, keyLetter, badLetter):
-        """Deletes a foreign letter from the list of normal letters."""
-        letterList = await self.config.get_raw(keyLetter)
-        if badLetter in letterList:
-            letterList.remove(badLetter)
-            await self.config.set_raw(keyLetter, value = letterList)
-            await self.rebuild_dict(letterList, keyLetter)
-            await ctx.send("Letter successfully removed.")
-        else:
-            await ctx.send("That letter isn't there.")
+        await self.generic_add_delete(self, ctx, item = badLetter, type = keyLetter, add = False)
 
     @delete.command(name = "regex")
     async def delete_regex(self, ctx, *, msg):
         """Removes a regex from the list."""
-        await self.generic_add_delete(ctx, msg, "regex", "deleted")
+        await self.generic_add_delete(ctx, msg, "regex", add = False)
 
     @delete.command(name = "name")
     async def delete_name(self, ctx, *, msg):
         """Removes a name from the list."""
-        await self.generic_add_delete(ctx, msg, "names", "deleted")
+        await self.generic_add_delete(ctx, msg, "names", add = False)
 
     @delete.command(name = "ignore")
     async def delete_ignore(self, ctx, *, msg):
         """Removes an ignored word from the list."""
-        await self.generic_add_delete(ctx, msg, "ignore", "deleted")
+        await self.generic_add_delete(ctx, msg, "ignore", add = False)
 
     @filter.group(name = "list")
-    async def listThings(self, ctx: commands.Context):
+    async def listThings(self, ctx):
         """Base command. Can either send the list of regex, names or ignored words."""
         pass
 
