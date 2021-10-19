@@ -144,22 +144,22 @@ class Regfilter(commands.Cog):
     @add.command(name = "letter")
     async def add_letter(self, ctx, keyLetter, badLetter):
         """Adds a foreign letter to the list of normal letters."""
-        await self.generic_add_delete(self, ctx, badLetter, keyLetter, add = True)
+        await self.generic_add_delete(self, ctx, badLetter, keyLetter, True)
 
     @add.command(name = "regex")
     async def add_regex(self, ctx, *, msg):
         """Adds a regex to the list."""
-        await self.generic_add_delete(ctx, msg, "regex", add = True)
+        await self.generic_add_delete(ctx, msg, "regex", True)
         
     @add.command(name = "name")
     async def add_name(self, ctx, *, msg):
         """Adds a name to the list of default names. Applied when filtering a name."""
-        await self.generic_add_delete(ctx, msg, "names", add = True)
+        await self.generic_add_delete(ctx, msg, "names", True)
 
     @add.command(name = "ignore")
     async def add_ignore(self, ctx, *, msg):
         """Adds a word to ignore to the list of ignored words."""
-        await self.generic_add_delete(ctx, msg, "ignore", add = True)
+        await self.generic_add_delete(ctx, msg, "ignore", True)
 
     @filter.group(name = "delete")
     async def delete(self, ctx):
@@ -168,22 +168,22 @@ class Regfilter(commands.Cog):
 
     @delete.command(name = "letter")
     async def delete_letter(self, ctx, keyLetter, badLetter):
-        await self.generic_add_delete(self, ctx, item = badLetter, type = keyLetter, add = False)
+        await self.generic_add_delete(self, ctx, badLetter, keyLetter, False)
 
     @delete.command(name = "regex")
     async def delete_regex(self, ctx, *, msg):
         """Removes a regex from the list."""
-        await self.generic_add_delete(ctx, msg, "regex", add = False)
+        await self.generic_add_delete(ctx, msg, "regex", False)
 
     @delete.command(name = "name")
     async def delete_name(self, ctx, *, msg):
         """Removes a name from the list."""
-        await self.generic_add_delete(ctx, msg, "names", add = False)
+        await self.generic_add_delete(ctx, msg, "names", False)
 
     @delete.command(name = "ignore")
     async def delete_ignore(self, ctx, *, msg):
         """Removes an ignored word from the list."""
-        await self.generic_add_delete(ctx, msg, "ignore", add = False)
+        await self.generic_add_delete(ctx, msg, "ignore", False)
 
     @filter.group(name = "list")
     async def listThings(self, ctx):
