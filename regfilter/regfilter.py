@@ -7,7 +7,8 @@ import re
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
-    def __init__(self):
+    def __init__(self, bot):
+        self.bot = bot
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
         default_global = {
                             "regex": [  
@@ -46,6 +47,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
+        self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
         for key in await self.config.letters():
@@ -108,32 +110,13 @@ class Regfilter(commands.Cog):
         """Base command. Check the subcommands."""
         pass
 
-    @filter.command(name = "reset")
-    async def reset(self, ctx: commands.Context, type):
-        """Reset regex, names, ignore or all by typing out what to reset."""
-        typed = type.lower()
-        if typed == "regex" or typed == "ignore" or typed == "names":
-            await self.config.clear_raw(typed) 
-        elif typed == "all":
-            await self.config.clear_all()
-            await self.update_cache("regex")
-            await self.update_cache("names")
-            await self.update_cache("ignore")
-            await ctx.send("Reset complete.")
-            return
-        else:
-            await ctx.send("Reset cancelled. If you want to reset something type in REGEX, NAMES, IGNORE or ALL.")
-            return
-        await self.update_cache(type)
-        await ctx.send("Reset complete.")
-
     @filter.group(name = "add")
     async def add(self, ctx):
         """Base command. Can add a regex, a name for replacing or a word to ignore."""
         pass
 
     async def generic_add_delete(self, ctx, item, type: str, add: bool):
-        await self.validate_cache()
+        #await self.validate_cache()
         list = await self.return_cache(type)
         found = not item in list if add else item in list
         letterType = type in await self.config.get_raw("letters")
@@ -210,7 +193,7 @@ class Regfilter(commands.Cog):
             
     async def generic_list(self, ctx, user, type: str):
         try:
-            await self.validate_cache()    
+            #await self.validate_cache()    
             list = await self.return_cache(type)
             if len(list) == 0:
                 await user.send("There's nothing in that list.")
@@ -242,7 +225,7 @@ class Regfilter(commands.Cog):
         author = message.author
         if author.bot:
             return
-        await self.validate_cache()    
+        #await self.validate_cache()    
         content = await self.replace(message.clean_content)
         regexs = await self.return_cache("regex")
         if await self.triggered_filter(content, regexs):
@@ -269,7 +252,7 @@ class Regfilter(commands.Cog):
         await self.maybe_filter_name(member)
 
     async def maybe_filter_name(self, member: discord.Member):
-        await self.validate_cache()
+        #await self.validate_cache()
         content = await self.replace(member.display_name)
         regex = await self.return_cache("regex")
         if await self.triggered_filter(content, regex):
