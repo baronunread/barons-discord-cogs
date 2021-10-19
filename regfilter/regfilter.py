@@ -136,7 +136,7 @@ class Regfilter(commands.Cog):
         if found:
             list.append(item) if add else list.remove(item)
             await self.config.set_raw(type, value = list)
-            await self.update_cache(type, content = item, letterAdd = add) if letterType else self.update_cache(type, content = list)
+            await self.update_cache(type, content = item, letterAdd = add) if letterType else await self.update_cache(type, content = list)
             message = "Operation completed successfully."
         else:
             message = "That item is already there." if add else "Couldn't find that item."
