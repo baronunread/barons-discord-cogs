@@ -77,7 +77,7 @@ class Regfilter(commands.Cog):
         else:
             return await self.config.get_raw(type)
 
-    async def update_cache(self, type, content = None):
+    async def update_cache(self, type, content = None, letterAdd = True):
         value = content if content else await self.config.get_raw(type)
         if type == "regex":
             self.cache_regex = value
@@ -86,7 +86,7 @@ class Regfilter(commands.Cog):
         elif type == "ignore":
             self.cache_ignore = value
         else:
-            await self.build_dict()
+            self.leet_dict[content] = type if letterAdd else self.leet_dict.pop(content)
                      
     async def validate_cache(self):
         if self.cache_regex == []: 
@@ -132,10 +132,11 @@ class Regfilter(commands.Cog):
         await self.validate_cache()
         list = await self.return_cache(type)
         found = not item in list if add else item in list
+        letterType = type in await self.config.get_raw("letters")
         if found:
             list.append(item) if add else list.remove(item)
             await self.config.set_raw(type, value = list)
-            await self.update_cache(type, content = list)
+            await self.update_cache(type, content = item, letterAdd = add) if letterType else self.update_cache(type, content = list)
             message = "Operation completed successfully."
         else:
             message = "That item is already there." if add else "Couldn't find that item."
