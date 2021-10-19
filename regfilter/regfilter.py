@@ -53,8 +53,11 @@ class Regfilter(commands.Cog):
             self.leet_dict.update(keyDict)
 
     async def update_dict(self, badLetter, letter, add: bool):
-        self.leet_dict[badLetter] = letter if add else self.leet_dict.pop(badLetter)
-
+        if add:
+            self.leet_dict[badLetter] = letter
+        else:
+            self.leet_dict.pop(badLetter)
+    
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
         nfkd_form = unicodedata.normalize('NFKD', noMarkdown)                               # NFKD form
