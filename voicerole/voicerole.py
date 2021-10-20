@@ -5,6 +5,7 @@ import json
 class Voicerole(commands.Cog):
     """Checks if people have joined the voice chat and gives them the voice chat role."""
     def __init__(self, bot):
+        self.bot = bot
         self.config = Config.get_conf(self, identifier = 3434346710410199107115321051023211210)
         self.config.register_global(voiceroles={})
         self.cache_voicepairs = {}
