@@ -4,10 +4,11 @@ import json
 
 class Voicerole(commands.Cog):
     """Checks if people have joined the voice chat and gives them the voice chat role."""
-    def __init__(self):
+    def __init__(self, bot):
         self.config = Config.get_conf(self, identifier = 3434346710410199107115321051023211210)
         self.config.register_global(voiceroles={})
         self.cache_voicepairs = {}
+        self.bot.loop.create_task(self.validate_cache())
 
     async def validate_cache(self):
         if self.cache_voicepairs == {}: 
@@ -38,7 +39,6 @@ class Voicerole(commands.Cog):
             await member.remove_roles(beforeRole)
 
     async def get_voice(self, voiceChannel):
-        await self.validate_cache()
         pairs = self.cache_voicepairs
         try:
             return pairs[voiceChannel]
@@ -73,7 +73,6 @@ class Voicerole(commands.Cog):
     @voicerole.group(name = "list", invoke_without_command = True)
     async def _list(self, ctx):
         try:    
-            await self.validate_cache()
             dict = self.cache_voicepairs
             if len(dict) == 0:
                 await ctx.message.author.send("There's nothing in that list.")
