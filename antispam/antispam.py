@@ -19,7 +19,8 @@ class Antispam(commands.Cog):
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
-        
+        self.bot.loop.create_task(self.validate_cache())
+
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
         if type == "role":
@@ -41,7 +42,6 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx):
         """Manually mutes someone."""
-        await self.validate_cache()
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
             return
@@ -59,7 +59,6 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
-        await self.validate_cache()
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
             return
@@ -107,7 +106,6 @@ class Antispam(commands.Cog):
     @antispam.command(name = "addMuteMessage")
     async def add_mute(self, ctx, *, msg):
         """Adds a message that randomly gets sent when muting someone."""
-        await self.validate_cache()
         list = self.cache_messages
         list.append(msg)
         await self.config.messages.set(list)
@@ -117,7 +115,6 @@ class Antispam(commands.Cog):
     @antispam.command(name = "delMuteMessage")
     async def del_mute(self, ctx, *, msg):
         """Removes a message from the list of messages."""
-        await self.validate_cache()
         list = self.cache_messages
         if msg not in list:
             await ctx.send("There's no such message in that list!")
@@ -130,7 +127,6 @@ class Antispam(commands.Cog):
     @antispam.command(name = "listMuteMessage")
     async def list_mute(self, ctx):
         """Sends the list of messages through DMs"""
-        await self.validate_cache()
         list = self.cache_messages
         await ctx.send("```" + str(list) +  "```") 
        
@@ -158,7 +154,6 @@ class Antispam(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
-        await self.validate_cache() 
         ctx = await self.bot.get_context(message)
         user = message.author
         if user.bot or ctx.valid or not self.cache_role or not self.cache_channel:
