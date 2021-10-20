@@ -5,7 +5,8 @@ import discord
 
 class Autorole(commands.Cog):
     """Automatically hands out a single role that you can setup beforehand."""
-    def __init__(self):
+    def __init__(self, bot):
+        self.bot = bot
         self.config = Config.get_conf(self, identifier = 343434651171161111099711610599971)
         default_global = {
                             "role": None,
@@ -15,6 +16,7 @@ class Autorole(commands.Cog):
         self.config.register_member(messages = 0, remembered = False)
         self.cache_role = None
         self.cache_messages = 0
+        self.bot.loop.create_task(self.validate_cache())
 
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
@@ -31,7 +33,6 @@ class Autorole(commands.Cog):
 
     @commands.command()
     async def iamrole(self, ctx):
-        await self.validate_cache()
         user = ctx.message.author
         messages = await self.config.member(user).messages()
         remembered = await self.config.member(user).remembered()
@@ -84,7 +85,6 @@ class Autorole(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        await self.validate_cache() 
         user = message.author
         if user.bot or not self.cache_role:
             return
