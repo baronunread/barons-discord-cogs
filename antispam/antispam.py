@@ -17,7 +17,7 @@ class TimeConverter(commands.Converter):
         time = 0
         for v, k in matches:
             try:
-                time += time_dict[k]*float(v)
+                time += time_dict[k]*v
             except KeyError:
                 raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
             except ValueError:
@@ -283,11 +283,10 @@ class Antispam(commands.Cog):
         m, s = divmod(time, 60)
         h, m = divmod(m, 60)
         d, h = divmod(h, 24)
-        string += str(int(d)) + " Days" if d else ""
-        string += ", " if h or m or s else " "
-        string += str(int(h)) + " Hours" if h else ""
-        string += ", " if m or s else " "
-        string += str(int(m)) + " Minutes" if m else ""
-        string += ", " if s else " "
-        string += str(int(s)) + " Seconds" if s else ""
+        days = " Day and" if d == 1 else " Days and"
+        # hours   = " Hour"   if h == 1 else " Hours"
+        # minutes = " Minute" if m == 1 else " Minutes"
+        # seconds = " Second" if s == 1 else " Seconds"
+        string += str(d) + days if d else ""
+        string += "{}:{}:{}".format(h,m,s)
         return string
