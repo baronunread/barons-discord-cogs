@@ -4,6 +4,26 @@ from discord import Embed
 from datetime import datetime
 from asyncio import sleep as a_sleep, all_tasks
 import random
+import re
+
+# This whole section was copied from another mute cog project written by user XuaTheGrate
+time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h":3600, "s":1, "m":60, "d":86400}
+
+class TimeConverter(commands.Converter):
+    async def convert(self, ctx, argument):
+        args = argument.lower()
+        matches = re.findall(time_regex, args)
+        time = 0
+        for v, k in matches:
+            try:
+                time += time_dict[k]*float(v)
+            except KeyError:
+                raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
+            except ValueError:
+                raise commands.BadArgument("{} is not a number!".format(v))
+        return time
+# End of copy, thanks again ;)
 
 class Antispam(commands.Cog):
     """Automatically hands out a single role that you can setup beforehand when people are found spamming."""
@@ -41,7 +61,7 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
-    async def manual_mute(self, ctx, days = 0, hours = 0, minutes = 0):
+    async def manual_mute(self, ctx, timeSeconds :TimeConverter = None):
         """Manually mutes someone."""
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
@@ -56,7 +76,6 @@ class Antispam(commands.Cog):
         else:   
             await self.mute(msgChannel, user, role, modChannel, True)
             muteInfo = (msgChannel, user, role, modChannel)
-            timeSeconds = 3600 * (days * 24 + hours) + minutes * 60
             if timeSeconds > 0:
                 self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
 
