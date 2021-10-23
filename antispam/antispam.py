@@ -288,5 +288,5 @@ class Antispam(commands.Cog):
         # minutes = " Minute" if m == 1 else " Minutes"
         # seconds = " Second" if s == 1 else " Seconds"
         string += str(d) + days if d else ""
-        string += "{}:{}:{}".format(h,m,s)
+        string += " {:02d}:{:02d}:{:02d}".format(h,m,s)
         return string
