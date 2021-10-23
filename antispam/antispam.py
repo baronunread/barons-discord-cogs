@@ -7,7 +7,7 @@ import random
 import re
 
 # This whole section was copied from another mute cog project written by user XuaTheGrate
-time_regex = re.compile("(?:(\d{1,5})(h|s|m|d))+?")
+time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
 time_dict = {"h":3600, "s":1, "m":60, "d":86400}
 
 class TimeConverter(commands.Converter):
@@ -266,8 +266,11 @@ class Antispam(commands.Cog):
                 pass
         await msgChannel.send(user.mention + " you've been unmuted!")
         await self.config.member(user).clear()
-        timer, = [task for task in all_tasks() if task.get_name() == str(user.id)]
-        timer.cancel()
+        try:    
+            timer, = [task for task in all_tasks() if task.get_name() == str(user.id)]
+            timer.cancel()
+        except:
+            pass
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
