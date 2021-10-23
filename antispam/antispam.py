@@ -283,8 +283,8 @@ class Antispam(commands.Cog):
         m, s = divmod(time, 60)
         h, m = divmod(m, 60)
         d, h = divmod(h, 24)
-        string += d + "Days, " if d else ""
-        string += h + "Hours, " if h else ""
-        string += m + "Minutes, " if m else ""
-        string += s + "Seconds" if s else ""
+        string += str(d) + "Days, " if d else ""
+        string += str(h) + "Hours, " if h else ""
+        string += str(m) + "Minutes, " if m else ""
+        string += str(s) + "Seconds" if s else ""
         return string
