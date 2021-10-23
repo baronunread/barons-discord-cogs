@@ -232,7 +232,7 @@ class Antispam(commands.Cog):
         msgEmbed = Embed.from_dict(msgDict)
         modEmbed = Embed.from_dict(modDict)
         if mutedTime:
-            msgEmbed.add_field("TIME IN JAIL:", await self.represent_time(mutedTime))
+            msgEmbed.add_field(name = "TIME IN JAIL:", value = await self.represent_time(mutedTime))
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
         await self.config.member(user).roles.set([role.id for role in user.roles])
