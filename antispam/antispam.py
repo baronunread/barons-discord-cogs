@@ -2,6 +2,7 @@ from redbot.core import commands, Config
 from discord.utils import get
 from discord import Embed 
 from datetime import datetime
+from asyncio import sleep as a_sleep, all_tasks
 import random
 
 class Antispam(commands.Cog):
@@ -15,7 +16,7 @@ class Antispam(commands.Cog):
                             "messages": ["has been muted."]
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [])
+        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0)
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
@@ -40,7 +41,7 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
-    async def manual_mute(self, ctx):
+    async def manual_mute(self, ctx, days = 0, hours = 0, minutes = 0):
         """Manually mutes someone."""
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
@@ -54,6 +55,16 @@ class Antispam(commands.Cog):
             await ctx.send("The user is already muted.")
         else:   
             await self.mute(msgChannel, user, role, modChannel, True)
+            muteInfo = (msgChannel, user, role, modChannel)
+            timeSeconds = 3600 * (days * 24 + hours) + minutes * 60
+            if timeSeconds > 0:
+                self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
+
+    async def unmute_timer(self, time, info):
+        while time > 1:
+            a_sleep(time/2)
+            time -= time/2 
+        await self.unmute(info[0], info[1], info[2], info[3])   
 
     @commands.command(name = "speakup")
     @commands.has_permissions(manage_messages = True)
@@ -236,6 +247,8 @@ class Antispam(commands.Cog):
                 pass
         await msgChannel.send(user.mention + " you've been unmuted!")
         await self.config.member(user).clear()
+        timer, = [task for task in all_tasks() if task.get_name() == str(user.id)]
+        timer.cancel()
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
