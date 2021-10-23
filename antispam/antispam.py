@@ -62,7 +62,7 @@ class Antispam(commands.Cog):
 
     async def unmute_timer(self, time, info):
         while time > 1:
-            a_sleep(time/2)
+            await a_sleep(time/2)
             time -= time/2 
         await self.unmute(info[0], info[1], info[2], info[3])   
 
