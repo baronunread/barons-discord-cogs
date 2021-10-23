@@ -74,15 +74,15 @@ class Antispam(commands.Cog):
         elif role in user.roles:
             await ctx.send("The user is already muted.")
         else:   
-            await self.mute(msgChannel, user, role, modChannel, True)
+            await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
             muteInfo = (msgChannel, user, role, modChannel)
             if timeSeconds > 0:
                 self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
 
     async def unmute_timer(self, time, info):
         while time > 1:
-            await a_sleep(time/2)
-            time -= time/2 
+            await a_sleep(time // 2)
+            time -= time // 2 
         await self.unmute(info[0], info[1], info[2], info[3])   
 
     @commands.command(name = "speakup")
@@ -217,12 +217,12 @@ class Antispam(commands.Cog):
         else:
             await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
 
-    async def mute(self, msgChannel, user, role, modChannel, manual):
+    async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime = 0):
         reason = " for spamming" if not manual else ""
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
         data =  {
-                    "author": {"name": "MUTED", "icon_url": str(user.avatar_url)},
+                    "author": {"name": "MUTED" if mutedTime == 0 else "TIMED MUTE", "icon_url": str(user.avatar_url)},
                     "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
                 }
         msgDict = data.copy()
@@ -231,6 +231,8 @@ class Antispam(commands.Cog):
         modDict["description"] = "I have muted the user " + user.mention + reason
         msgEmbed = Embed.from_dict(msgDict)
         modEmbed = Embed.from_dict(modDict)
+        if mutedTime:
+            msgEmbed.add_field("TIME IN JAIL:", await self.represent_time(mutedTime))
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
         await self.config.member(user).roles.set([role.id for role in user.roles])
@@ -275,3 +277,14 @@ class Antispam(commands.Cog):
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
+
+    async def represent_time(self, time):
+        string = ""
+        m, s = divmod(time, 60)
+        h, m = divmod(m, 60)
+        d, h = divmod(h, 24)
+        string += d + "Days, " if d else ""
+        string += h + "Hours, " if h else ""
+        string += m + "Minutes, " if m else ""
+        string += s + "Seconds" if s else ""
+        return string
