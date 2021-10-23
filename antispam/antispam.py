@@ -76,7 +76,6 @@ class Antispam(commands.Cog):
         else:   
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
             muteInfo = (msgChannel, user, role, modChannel)
-            await ctx.send(timeSeconds)
             if timeSeconds > 0:
                 self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
 
@@ -284,11 +283,11 @@ class Antispam(commands.Cog):
         m, s = divmod(time, 60)
         h, m = divmod(m, 60)
         d, h = divmod(h, 24)
-        string += str(int(d)) + "Days" if d else ""
+        string += str(int(d)) + " Days" if d else ""
         string += ", " if h or m or s else " "
-        string += str(int(h)) + "Hours" if h else ""
+        string += str(int(h)) + " Hours" if h else ""
         string += ", " if m or s else " "
-        string += str(int(m)) + "Minutes" if m else ""
+        string += str(int(m)) + " Minutes" if m else ""
         string += ", " if s else " "
-        string += str(int(s)) + "Seconds" if s else ""
+        string += str(int(s)) + " Seconds" if s else ""
         return string
