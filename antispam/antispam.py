@@ -59,6 +59,15 @@ class Antispam(commands.Cog):
         if self.cache_messages == []:
             await self.update_cache("messages")    
 
+    async def represent_time(self, time):
+        m, s = divmod(time, 60)
+        h, m = divmod(m, 60)
+        d, h = divmod(h, 24)
+        days = " Day and" if d == 1 else " Days and"
+        string = str(d) + days if d else ""
+        string += " {}:{:02d}:{:02d}".format(h,m,s)
+        return string
+
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
@@ -277,16 +286,3 @@ class Antispam(commands.Cog):
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
-
-    async def represent_time(self, time):
-        string = ""
-        m, s = divmod(time, 60)
-        h, m = divmod(m, 60)
-        d, h = divmod(h, 24)
-        days = " Day and" if d == 1 else " Days and"
-        # hours   = " Hour"   if h == 1 else " Hours"
-        # minutes = " Minute" if m == 1 else " Minutes"
-        # seconds = " Second" if s == 1 else " Seconds"
-        string += str(d) + days if d else ""
-        string += " {:02d}:{:02d}:{:02d}".format(h,m,s)
-        return string
