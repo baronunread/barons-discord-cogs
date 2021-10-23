@@ -61,7 +61,7 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
-    async def manual_mute(self, ctx, timeSeconds :TimeConverter = None):
+    async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
         """Manually mutes someone."""
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
