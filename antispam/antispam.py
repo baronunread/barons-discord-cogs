@@ -63,9 +63,9 @@ class Antispam(commands.Cog):
         m, s = divmod(time, 60)
         h, m = divmod(m, 60)
         d, h = divmod(h, 24)
-        days = " Day and" if d == 1 else " Days and"
+        days = " Day" + "" if d == 1 else "s"
         string = str(d) + days if d else ""
-        string += " {}:{:02d}:{:02d}".format(h,m,s)
+        if h or m or s: string += "and {}:{:02d}:{:02d}".format(h,m,s)
         return string
 
     @commands.command(name = "simmerdown")
@@ -91,6 +91,7 @@ class Antispam(commands.Cog):
     async def unmute_timer(self, time, info):
         while time > 1:
             await a_sleep(time // 2)
+            await self.config.member(info[1]).secondsOfMute.set(time // 2)
             time -= time // 2 
         await self.unmute(info[0], info[1], info[2], info[3])   
 
@@ -111,6 +112,33 @@ class Antispam(commands.Cog):
         else:
             await ctx.send("The user isn't muted.")
 
+    @commands.commands(name = "checkup")
+    @commands.has_permissions(manage_messages = True)
+    async def timed_mute_info(self, ctx):
+        """Checks how much time is left in the muted status."""
+        if not self.cache_role or not self.cache_channel:
+            await ctx.send("I have not been set up yet!")
+            return
+        None, user, role = await self.get_context_data(ctx)
+        if not user:
+            await ctx.send("I need either a reply or mention to check up on someone's jail time.")    
+        elif user.bot:
+            await ctx.send("Bots can't be muted so why should I even check up on them?!?")
+        elif role in user.roles:
+            time = self.config.member(user).secondsOfMute()
+            if time == 0:
+                await ctx.send("The mute is indefinite.")
+            else:
+                data =  {
+                    "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
+                    "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
+                }
+                msgEmbed = Embed.from_dict(data)
+                msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(time))
+                await ctx.send(embed = msgEmbed)
+        else:
+            await ctx.send("The user isn't muted.")     
+    
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
         if not user:
@@ -241,6 +269,7 @@ class Antispam(commands.Cog):
         msgEmbed = Embed.from_dict(msgDict)
         modEmbed = Embed.from_dict(modDict)
         if mutedTime:
+            await self.config.member(user).secondsOfMute.set(mutedTime)
             msgEmbed.add_field(name = "TIME IN JAIL:", value = await self.represent_time(mutedTime))
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
