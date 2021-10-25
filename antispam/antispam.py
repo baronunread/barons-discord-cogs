@@ -112,7 +112,7 @@ class Antispam(commands.Cog):
         else:
             await ctx.send("The user isn't muted.")
 
-    @commands.commands(name = "checkup")
+    @commands.command(name = "checkup")
     @commands.has_permissions(manage_messages = True)
     async def timed_mute_info(self, ctx):
         """Checks how much time is left in the muted status."""
