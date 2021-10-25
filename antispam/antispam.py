@@ -1,4 +1,3 @@
-from typing_extensions import NotRequired
 from redbot.core import commands, Config
 from discord.utils import get
 from discord import Embed 
