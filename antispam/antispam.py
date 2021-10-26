@@ -119,7 +119,7 @@ class Antispam(commands.Cog):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
             return
-        notUsed, user, role = await self.get_context_data(ctx)
+        notUsed, user, role, notUsed= await self.get_context_data(ctx)
         if not user:
             await ctx.send("I need either a reply or mention to check up on someone's jail time.")    
         elif user.bot:
