@@ -147,7 +147,7 @@ class Antispam(commands.Cog):
             await ctx.send("The user isn't muted.")   
 
     async def get_time(self, currentTime, timeOfMute, jailTime):
-        return jailTime - (currentTime - timeOfMute).total_seconds()
+        return jailTime - int( (currentTime - timeOfMute).total_seconds() )
 
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
