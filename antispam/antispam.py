@@ -36,10 +36,11 @@ class Antispam(commands.Cog):
                             "messages": ["has been muted."]
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0)
+        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0, timeOfMute = None)
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
+        self.format = "%m/%d/%Y, %H:%M:%S"
         self.bot.loop.create_task(self.validate_cache())
 
     async def update_cache(self, type: str, content = None):
@@ -84,16 +85,17 @@ class Antispam(commands.Cog):
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles:
             await ctx.send("The user is already muted.")
-        else:   
+        else:
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
             muteInfo = (msgChannel, user, role, modChannel)
             if timeSeconds > 0:
+                timeOfMute = ctx.message.created_at
+                await self.config.member(user).timeOfMute.set(timeOfMute.strftime(self.format))   
                 self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
 
     async def unmute_timer(self, time, info):
         while time > 1:
             await a_sleep(time // 2)
-            await self.config.member(info[1]).secondsOfMute.set(time // 2)
             time -= time // 2 
         await self.unmute(info[0], info[1], info[2], info[3])   
 
@@ -131,16 +133,22 @@ class Antispam(commands.Cog):
             if time == 0:
                 await ctx.send("The mute is indefinite.")
             else:
+                timeOfMute = await self.config.member(user).timeOfMute()
+                currentTime = datetime.strptime(ctx.message.created_at, self.format)
+                remainingTime = await self.get_time(currentTime, timeOfMute, time)
                 data =  {
                     "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
                     "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
                 }
                 msgEmbed = Embed.from_dict(data)
-                msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(time))
+                msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(remainingTime))
                 await ctx.send(embed = msgEmbed)
         else:
-            await ctx.send("The user isn't muted.")     
-    
+            await ctx.send("The user isn't muted.")   
+
+    async def get_time(self, currentTime, timeOfMute, jailTime):
+        return jailTime - (currentTime - timeOfMute).total_seconds()
+
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
         if not user:
@@ -228,14 +236,13 @@ class Antispam(commands.Cog):
         if user.bot or ctx.valid or not self.cache_role or not self.cache_channel:
             return
         msgList = await self.config.member(user).messageList()
-        format = "%m/%d/%Y, %H:%M:%S"
         role = get(user.guild.roles, id = self.cache_role)
         modChannel = message.guild.get_channel(self.cache_channel) 
         timePrevious = await self.config.member(user).timePrevious() 
-        timePrevious = datetime.strptime(timePrevious, format) if timePrevious else None
+        timePrevious = datetime.strptime(timePrevious, self.format) if timePrevious else None
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at  
-        timeSaved = timeCurrent.strftime(format)
+        timeSaved = timeCurrent.strftime(self.format)
         currentMessageHash = hash(message.clean_content) if message.clean_content else hash( message.attachments[0].filename + str(message.attachments[0].size) )
         if not timePrevious:
             timePrevious = timeCurrent
