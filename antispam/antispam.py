@@ -136,6 +136,7 @@ class Antispam(commands.Cog):
                 currentTime = ctx.message.created_at
                 timeOfMute = datetime.strptime(await self.config.member(user).timeOfMute(), self.format)
                 remainingTime = await self.get_time(currentTime, timeOfMute, time)
+                if not remainingTime: return
                 data =  {
                     "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
                     "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
