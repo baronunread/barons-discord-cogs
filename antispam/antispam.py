@@ -63,9 +63,11 @@ class Antispam(commands.Cog):
         m, s = divmod(time, 60)
         h, m = divmod(m, 60)
         d, h = divmod(h, 24)
-        days = " Day" + "" if d == 1 else "s"
-        string = str(d) + days if d else ""
-        if h or m or s: string += "and {}:{:02d}:{:02d}".format(h,m,s)
+        days = str(d) + " Day" + ("" if d == 1 else "s")
+        string = days if d else ""
+        if h or m or s:
+            if string: string += " and "
+            string += "{}:{:02d}:{:02d}".format(h,m,s)
         return string
 
     @commands.command(name = "simmerdown")
@@ -125,7 +127,7 @@ class Antispam(commands.Cog):
         elif user.bot:
             await ctx.send("Bots can't be muted so why should I even check up on them?!?")
         elif role in user.roles:
-            time = self.config.member(user).secondsOfMute()
+            time = await self.config.member(user).secondsOfMute()
             if time == 0:
                 await ctx.send("The mute is indefinite.")
             else:
