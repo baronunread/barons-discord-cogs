@@ -133,8 +133,8 @@ class Antispam(commands.Cog):
             if time == 0:
                 await ctx.send("The mute is indefinite.")
             else:
-                timeOfMute = await self.config.member(user).timeOfMute()
-                currentTime = datetime.strptime(ctx.message.created_at, self.format)
+                currentTime = ctx.message.created_at
+                timeOfMute = datetime.strptime(await self.config.member(user).timeOfMute(), self.format)
                 remainingTime = await self.get_time(currentTime, timeOfMute, time)
                 data =  {
                     "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
