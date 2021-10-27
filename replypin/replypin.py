@@ -50,7 +50,8 @@ class Replypin(commands.Cog):
                     "url": msg.jump_url,
                     "description": content,
                     "footer": {"text": "Posted on the <t:{}>".format( int( msg.created_at.timestamp() ) )},
-                    "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
+                    "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)},
+                    "timestamp" : str(msg.created_at)
                 }
         embed = discord.Embed.from_dict(data)
         if video:
