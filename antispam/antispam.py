@@ -1,8 +1,8 @@
 from redbot.core import commands, Config
 from discord.utils import get
 from discord import Embed 
-from datetime import datetime
 from asyncio import sleep as a_sleep, all_tasks
+import time
 import random
 import re
 
@@ -40,7 +40,6 @@ class Antispam(commands.Cog):
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
-        self.format = "%m/%d/%Y, %H:%M:%S"
         self.bot.loop.create_task(self.validate_cache())
 
     async def update_cache(self, type: str, content = None):
@@ -89,8 +88,8 @@ class Antispam(commands.Cog):
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
             muteInfo = (msgChannel, user, role, modChannel)
             if not timeSeconds: return
-            timeOfMute = ctx.message.created_at
-            await self.config.member(user).timeOfMute.set(timeOfMute.strftime(self.format))   
+            timeOfMute = ctx.message.created_at.total_seconds()
+            await self.config.member(user).timeOfMute.set(timeOfMute)   
             self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
 
     async def unmute_timer(self, time, info):
@@ -123,23 +122,23 @@ class Antispam(commands.Cog):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I have not been set up yet!")
             return
-        notUsed, user, role, notUsed= await self.get_context_data(ctx)
+        notUsed, user, role, notUsed = await self.get_context_data(ctx)
         if not user:
             await ctx.send("I need either a reply or mention to check up on someone's jail time.")    
         elif user.bot:
             await ctx.send("Bots can't be muted so why should I even check up on them?!?")
         elif role in user.roles:
             time = await self.config.member(user).secondsOfMute()
-            if time == 0:
+            if not time:
                 await ctx.send("The mute is indefinite.")
             else:
-                currentTime = ctx.message.created_at
-                timeOfMute = datetime.strptime(await self.config.member(user).timeOfMute(), self.format)
+                currentTime = ctx.message.created_at.total_seconds()
+                timeOfMute = await self.config.member(user).timeOfMute()
                 remainingTime = await self.get_time(currentTime, timeOfMute, time)
                 if not remainingTime: return
                 data =  {
                     "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
-                    "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
+                    "footer": {"text": "<t:{}>".format( int( time.time() ) )}
                 }
                 msgEmbed = Embed.from_dict(data)
                 msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(remainingTime))
@@ -148,7 +147,7 @@ class Antispam(commands.Cog):
             await ctx.send("The user isn't muted.")   
 
     async def get_time(self, currentTime, timeOfMute, jailTime):
-        return jailTime - int( (currentTime - timeOfMute).total_seconds() )
+        return jailTime - int(currentTime - timeOfMute)
 
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
@@ -240,15 +239,15 @@ class Antispam(commands.Cog):
         role = get(user.guild.roles, id = self.cache_role)
         modChannel = message.guild.get_channel(self.cache_channel) 
         timePrevious = await self.config.member(user).timePrevious() 
-        timePrevious = datetime.strptime(timePrevious, self.format) if timePrevious else None
+        timePrevious = timePrevious if timePrevious else None
         previousMessageHash = await self.config.member(user).previousMessageHash()
-        timeCurrent = message.created_at  
-        timeSaved = timeCurrent.strftime(self.format)
+        timeCurrent = message.created_at.total_seconds()  
+        timeSaved = timeCurrent
         currentMessageHash = hash(message.clean_content) if message.clean_content else hash( message.attachments[0].filename + str(message.attachments[0].size) )
         if not timePrevious:
             timePrevious = timeCurrent
             previousMessageHash = currentMessageHash
-        deltaTime = (timeCurrent - timePrevious).seconds
+        deltaTime = timeCurrent - timePrevious
         differentHash = currentMessageHash - previousMessageHash
         await self.config.member(user).timePrevious.set(timeSaved)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
@@ -270,7 +269,7 @@ class Antispam(commands.Cog):
         selected = random.choice(self.cache_messages)
         data =  {
                     "author": {"name": "MUTED" if mutedTime == 0 else "TIMED MUTE", "icon_url": str(user.avatar_url)},
-                    "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")}
+                    "footer": {"text": "<t:{}>".format( int( time.time() ) )}
                 }
         msgDict = data.copy()
         modDict = data.copy()
@@ -301,7 +300,7 @@ class Antispam(commands.Cog):
     async def unmute(self, msgChannel, user, role, modChannel):
         msgDict =   {
                         "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
-                        "footer": {"text": datetime.now().strftime("%d/%m/%Y, at %H:%M:%S")},
+                        "footer": {"text": "<t:{}>".format( int( time.time() ) )},
                         "description" : user.mention + " has been unmuted"
                     }
         msgEmbed = Embed.from_dict(msgDict)
