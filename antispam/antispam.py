@@ -2,6 +2,7 @@ from redbot.core import commands, Config
 from discord.utils import get
 from discord import Embed 
 from asyncio import sleep as a_sleep, all_tasks
+from datetime import datetime, timezone
 import time
 import random
 import re
@@ -88,7 +89,7 @@ class Antispam(commands.Cog):
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
             muteInfo = (msgChannel, user, role, modChannel)
             if not timeSeconds: return
-            timeOfMute = ctx.message.created_at.total_seconds()
+            timeOfMute = ctx.message.created_at.timestamp()
             await self.config.member(user).timeOfMute.set(timeOfMute)   
             self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
 
@@ -132,14 +133,14 @@ class Antispam(commands.Cog):
             if not time:
                 await ctx.send("The mute is indefinite.")
             else:
-                currentTime = ctx.message.created_at.total_seconds()
+                currentTime = ctx.message.created_at.timestamp()
                 timeOfMute = await self.config.member(user).timeOfMute()
                 remainingTime = await self.get_time(currentTime, timeOfMute, time)
                 if not remainingTime: return
                 data =  {
-                    "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
-                    "footer": {"text": "<t:{}>".format( int( time.time() ) )}
-                }
+                            "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
+                            "timestamp" : datetime.now(tz = timezone.utc)
+                        }
                 msgEmbed = Embed.from_dict(data)
                 msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(remainingTime))
                 await ctx.send(embed = msgEmbed)
@@ -241,7 +242,7 @@ class Antispam(commands.Cog):
         timePrevious = await self.config.member(user).timePrevious() 
         timePrevious = timePrevious if timePrevious else None
         previousMessageHash = await self.config.member(user).previousMessageHash()
-        timeCurrent = message.created_at.total_seconds()  
+        timeCurrent = message.created_at.timestamp()
         timeSaved = timeCurrent
         currentMessageHash = hash(message.clean_content) if message.clean_content else hash( message.attachments[0].filename + str(message.attachments[0].size) )
         if not timePrevious:
@@ -269,7 +270,7 @@ class Antispam(commands.Cog):
         selected = random.choice(self.cache_messages)
         data =  {
                     "author": {"name": "MUTED" if mutedTime == 0 else "TIMED MUTE", "icon_url": str(user.avatar_url)},
-                    "footer": {"text": "<t:{}>".format( int( time.time() ) )}
+                    "timestamp" : datetime.now(tz = timezone.utc)
                 }
         msgDict = data.copy()
         modDict = data.copy()
@@ -300,8 +301,8 @@ class Antispam(commands.Cog):
     async def unmute(self, msgChannel, user, role, modChannel):
         msgDict =   {
                         "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
-                        "footer": {"text": "<t:{}>".format( int( time.time() ) )},
-                        "description" : user.mention + " has been unmuted"
+                        "description" : user.mention + " has been unmuted",
+                        "timestamp" : datetime.now(tz = timezone.utc)
                     }
         msgEmbed = Embed.from_dict(msgDict)
         await modChannel.send(embed = msgEmbed)
