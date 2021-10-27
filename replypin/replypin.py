@@ -54,6 +54,7 @@ class Replypin(commands.Cog):
                     "timestamp" : str(msg.created_at)
                 }
         embed = discord.Embed.from_dict(data)
+        embed.add_field(name = "Posted on the:", value = "<t:{}>".format( int( msg.created_at.timestamp() ) ) )
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
         if linkImage:
