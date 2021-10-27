@@ -139,8 +139,9 @@ class Antispam(commands.Cog):
                 if not remainingTime: return
                 data =  {
                             "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)},
-                            "timestamp" : datetime.now(tz = timezone.utc)
+                            #"timestamp" : datetime.now(tz = timezone.utc)
                         }
+                data.timestamp = datetime.now(tz = timezone.utc)
                 msgEmbed = Embed.from_dict(data)
                 msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(remainingTime))
                 await ctx.send(embed = msgEmbed)
@@ -270,8 +271,9 @@ class Antispam(commands.Cog):
         selected = random.choice(self.cache_messages)
         data =  {
                     "author": {"name": "MUTED" if mutedTime == 0 else "TIMED MUTE", "icon_url": str(user.avatar_url)},
-                    "timestamp" : datetime.now(tz = timezone.utc)
+                    #"timestamp" : datetime.now(tz = timezone.utc)
                 }
+        data.timestamp = datetime.now(tz = timezone.utc)
         msgDict = data.copy()
         modDict = data.copy()
         msgDict["description"] = user.mention + " " + selected
@@ -302,8 +304,9 @@ class Antispam(commands.Cog):
         msgDict =   {
                         "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
                         "description" : user.mention + " has been unmuted",
-                        "timestamp" : datetime.now(tz = timezone.utc)
+                        #"timestamp" : datetime.now(tz = timezone.utc)
                     }
+        msgDict.timestamp = datetime.now(tz = timezone.utc)
         msgEmbed = Embed.from_dict(msgDict)
         await modChannel.send(embed = msgEmbed)
         roles = await self.config.member(user).roles()
