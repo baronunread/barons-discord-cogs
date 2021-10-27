@@ -1,5 +1,5 @@
 from redbot.core import commands
-from datetime import timezone, tzinfo
+from datetime import timezone
 import discord
 import aiohttp
 import re
