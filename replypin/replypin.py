@@ -49,9 +49,7 @@ class Replypin(commands.Cog):
                     "title": "Click to jump to message!",
                     "url": msg.jump_url,
                     "description": content,
-                    "footer": {"text": "Posted on the <t:{}>".format( int( msg.created_at.timestamp() ) )},
-                    "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)},
-                    "timestamp" : str(msg.created_at)
+                    "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
                 }
         embed = discord.Embed.from_dict(data)
         embed.add_field(name = "Posted on the:", value = "<t:{}>".format( int( msg.created_at.timestamp() ) ) )
