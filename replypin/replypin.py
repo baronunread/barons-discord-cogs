@@ -1,4 +1,5 @@
 from redbot.core import commands
+from datetime import timezone, tzinfo
 import discord
 import aiohttp
 import re
@@ -52,7 +53,7 @@ class Replypin(commands.Cog):
                     "author": {"name": msg.author.display_name, "icon_url": str(msg.author.avatar_url)}
                 }
         embed = discord.Embed.from_dict(data)
-        embed.add_field(name = "Posted on the:", value = "<t:{}>".format( int( msg.created_at.timestamp() ) ) )
+        embed.add_field(name = "Posted on the:", value = "<t:{}>".format( int( msg.created_at.replace(tzinfo = timezone.utc).timestamp() ) ) )
         if video:
             embed.add_field(name = "Quentin's thought:", value = "There must be a video in that message so I've posted it below this embed!")
         if linkImage:
