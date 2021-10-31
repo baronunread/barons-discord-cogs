@@ -6,6 +6,11 @@ import discord
 import random
 import re
 
+async def work(content, regex):
+    if regex.search(content):
+        return True
+    return False
+
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
@@ -113,11 +118,6 @@ class Regfilter(commands.Cog):
             await self.compile_cache("ignore")
         if not self.leet_dict:
             await self.build_dict()
-
-    async def work(content, regex):
-        if regex.search(content):
-            return True
-        return False
 
     @commands.command()
     async def test(self, ctx, *, msg):
