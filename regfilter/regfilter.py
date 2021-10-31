@@ -4,7 +4,7 @@ sys.path.insert(0, regfilter)
 from redbot.core import commands, Config
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
-from pathos.pp import ParallelPool
+from pathos.pools import ProcessPool
 import unicodedata
 import discord
 import random
@@ -59,7 +59,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-        self.pool = ParallelPool(nodes = 9)
+        self.pool = ProcessPool(nodes = 9)
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
