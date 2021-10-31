@@ -1,10 +1,10 @@
 import sys
-
 import regfilter
 sys.path.insert(0, regfilter)
 from redbot.core import commands, Config
 from concurrent.futures import ProcessPoolExecutor
 from functools import partial
+from pathos.pp import ParallelPool
 import unicodedata
 import discord
 import random
@@ -59,7 +59,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-        self.pool = ProcessPoolExecutor()
+        self.pool = ParallelPool(nodes = 9)
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
@@ -139,7 +139,7 @@ class Regfilter(commands.Cog):
     
     async def thread_filter(self, msg):
         process = partial(work, msg)
-        results = self.pool.map(process, self.cache_regex)
+        results = self.pool.imap(process, self.cache_regex)
         for result in results:
             if result: 
                 return True
