@@ -15,49 +15,49 @@ def work(content, regex):
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
-    if __name__ == "__main__":
-        def __init__(self, bot):
-            self.bot = bot
-            self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
-            default_global = {
-                                "regex": [  
-                                            r"\bj+\s*[aæ]+[\saæ]*p+[\sp]*s?\b",
-                                            r"\bf+\s*[aæ]+[\saæ]*g|\b\w*f+[aæ]+g",
-                                            r"\bs+\s*p+[\sp]*i+[\si]*c+[\sc]*s?\b",
-                                            r"\bg+\s*[oœ]+\s*[oœ]+[\soœ]*k|\b\w*g+[oœ]{2,}k",
-                                            r"\bk+\s*i+[\si]*k+[\sk]*[eæœ]|\b\w*k+i+k+[eæœ]",
-                                            r"\bn+\s*[eæœ]+[\seæœ]*g+[\sg]*r+[\sr]*[oœ]|\b\w*n+[eæœ]+g+r+[oœ]",
-                                            r"\bc+\s*h+[\sh]*i+[\si]*n+[\sn]*k|\b\w*c+h+i+n+k",
-                                            r"\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*[eæœ]+[\seæœ]*r|\b\w*n+[il]+g{2,}[eæœ]+r",
-                                            r"\bt+\s*r+[\sr]*[aæ]+[\saæ]*n+\s*n+[\sn]*[iy]|\b\w*t+r+[aæ]+n{2,}[iy]"
-                                            ],
-                                "names": [],
-                                "ignore":[ r"\bhttp[^' ']*" ],
-                                "letters":["a","c","e","f","g","h","i","j","k","n","o","p","r","s","t","y"],
-                                "a": ["ⱥ","@","4","α","λ","ƛ","δ","σ","а","ҩ"],                                             
-                                "c": ["ȼ","с","¢","ƈ","ϲ","ͼ","ҫ"], 
-                                "e": ["ɇ","£","€","ҽ","ҿ","ə","з","ӡ","ʒ","3","ҙ","е","э","ε","є","ξ"],
-                                "f": ["ꞙ","ƒ","₣","ꬵ","ӻ","ғ"],      
-                                "g": ["ǥ","ɠ","غ","ع"],                                          
-                                "h": ["ħ"],
-                                "i": ["1","!","|","ӏ","ι","ł","ƚ","ɨ","і"], 
-                                "j": ["ɉ","ј"],
-                                "k": ["ƙ","ĸ","κ","к","ӄ","ҝ","ҟ","ҡ","қ"],                                                                     
-                                "n": ["η","ƞ","π","п","л","ɲ","ν","и","ȵ","ŋ"],
-                                "o": ["ø","0","ο","ө","о","ѳ"],
-                                "p": ["р","ƥ"],
-                                "r": ["ɍ","г","ӷ","я"],
-                                "s": ["ѕ","ϟ","$","ß"],
-                                "t": ["ⱦ","ŧ","ϯ","т","ҭ","ʈ","ƭ","ƫ"],
-                                "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
-                                }
-            self.config.register_global(**default_global)
-            self.cache_regex = []
-            self.cache_names = []
-            self.cache_ignore = []
-            self.leet_dict = {}
+    def __init__(self, bot):
+        self.bot = bot
+        self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
+        default_global = {
+                            "regex": [  
+                                        r"\bj+\s*[aæ]+[\saæ]*p+[\sp]*s?\b",
+                                        r"\bf+\s*[aæ]+[\saæ]*g|\b\w*f+[aæ]+g",
+                                        r"\bs+\s*p+[\sp]*i+[\si]*c+[\sc]*s?\b",
+                                        r"\bg+\s*[oœ]+\s*[oœ]+[\soœ]*k|\b\w*g+[oœ]{2,}k",
+                                        r"\bk+\s*i+[\si]*k+[\sk]*[eæœ]|\b\w*k+i+k+[eæœ]",
+                                        r"\bn+\s*[eæœ]+[\seæœ]*g+[\sg]*r+[\sr]*[oœ]|\b\w*n+[eæœ]+g+r+[oœ]",
+                                        r"\bc+\s*h+[\sh]*i+[\si]*n+[\sn]*k|\b\w*c+h+i+n+k",
+                                        r"\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*[eæœ]+[\seæœ]*r|\b\w*n+[il]+g{2,}[eæœ]+r",
+                                        r"\bt+\s*r+[\sr]*[aæ]+[\saæ]*n+\s*n+[\sn]*[iy]|\b\w*t+r+[aæ]+n{2,}[iy]"
+                                        ],
+                            "names": [],
+                            "ignore":[ r"\bhttp[^' ']*" ],
+                            "letters":["a","c","e","f","g","h","i","j","k","n","o","p","r","s","t","y"],
+                            "a": ["ⱥ","@","4","α","λ","ƛ","δ","σ","а","ҩ"],                                             
+                            "c": ["ȼ","с","¢","ƈ","ϲ","ͼ","ҫ"], 
+                            "e": ["ɇ","£","€","ҽ","ҿ","ə","з","ӡ","ʒ","3","ҙ","е","э","ε","є","ξ"],
+                            "f": ["ꞙ","ƒ","₣","ꬵ","ӻ","ғ"],      
+                            "g": ["ǥ","ɠ","غ","ع"],                                          
+                            "h": ["ħ"],
+                            "i": ["1","!","|","ӏ","ι","ł","ƚ","ɨ","і"], 
+                            "j": ["ɉ","ј"],
+                            "k": ["ƙ","ĸ","κ","к","ӄ","ҝ","ҟ","ҡ","қ"],                                                                     
+                            "n": ["η","ƞ","π","п","л","ɲ","ν","и","ȵ","ŋ"],
+                            "o": ["ø","0","ο","ө","о","ѳ"],
+                            "p": ["р","ƥ"],
+                            "r": ["ɍ","г","ӷ","я"],
+                            "s": ["ѕ","ϟ","$","ß"],
+                            "t": ["ⱦ","ŧ","ϯ","т","ҭ","ʈ","ƭ","ƫ"],
+                            "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
+                            }
+        self.config.register_global(**default_global)
+        self.cache_regex = []
+        self.cache_names = []
+        self.cache_ignore = []
+        self.leet_dict = {}
+        if __name__ == "__main__":
             self.pool = ProcessPoolExecutor()
-            self.bot.loop.create_task(self.validate_cache())
+        self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
         for key in await self.config.letters():
