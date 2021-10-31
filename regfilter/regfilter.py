@@ -1,4 +1,6 @@
 from redbot.core import commands, Config
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 import unicodedata
 import discord
 import random
@@ -240,9 +242,18 @@ class Regfilter(commands.Cog):
             await message.delete()
 
     async def triggered_filter(self, content, regexs):
-        for regex in regexs:
-            if regex.search(content):
-                return True
+        with ProcessPoolExecutor(len( await self.config.regex() )) as pool:
+            filter_check = partial(self.filter_task, content)    
+            futures = pool.map(filter_check, regexs)
+            for future in futures.as_completed():
+                if future.result(): 
+                    pool.shutdown()
+                    return True
+            return False
+     
+    async def filter_task(self, content, regex):
+        if regex.search(content):
+            return True
         return False
 
     @commands.Cog.listener()
