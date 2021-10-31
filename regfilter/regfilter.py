@@ -194,7 +194,7 @@ class Regfilter(commands.Cog):
         return prettyList
 
     async def generic_list(self, ctx, user, type: str):
-        try:
+        # try:
             if type == "letters":
                 prettyList = await self.letter_list()    
             else:    
@@ -206,8 +206,8 @@ class Regfilter(commands.Cog):
             if type == "regex" or "letters":
                 prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
-        except:
-            await ctx.send("ERROR: Open your DMs.")
+        # except:
+        #     await ctx.send("ERROR: Open your DMs.")
 
     @listThings.command(name = "regex")
     async def list_regex(self, ctx):
