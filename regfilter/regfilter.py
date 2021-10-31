@@ -85,22 +85,30 @@ class Regfilter(commands.Cog):
         else:
             return await self.config.get_raw(type)
 
+    async def compile_cache(self, type, value = None):
+        toCompile = value if value else await self.config.get_raw(type)
+        compiled = []
+        for pattern in toCompile:
+            compiled.append( re.compile(pattern) )
+        if type == "regex": self.cache_regex = compiled
+        if type == "ignore": self.cache_ignore = compiled
+
     async def update_cache(self, type, content = None):
         value = content if content else await self.config.get_raw(type)
         if type == "regex":
-            self.cache_regex = value
+            self.cache_regex = await self.compile_cache("regex", value = value)
         elif type == "names":
             self.cache_names = value
         elif type == "ignore":
-            self.cache_ignore = value        
+            self.cache_ignore = await self.compile_cache("regex", value = value)
                      
     async def validate_cache(self):
         if self.cache_regex == []: 
-            await self.update_cache("regex")
+            await self.compile_cache("regex")
         if self.cache_ignore == []:
             await self.update_cache("names")    
         if self.cache_ignore == []:
-            await self.update_cache("ignore")
+            await self.compile_cache("ignore")
         if not self.leet_dict:
             await self.build_dict()
 
@@ -116,7 +124,7 @@ class Regfilter(commands.Cog):
         pass
 
     async def generic_add_delete(self, ctx, item, type: str, add: bool):
-        list = await self.return_cache(type)
+        list = self.config.get_raw(type)
         found = not item in list if add else item in list
         letterType = type in await self.config.get_raw("letters")
         if found:
@@ -177,27 +185,25 @@ class Regfilter(commands.Cog):
         """Base command. Can either send the list of regex, names or ignored words."""
         pass
 
-    @listThings.command(name = "letters")
-    async def list_letters(self, ctx):
-        """Sends the letter list through DMs."""
-        try:
-            letters = await self.config.letters()
-            prettyList = ""
-            for letter in letters:
-                list = await self.config.get_raw(letter)
-                prettyList = prettyList + letter + " : " + str(list) + "\n"
-            await ctx.message.author.send("```" + prettyList + "```")
-        except:
-            await ctx.send("ERROR: Open your DMs.")
-            
+    async def letters_list(self):
+        letters = await self.config.letters()
+        prettyList = ""
+        for letter in letters:
+            list = await self.config.get_raw(letter)
+            prettyList = prettyList + letter + " : " + str(list) + "\n"
+        return prettyList
+
     async def generic_list(self, ctx, user, type: str):
         try:
-            list = await self.return_cache(type)
-            if len(list) == 0:
+            if type == "letters":
+                prettyList = await self.letter_list()    
+            else:    
+                list = self.config.get_raw(type)
+                prettyList = "\n".join(list)
+            if not prettyList:
                 await user.send("There's nothing in that list.")
                 return
-            prettyList = "\n".join(list)
-            if type == "regex":
+            if type == "regex" or "letters":
                 prettyList = "```" + prettyList + "```"
             await user.send(prettyList)
         except:
@@ -217,6 +223,11 @@ class Regfilter(commands.Cog):
     async def list_ignored(self, ctx):
         """Sends the ignored word list through DMs."""
         await self.generic_list(ctx, ctx.message.author, "ignore")
+
+    @listThings.command(name = "letters")
+    async def list_letters(self, ctx):
+        """Sends the letter list through DMs."""
+        await self.generic_list(ctx, ctx.message.author, "letters")
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -230,8 +241,7 @@ class Regfilter(commands.Cog):
 
     async def triggered_filter(self, content, regexs):
         for regex in regexs:
-            result = re.findall(regex, content)
-            if result != []:
+            if regex.search(content):
                 return True
         return False
 
