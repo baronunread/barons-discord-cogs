@@ -139,7 +139,7 @@ class Regfilter(commands.Cog):
     
     async def thread_filter(self, msg):
         process = partial(work, msg)
-        results = self.pool.amap(process, self.cache_regex)
+        results = self.pool.map(process, self.cache_regex)
         for result in results:
             if result: 
                 return True
