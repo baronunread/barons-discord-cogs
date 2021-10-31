@@ -124,7 +124,7 @@ class Regfilter(commands.Cog):
         pass
 
     async def generic_add_delete(self, ctx, item, type: str, add: bool):
-        list = self.config.get_raw(type)
+        list = await self.config.get_raw(type)
         found = not item in list if add else item in list
         letterType = type in await self.config.get_raw("letters")
         if found:
@@ -198,7 +198,7 @@ class Regfilter(commands.Cog):
             if type == "letters":
                 prettyList = await self.letter_list()    
             else:    
-                list = self.config.get_raw(type)
+                list = await self.config.get_raw(type)
                 prettyList = "\n".join(list)
             if not prettyList:
                 await user.send("There's nothing in that list.")
