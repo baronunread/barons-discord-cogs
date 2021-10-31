@@ -1,12 +1,15 @@
 from redbot.core import commands, Config
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial
 import unicodedata
 import discord
 import random
 import re
+import ray
 import time
 
+ray.init()
+
+@ray.remote
 def work(content, regex):
     if regex.search(content):
         return True
@@ -133,13 +136,10 @@ class Regfilter(commands.Cog):
         await ctx.send( "The normal time is {} \n The multithreaded time is {}".format(normalFilterTime,threadFilterTime)    )
     
     async def thread_filter(self, msg):
-        with ThreadPoolExecutor() as executor:
-            partial_task = partial(work, msg)
-            results = executor.map(partial_task, self.cache_regex)
-            for result in results:
-                if result: 
-                    executor.shutdown()
-                    return True
+        results = [work.remote(msg, regex) for regex in self.cache_regex]
+        for result in results:
+            if ray.get(result): 
+                return True
         return False
             
     @commands.group()
