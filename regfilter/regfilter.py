@@ -55,6 +55,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
+        self.name = __name__
         if __name__ == "__regfilter__":
             self.pool = ProcessPoolExecutor()
         self.bot.loop.create_task(self.validate_cache())
@@ -121,6 +122,10 @@ class Regfilter(commands.Cog):
             await self.compile_cache("ignore")
         if not self.leet_dict:
             await self.build_dict()
+
+    @commands.command()
+    async def name(self, ctx):
+        await ctx.send(self.name)
 
     @commands.command()
     async def test(self, ctx, *, msg):
