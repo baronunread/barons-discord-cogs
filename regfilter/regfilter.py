@@ -67,7 +67,7 @@ class Regfilter(commands.Cog):
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
         alphanum = ''.join(c for c in noLookAlikes if c.isalnum() or c == ' ')              # remove anything that isn't an alphabetic character or a space
         for ignore in self.cache_ignore:
-            alphanum = re.sub(ignore, '', alphanum)                                         # remove ignored words as they are not important
+            alphanum = ignore.sub('', alphanum)                                             # remove ignored words as they are not important
         return alphanum
 
     async def clean(self, cleaned):
