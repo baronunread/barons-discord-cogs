@@ -100,7 +100,7 @@ class Regfilter(commands.Cog):
         elif type == "names":
             self.cache_names = value
         elif type == "ignore":
-            self.cache_ignore = await self.compile_cache("regex", value = value)
+            self.cache_ignore = await self.compile_cache("ignore", value = value)
                      
     async def validate_cache(self):
         if self.cache_regex == []: 
