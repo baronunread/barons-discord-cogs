@@ -6,6 +6,11 @@ import discord
 import random
 import re
 
+async def filter_task(content, regex):
+        if regex.search(content):
+            return True
+        return False
+
 class Regfilter(commands.Cog):
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
@@ -243,18 +248,13 @@ class Regfilter(commands.Cog):
 
     async def triggered_filter(self, content, regexs):
         with ProcessPoolExecutor(len( await self.config.regex() )) as pool:
-            filter_check = partial(self.filter_task, content)    
+            filter_check = partial(filter_task, content)    
             futures = pool.map(filter_check, regexs)
             for future in as_completed(futures):
                 if future.result(): 
                     pool.shutdown()
                     return True
             return False
-     
-    async def filter_task(self, content, regex):
-        if regex.search(content):
-            return True
-        return False
 
     @commands.Cog.listener()
     async def on_message_edit(self, _prior, message):
