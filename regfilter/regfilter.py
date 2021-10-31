@@ -253,7 +253,6 @@ class Regfilter(commands.Cog):
             futures = pool.map(filter_check, regexs)
             for future in as_completed(futures):
                 if future.result(): 
-                    pool.shutdown()
                     return True
             return False
 
