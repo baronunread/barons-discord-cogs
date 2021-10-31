@@ -1,15 +1,12 @@
 from redbot.core import commands, Config
+from concurrent.futures import ProcessPoolExecutor
 from functools import partial
 import unicodedata
 import discord
 import random
 import re
-import ray
 import time
 
-ray.init()
-
-@ray.remote
 def work(content, regex):
     if regex.search(content):
         return True
@@ -58,6 +55,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
+        self.pool = ProcessPoolExecutor()
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
@@ -136,9 +134,10 @@ class Regfilter(commands.Cog):
         await ctx.send( "The normal time is {} \n The multithreaded time is {}".format(normalFilterTime,threadFilterTime)    )
     
     async def thread_filter(self, msg):
-        results = [work.remote(msg, regex) for regex in self.cache_regex]
+        process = partial(work, msg)
+        results = self.pool.map(process, self.cache_regex)
         for result in results:
-            if ray.get(result): 
+            if result: 
                 return True
         return False
             
