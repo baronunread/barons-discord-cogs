@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, regfilter)
+#sys.path.insert(0, regfilter)
 import regfilter
 from redbot.core import commands, Config
 from concurrent.futures import ProcessPoolExecutor
