@@ -123,7 +123,7 @@ class Regfilter(commands.Cog):
     async def test(self, ctx, *, msg):
         answer = "I didn't find anything."
         with ProcessPoolExecutor() as executor:
-            partial_task = partial(self.work, msg)
+            partial_task = partial(work, msg)
             results = executor.map(partial_task, self.cache_regex)
             for future in as_completed(results):
                 if future.result(): answer = "I did find something!"
