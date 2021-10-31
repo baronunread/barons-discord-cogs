@@ -128,7 +128,7 @@ class Regfilter(commands.Cog):
         normalFilterTime = time.perf_counter() - saved
         saved = time.perf_counter()
         for i in range(1000):
-            await self.thread_filter(msg, self.cache_regex)
+            await self.thread_filter(msg)
         threadFilterTime = time.perf_counter() - saved
         await ctx.send( "The normal time is {} \n The multithreaded time is {}".format(normalFilterTime,threadFilterTime)    )
     
