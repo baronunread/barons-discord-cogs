@@ -125,8 +125,8 @@ class Regfilter(commands.Cog):
         with ThreadPoolExecutor() as executor:
             partial_task = partial(work, msg)
             results = executor.map(partial_task, self.cache_regex)
-            for future in as_completed(results):
-                if results[future].result(): answer = "I did find something!"
+            for result in results:
+                if result: answer = "I did find something!"
         await ctx.send(answer)
             
     @commands.group()
