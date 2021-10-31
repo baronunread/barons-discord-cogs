@@ -134,6 +134,7 @@ class Regfilter(commands.Cog):
         await ctx.send( "The normal time is {} \n The multithreaded time is {}".format(normalFilterTime,threadFilterTime)    )
     
     async def thread_filter(self, msg):
+        import regfilter
         process = partial(work, msg)
         results = self.pool.map(process, self.cache_regex)
         for result in results:
