@@ -1,5 +1,5 @@
 from redbot.core import commands, Config
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial
 import unicodedata
 import discord
@@ -245,7 +245,7 @@ class Regfilter(commands.Cog):
         with ProcessPoolExecutor(len( await self.config.regex() )) as pool:
             filter_check = partial(self.filter_task, content)    
             futures = pool.map(filter_check, regexs)
-            for future in futures.as_completed():
+            for future in as_completed(futures):
                 if future.result(): 
                     pool.shutdown()
                     return True
