@@ -6,7 +6,7 @@ import discord
 import random
 import re
 
-async def work(content, regex):
+def work(content, regex):
     if regex.search(content):
         return True
     return False
