@@ -1,5 +1,5 @@
 from redbot.core import commands, Config
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from functools import partial
 import unicodedata
 import discord
@@ -122,7 +122,7 @@ class Regfilter(commands.Cog):
     @commands.command()
     async def test(self, ctx, *, msg):
         answer = "I didn't find anything."
-        with ProcessPoolExecutor() as executor:
+        with ThreadPoolExecutor() as executor:
             partial_task = partial(work, msg)
             results = executor.map(partial_task, self.cache_regex)
             for future in as_completed(results):
