@@ -5,6 +5,7 @@ import unicodedata
 import discord
 import random
 import re
+import time
 
 def work(content, regex):
     if regex.search(content):
@@ -121,15 +122,25 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, *, msg):
+        saved = time.perf_counter()
+        for i in range(1000):
+            await self.triggered_filter(msg, self.cache_regex)
+        normalFilterTime = time.perf_counter() - saved
+        saved = time.perf_counter()
+        for i in range(1000):
+            await self.thread_filter(msg, self.cache_regex)
+        threadFilterTime = time.perf_counter() - saved
+        await ctx.send( "The normal time is {} \n The multithreaded time is {}".format(normalFilterTime,threadFilterTime)    )
+    
+    async def thread_filter(self, msg):
         with ThreadPoolExecutor() as executor:
             partial_task = partial(work, msg)
             results = executor.map(partial_task, self.cache_regex)
             for result in results:
                 if result: 
-                    await ctx.send("I did find something!")
                     executor.shutdown()
-                    return
-        await ctx.send("I didn't find anything.")
+                    return True
+        return False
             
     @commands.group()
     @commands.has_permissions(manage_messages = True)
