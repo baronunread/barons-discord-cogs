@@ -55,7 +55,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-        if __name__ == "__main__":
+        if __name__ == "__regfilter__":
             self.pool = ProcessPoolExecutor()
         self.bot.loop.create_task(self.validate_cache())
 
