@@ -268,7 +268,7 @@ class Antispam(commands.Cog):
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
         data =  {
-                    "author": {"name": "MUTED" if mutedTime == 0 else "TIMED MUTE", "icon_url": str(user.avatar_url)}
+                    "author": {"name": "MUTED" if not mutedTime else "TIMED MUTE", "icon_url": str(user.avatar_url)}
                 }
         msgEmbed = Embed.from_dict(data)
         msgEmbed.timestamp = datetime.now(tz = timezone.utc)
