@@ -121,13 +121,15 @@ class Regfilter(commands.Cog):
 
     @commands.command()
     async def test(self, ctx, *, msg):
-        answer = "I didn't find anything."
         with ThreadPoolExecutor() as executor:
             partial_task = partial(work, msg)
             results = executor.map(partial_task, self.cache_regex)
             for result in results:
-                if result: answer = "I did find something!"
-        await ctx.send(answer)
+                if result: 
+                    await ctx.send("I did find something!")
+                    executor.shutdown()
+                    return
+        await ctx.send("I didn't find anything.")
             
     @commands.group()
     @commands.has_permissions(manage_messages = True)
