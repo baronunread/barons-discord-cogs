@@ -1,5 +1,6 @@
 from redbot.core import commands, Config
-from concurrent.futures import ProcessPoolExecutor
+#from concurrent.futures import ProcessPoolExecutor
+from pathos.multiprocessing import ProcessPool
 from functools import partial
 import unicodedata
 import discord
@@ -55,9 +56,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-        self.name = __name__
-        if __name__ == "regfilter.regfilter":
-            self.pool = ProcessPoolExecutor()
+        self.pool = ProcessPool(nodes = 9)
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
@@ -124,11 +123,6 @@ class Regfilter(commands.Cog):
             await self.build_dict()
 
     @commands.command()
-    async def name(self, ctx):
-        if __name__ == "regfilter.regfilter":
-            await ctx.send("Yep")
-
-    @commands.command()
     async def test(self, ctx, *, msg):
         saved = time.perf_counter()
         for i in range(1000):
@@ -142,7 +136,7 @@ class Regfilter(commands.Cog):
     
     async def thread_filter(self, msg):
         process = partial(work, msg)
-        results = self.pool.map(process, self.cache_regex)
+        results = self.pool.amap(process, self.cache_regex)
         for result in results:
             if result: 
                 return True
