@@ -1,6 +1,5 @@
-import regfilter
 from redbot.core import commands, Config
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 import unicodedata
 import discord
@@ -56,7 +55,7 @@ class Regfilter(commands.Cog):
         self.cache_names = []
         self.cache_ignore = []
         self.leet_dict = {}
-        self.pool = ProcessPoolExecutor()
+        self.pool = ThreadPoolExecutor(4)
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
@@ -136,7 +135,7 @@ class Regfilter(commands.Cog):
     
     async def thread_filter(self, msg):
         process = partial(work, msg)
-        results = [await self.bot.loop.run_in_executor(self.pool, partial(process, regex)) for regex in self.cache_regex]
+        results = self.pool.map(process, self.cache_regex)
         for result in results:
             if result: 
                 return True
