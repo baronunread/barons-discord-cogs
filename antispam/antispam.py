@@ -316,6 +316,22 @@ class Antispam(commands.Cog):
         except:
             pass
 
+    @commands.command()
+    @commands.has_permissions(manage_messages = True)
+    async def purge(self, ctx):
+        msg = ctx.message
+        msgChannel = ctx.channel
+        try:
+            id = msg.reference.message_id
+            toDelete = await msgChannel.fetch_message(id)
+        except AttributeError:
+            await ctx.send("I can only delete from a reply onward.")
+            return
+        time = toDelete.created_at
+        await msgChannel.purge(after = time)
+        await toDelete.delete()
+        await ctx.send("https://tenor.com/view/mib-men-in-black-will-smith-flash-gif-7529438")
+        
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
