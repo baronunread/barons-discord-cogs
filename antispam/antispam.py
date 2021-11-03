@@ -240,12 +240,12 @@ class Antispam(commands.Cog):
         modChannel = message.guild.get_channel(self.cache_channel) 
         timePrevious = await self.config.member(user).timePrevious() 
         previousMessageHash = await self.config.member(user).previousMessageHash()
-        timeCurrent = float( message.created_at.timestamp() )
+        timeCurrent = message.created_at.timestamp()
         currentMessageHash = hash(message.clean_content) if message.clean_content else hash( message.attachments[0].filename + str(message.attachments[0].size) )
-        if not timePrevious:
+        if not timePrevious or type(timePrevious) is not float:
             timePrevious = timeCurrent
             previousMessageHash = currentMessageHash
-        deltaTime = float(timeCurrent) - float(timePrevious)
+        deltaTime = timeCurrent - timePrevious
         differentHash = currentMessageHash - previousMessageHash
         await self.config.member(user).timePrevious.set(timeCurrent)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
