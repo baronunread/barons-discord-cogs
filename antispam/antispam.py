@@ -321,6 +321,7 @@ class Antispam(commands.Cog):
     async def purge(self, ctx):
         msg = ctx.message
         msgChannel = ctx.channel
+        stop = msg.created_at
         try:
             id = msg.reference.message_id
             toDelete = await msgChannel.fetch_message(id)
@@ -328,7 +329,9 @@ class Antispam(commands.Cog):
             await ctx.send("I can only delete from a reply onward.")
             return
         time = toDelete.created_at
-        await msgChannel.purge(after = time)
+        list = [1]
+        while list:    
+            list = await msgChannel.purge(after = time, before = stop)
         await toDelete.delete()
         await ctx.send("https://tenor.com/view/mib-men-in-black-will-smith-flash-gif-7529438")
         
