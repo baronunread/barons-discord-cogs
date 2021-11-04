@@ -289,6 +289,9 @@ class Antispam(commands.Cog):
         differentHash = currentMessageHash - previousMessageHash
         await self.config.member(user).timePrevious.set(timeCurrent)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
+        if deltaTime > 300:
+            await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
+            return
         if deltaTime < 1 or not differentHash:
             msgList.append( (message.channel.id, message.id) )
             await self.config.member(user).messageList.set(msgList)    
