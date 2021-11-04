@@ -197,7 +197,7 @@ class Antispam(commands.Cog):
         await self.update_cache(type, content)
 
     async def add_something(self, type: str, content):
-        list = self.return_cache(type)
+        list = await self.return_cache(type)
         list.append(content)
         await self.config.set_raw(type, value = list)
         await self.update_cache(type, list)
@@ -215,7 +215,7 @@ class Antispam(commands.Cog):
         await ctx.send("Successfully added the new mute message.")
 
     async def del_something(self, ctx, type: str, content):
-        list = self.return_cache(type)
+        list = await self.return_cache(type)
         if content not in list:
             await ctx.send("There's nothing like that in the list!")
             return 
