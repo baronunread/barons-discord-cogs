@@ -235,16 +235,16 @@ class Antispam(commands.Cog):
         await self.del_something(ctx, "messages", msg)
 
     @antispam.command(name = "listWhitelist")
-    async def list_mute(self, ctx):
+    async def list_whitelist(self, ctx):
         """Sends the list of whitelisted channels through DMs"""
         list = self.cache_whitelist
-        await ctx.send("```" + str(list) +  "```") 
+        await ctx.message.author.send("```" + str(list) +  "```") 
 
     @antispam.command(name = "listMuteMessage")
     async def list_mute(self, ctx):
         """Sends the list of messages through DMs"""
         list = self.cache_messages
-        await ctx.send("```" + str(list) +  "```")
+        await ctx.message.author.send("```" + str(list) +  "```")
        
     @antispam.command(name = "setup")
     async def setup(self, ctx, roleID, channelID):
