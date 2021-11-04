@@ -218,22 +218,21 @@ class Antispam(commands.Cog):
         list = await self.return_cache(type)
         if content not in list:
             await ctx.send("There's nothing like that in the list!")
-            return 
+            return
         list.remove(content)
         await self.config.set_raw(type, value = list)
         await self.update_cache(type, list)   
+        await ctx.send("Successfully removed the item.")
     
     @antispam.command(name = "delWhitelist")
     async def del_whitelist(self, ctx, *, msg):
         """Removes a channel from the list of whitelisted channels."""
-        await self.del_something("whitelist", msg)
-        await ctx.send("Successfully removed the channel.")
+        await self.del_something(ctx, "whitelist", msg)
     
     @antispam.command(name = "delMuteMessage")
     async def del_mute(self, ctx, *, msg):
         """Removes a message from the list of messages."""
-        await self.del_something("messages", msg)
-        await ctx.send("Successfully removed the mute message.")
+        await self.del_something(ctx, "messages", msg)
 
     @antispam.command(name = "listWhitelist")
     async def list_mute(self, ctx):
@@ -272,8 +271,9 @@ class Antispam(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         ctx = await self.bot.get_context(message)
+        whitelist = await self.return_cache("whitelist")
         user = message.author
-        if user.bot or ctx.valid or not self.cache_role or not self.cache_channel:
+        if user.bot or ctx.valid or not self.cache_role or not self.cache_channel or str(ctx.channel.id) in whitelist:
             return
         msgList = await self.config.member(user).messageList()
         role = get(user.guild.roles, id = self.cache_role)
