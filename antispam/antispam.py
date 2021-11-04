@@ -34,14 +34,26 @@ class Antispam(commands.Cog):
         default_global = {
                             "role": None,
                             "channel": None,
-                            "messages": ["has been muted."]
+                            "messages": ["has been muted."],
+                            "whitelist": []
                          }
         self.config.register_global(**default_global)
         self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0, timeOfMute = None)
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
+        self.cache_whitelist = []
         self.bot.loop.create_task(self.validate_cache())
+
+    async def return_cache(self, type: str):
+        if type == "role":
+            return self.cache_role
+        elif type == "channel":
+            return self.cache_channel
+        elif type == "messages":
+            return self.cache_messages
+        elif type == "whitelist":
+            return self.cache_whitelist
 
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
@@ -51,6 +63,8 @@ class Antispam(commands.Cog):
             self.cache_channel = value
         elif type == "messages":
             self.cache_messages = value
+        elif type == "whitelist":
+            self.cache_whitelist = value
         
     async def validate_cache(self):
         if self.cache_role == None: 
@@ -58,7 +72,9 @@ class Antispam(commands.Cog):
         if self.cache_channel == None:
             await self.update_cache("channel")
         if self.cache_messages == []:
-            await self.update_cache("messages")    
+            await self.update_cache("messages")
+        if self.cache_whitelist == []:
+            await self.update_cache("whitelist")    
 
     async def represent_time(self, time):
         m, s = divmod(time, 60)
@@ -180,32 +196,56 @@ class Antispam(commands.Cog):
         await self.config.set_raw(type, value = content)
         await self.update_cache(type, content)
 
+    async def add_something(self, type: str, content):
+        list = self.return_cache(type)
+        list.append(content)
+        await self.config.set_raw(type, value = list)
+        await self.update_cache(type, list)
+    
+    @antispam.command(name = "addWhitelist")
+    async def add_whitelist(self, ctx, msg):
+        """Adds a channel to the list of whitelisted channels."""
+        await self.add_something("whitelist", msg)
+        await ctx.send("Successfully added the new ignored channel.")
+
     @antispam.command(name = "addMuteMessage")
     async def add_mute(self, ctx, *, msg):
         """Adds a message that randomly gets sent when muting someone."""
-        list = self.cache_messages
-        list.append(msg)
-        await self.config.messages.set(list)
-        await self.update_cache("messages", list)
+        await self.add_something("messages", msg)
         await ctx.send("Successfully added the new mute message.")
 
+    async def del_something(self, ctx, type: str, content):
+        list = self.return_cache(type)
+        if content not in list:
+            await ctx.send("There's nothing like that in the list!")
+            return 
+        list.remove(content)
+        await self.config.set_raw(type, value = list)
+        await self.update_cache(type, list)   
+    
+    @antispam.command(name = "delWhitelist")
+    async def del_whitelist(self, ctx, *, msg):
+        """Removes a channel from the list of whitelisted channels."""
+        await self.del_something("whitelist", msg)
+        await ctx.send("Successfully removed the channel.")
+    
     @antispam.command(name = "delMuteMessage")
     async def del_mute(self, ctx, *, msg):
         """Removes a message from the list of messages."""
-        list = self.cache_messages
-        if msg not in list:
-            await ctx.send("There's no such message in that list!")
-            return
-        list.remove(msg)
-        await self.config.messages.set(list)
-        await self.update_cache("messages", list)
+        await self.del_something("messages", msg)
         await ctx.send("Successfully removed the mute message.")
+
+    @antispam.command(name = "listWhitelist")
+    async def list_mute(self, ctx):
+        """Sends the list of whitelisted channels through DMs"""
+        list = self.cache_whitelist
+        await ctx.send("```" + str(list) +  "```") 
 
     @antispam.command(name = "listMuteMessage")
     async def list_mute(self, ctx):
         """Sends the list of messages through DMs"""
         list = self.cache_messages
-        await ctx.send("```" + str(list) +  "```") 
+        await ctx.send("```" + str(list) +  "```")
        
     @antispam.command(name = "setup")
     async def setup(self, ctx, roleID, channelID):
