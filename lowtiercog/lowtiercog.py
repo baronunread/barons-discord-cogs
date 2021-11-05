@@ -7,12 +7,10 @@ class Lowtiercog(commands.Cog):
 
     @commands.command()
     async def download_test(self, ctx):
-        try:
-            await ctx.attachments[0].save("ltgkeys.json")
-            with open('ltgkeys.json', 'r') as handle:
-                await ctx.send(json.load(handle))
-        except:
-            await ctx.send("Bro you fucked up doe")
+        await ctx.attachments[0].save("ltgkeys.json")
+        with open('ltgkeys.json', 'r') as handle:
+            await ctx.send(json.load(handle))
+
 
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx: commands.Context):
