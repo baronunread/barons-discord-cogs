@@ -45,7 +45,7 @@ class Lowtiercog(commands.Cog):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
             return
-        numberOfQuotes = self.quotes.acell('F1').value
+        numberOfQuotes = int(self.quotes.acell('F1').value)
         selected = random.randint(1, numberOfQuotes)
         quote = self.quotes.cell(selected, 1)
         await ctx.send(quote)
