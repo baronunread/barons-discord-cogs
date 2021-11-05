@@ -35,6 +35,7 @@ class Lowtiercog(commands.Cog):
                 await args[1].send("I haven't been setup yet.")
             else:
                 await f(*args)
+            return wrapper
     
     @setup_check
     @commands.group(invoke_without_command = True)
