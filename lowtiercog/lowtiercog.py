@@ -34,7 +34,7 @@ class Lowtiercog(commands.Cog):
             if not args[0].quotes:
                 await args[1].send("I haven't been setup yet.")
             else:
-                return f(*args)
+                await f(*args)
     
     @setup_check
     @commands.group(invoke_without_command = True)
