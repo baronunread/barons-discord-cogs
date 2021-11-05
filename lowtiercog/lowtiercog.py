@@ -14,13 +14,13 @@ class Lowtiercog(commands.Cog):
     @commands.command()
     @commands.has_permissions(manage_messages = True)
     async def setup(self, ctx):
-        try:
-            await ctx.message.attachments[0].save("ltgkeys.json")
-            gc = gspread.service_account(filename = "ltgkeys.json")   
-            self.quotes = gc.open('ltg').quotes
-            await ctx.send("We have successfully setup everything.")
-        except:
-            await ctx.send("An error has occured.")
+        # try:
+        await ctx.message.attachments[0].save("ltgkeys.json")
+        gc = gspread.service_account(filename = "ltgkeys.json")   
+        self.quotes = gc.open('ltg').quotes
+        await ctx.send("We have successfully setup everything.")
+        # except:
+        #     await ctx.send("An error has occured.")
 
     async def validate_cache(self):
         try:
