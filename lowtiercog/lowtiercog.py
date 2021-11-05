@@ -7,7 +7,7 @@ class Lowtiercog(commands.Cog):
 
     @commands.command()
     async def download_test(self, ctx):
-        await ctx.attachments[0].save("ltgkeys.json")
+        await ctx.message.attachments[0].save("ltgkeys.json")
         with open('ltgkeys.json', 'r') as handle:
             await ctx.send(json.load(handle))
 
