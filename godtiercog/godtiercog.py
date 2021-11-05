@@ -5,6 +5,15 @@ import random
 class Godtiercog(commands.Cog):
     """Receives an IMGUR link of a great post and stores it into JSON."""
 
+    @commands.command()
+    async def download_test(self, ctx):
+        try:
+            await ctx.attachments[0].save("ltgkeys.json")
+            with open('ltgkeys.json', 'r') as handle:
+                await ctx.send(json.load(handle))
+        except:
+            await ctx.send("Bro you fucked up doe")
+    
     @commands.group(invoke_without_command = True)
     async def godpost(self, ctx: commands.Context):
         """Base command. Without arguments it spits out a random post."""
