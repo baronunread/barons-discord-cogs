@@ -3,6 +3,7 @@ import gspread
 import discord
 import json
 import random
+import inspect
 
 class Lowtiercog(commands.Cog):
     """Receives infamous LTG quotes and stores them into JSON."""
@@ -28,18 +29,20 @@ class Lowtiercog(commands.Cog):
             self.quotes = gc.open('ltg').sheet1
         except:
             pass
-
-    def setup_check(f):
-        async def wrapper(*args):
-            if not args[0].quotes:
-                await args[1].send("I haven't been setup yet.")
-            else:
-                await f(*args)
-            return f(*args)
-        return wrapper
     
-    @setup_check
+    def setup_check(self, f):
+            async def decorator(ctx, *args):
+                if not self.quotes:
+                    await ctx.send("I haven't been setup yet.")
+                else:
+                    await f(ctx, *args)
+            decorator.__name__ = f.__name__
+            sig = inspect.signature(f)
+            decorator.__signature__ = sig.replace(parameters=tuple(sig.parameters.values())[1:])
+            return decorator
+
     @commands.group(invoke_without_command = True)
+    @setup_check
     async def lowtierquote(self, ctx):
         """Base command. Without arguments it posts a random LTG quote."""
         numberOfQuotes = int(self.quotes.acell('F1').value)
