@@ -73,7 +73,7 @@ class Lowtiercog(commands.Cog):
     @_lowtierlist.error
     @_lowtiershow.error
     @_lowtieradd.error
-    @_lowtierdel.error
+    #@_lowtierdel.error
     async def check_error(self, ctx, error):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
