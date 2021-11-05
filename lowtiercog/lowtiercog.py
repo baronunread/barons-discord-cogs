@@ -29,20 +29,14 @@ class Lowtiercog(commands.Cog):
             self.quotes = gc.open('ltg').sheet1
         except:
             pass
-    
-    def setup_check(self, f):
-            async def decorator(ctx, *args):
-                if not self.quotes:
-                    await ctx.send("I haven't been setup yet.")
-                else:
-                    await f(ctx, *args)
-            decorator.__name__ = f.__name__
-            sig = inspect.signature(f)
-            decorator.__signature__ = sig.replace(parameters=tuple(sig.parameters.values())[1:])
-            return decorator
 
+    async def setup_check(self, ctx):
+        if not self.quotes:
+            await ctx.send("I haven't been setup yet.")
+            return
+        
+    @commands.before_invoke(setup_check)    
     @commands.group(invoke_without_command = True)
-    @self.bot.setup_check
     async def lowtierquote(self, ctx):
         """Base command. Without arguments it posts a random LTG quote."""
         numberOfQuotes = int(self.quotes.acell('F1').value)
