@@ -57,16 +57,16 @@ class Lowtiercog(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def _lowtieradd(self, ctx, *, msg):
         """Adds a quote to the list of quotes."""
+        self.quotes.update_cell(self.numQuotes + 1, 1, msg)
         self.numQuotes += 1
-        self.quotes.update_cell(self.numQuotes, 1, msg)
         await ctx.send("Quote successfully added! Its ID is: {}".format(self.numQuotes))
         
     @lowtierquote.command(name = "delete")
     @commands.has_permissions(manage_messages = True)
-    async def _lowtierdel(self, ctx, *, msg):
-        """Removes a quote from the list of quotes, given the quote."""
+    async def _lowtierdel(self, ctx, *, code):
+        """Removes a quote from the list of quotes, given the ID"""
+        self.quotes.delete_rows(code)
         self.numQuotes -= 1
-        self.quotes.delete_rows(self.quotes.find(msg).row)
         await ctx.send("Quote successfully deleted!")
         
     @lowtierquote.error
@@ -75,7 +75,7 @@ class Lowtiercog(commands.Cog):
     @_lowtieradd.error
     @_lowtierdel.error
     async def check_error(self, ctx, error):
-        if not self.numQuotes or not self.quotes:
+        if not self.quotes:
             await ctx.send("I haven't been setup yet.")
         elif isinstance(error, discord.HTTPException):
             await ctx.send("Open up your DMs.")
