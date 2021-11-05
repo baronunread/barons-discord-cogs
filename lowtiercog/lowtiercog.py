@@ -44,7 +44,7 @@ class Lowtiercog(commands.Cog):
     async def _lowtiershow(self, ctx, code):
         """Showcases a specific quote given an ID. The row number in the Google Sheet is the code.
            To see the the Google Sheets use the list command."""
-        quote = self.quotes.cell(code, 1).value
+        quote = self.quotes.cell(code + 1, 1).value
         if not quote: quote = "There's no quote associated to that ID."
         await ctx.send(quote)
 
@@ -65,7 +65,7 @@ class Lowtiercog(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def _lowtierdel(self, ctx, *, code):
         """Removes a quote from the list of quotes, given the ID"""
-        self.quotes.delete_rows(int(code))
+        self.quotes.delete_rows(int(code) + 1)
         self.numQuotes -= 1
         await ctx.send("Quote successfully deleted!")
         
@@ -73,7 +73,7 @@ class Lowtiercog(commands.Cog):
     @_lowtierlist.error
     @_lowtiershow.error
     @_lowtieradd.error
-    #@_lowtierdel.error
+    @_lowtierdel.error
     async def check_error(self, ctx, error):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
