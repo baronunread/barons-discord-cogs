@@ -29,19 +29,24 @@ class Lowtiercog(commands.Cog):
         except:
             pass
 
+    def setup_check(f):
+        async def wrapper(*args):
+            if not args[0].quotes:
+                await args[1].send("I haven't been setup yet.")
+            else:
+                return f(*args)
+    
+    @setup_check()
     @commands.group(invoke_without_command = True)
-    async def lowtierquote(self, ctx: commands.Context):
+    async def lowtierquote(self, ctx):
         """Base command. Without arguments it posts a random LTG quote."""
-        if not self.quotes:
-            await ctx.send("I haven't been setup yet.")
-            return
         numberOfQuotes = int(self.quotes.acell('F1').value)
         selected = random.randint(1, numberOfQuotes)
         quote = self.quotes.cell(selected, 1).value
         await ctx.send(quote)
 
     @lowtierquote.command(name = "show")
-    async def _lowtiershow(self, ctx: commands.Context, code):
+    async def _lowtiershow(self, ctx, code):
         """Showcases a specific quote given an ID."""
         if ( ctx.channel.id == 319638586364395520 or ctx.channel.id == 344539989906030612 ):
             try:
@@ -60,7 +65,7 @@ class Lowtiercog(commands.Cog):
                 await ctx.send("Invalid code.")
 
     @lowtierquote.command(name = "list")
-    async def _lowtierlist(self, ctx: commands.Context):
+    async def _lowtierlist(self, ctx):
         """Showcases the current list of quotes. The preview is 50 characters long."""
         output = ""
         messages = []
@@ -89,7 +94,7 @@ class Lowtiercog(commands.Cog):
 
     @lowtierquote.command(name = "add")
     @commands.has_permissions(manage_messages = True)
-    async def _lowtieradd(self, ctx: commands.Context, *, msg):
+    async def _lowtieradd(self, ctx, *, msg):
         """Adds a quote to the JSON file."""
         id = 0
         with open('quotes.json') as file:
@@ -115,7 +120,7 @@ class Lowtiercog(commands.Cog):
 
     @lowtierquote.command(name = "delete")
     @commands.has_permissions(manage_messages = True)
-    async def _lowtierdelete(self, ctx: commands.Context, code):
+    async def _lowtierdelete(self, ctx, code):
         """Removes a quote from the JSON file, given an id."""
         id = int(code)
         msg = "The given ID wasn't found."
