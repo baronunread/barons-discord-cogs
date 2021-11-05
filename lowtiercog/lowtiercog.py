@@ -1,9 +1,7 @@
 from redbot.core import commands
 import gspread
 import discord
-import json
 import random
-import inspect
 
 class Lowtiercog(commands.Cog):
     """Receives infamous LTG quotes and stores them into JSON."""
@@ -20,6 +18,7 @@ class Lowtiercog(commands.Cog):
             await ctx.message.attachments[0].save("ltgkeys.json")
             await self.parse()
             await ctx.send("We have successfully setup everything.")
+            await ctx.message.delete()
         except:
             await ctx.send("An error has occured.")
 
@@ -43,27 +42,16 @@ class Lowtiercog(commands.Cog):
 
     @lowtierquote.command(name = "show")
     async def _lowtiershow(self, ctx, code):
-        """Showcases a specific quote given an ID."""
+        """Showcases a specific quote given an ID. The row number in the Google Sheet is the code.
+           To see the the Google Sheets use the list command."""
         quote = self.quotes.cell(code, 1).value
         if not quote: quote = "There's no quote associated to that ID."
         await ctx.send(quote)
 
     @lowtierquote.command(name = "list")
     async def _lowtierlist(self, ctx):
-        """Showcases the current list of quotes. The preview is 50 characters long."""
-        output = ""
-        messages = []
-        user = ctx.message.author
-        for i in range(self.numQuotes):
-            msg = self.quotes.cell(i, 1)
-            if len(msg) > 50: msg = msg[0:50].rstrip().replace('\n', ' ') + "..."
-            if len(output) >= 1950:
-                messages.append(output)
-                output = ""
-            output += output + "ID: " + str(i) + " - " + msg + "\n"
-        if output: messages.append(output)
-        for output in messages:
-            await user.send(output)
+        """Sends the Google Sheet link."""
+        await ctx.send("https://docs.google.com/spreadsheets/d/1wOBldLlBONvFxVI0jRALLuUpaQ8uev_JOUvzyL6PTd8")
 
     @lowtierquote.command(name = "add")
     @commands.has_permissions(manage_messages = True)
@@ -71,7 +59,7 @@ class Lowtiercog(commands.Cog):
         """Adds a quote to the list of quotes."""
         self.numQuotes += 1
         self.quotes.update_cell(self.numQuotes, 1, msg)
-        await ctx.send("Quote successfully added!")
+        await ctx.send("Quote successfully added! Its ID is: {}".format(self.numQuotes))
         
     @lowtierquote.command(name = "delete")
     @commands.has_permissions(manage_messages = True)
@@ -87,7 +75,7 @@ class Lowtiercog(commands.Cog):
     @_lowtieradd.error
     @_lowtierdel.error
     async def check_error(self, ctx, error):
-        if not self.quotes:
+        if not self.numQuotes or not self.quotes:
             await ctx.send("I haven't been setup yet.")
         elif isinstance(error, discord.HTTPException):
             await ctx.send("Open up your DMs.")
