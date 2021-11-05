@@ -42,7 +42,7 @@ class Lowtiercog(commands.Cog):
             return decorator
 
     @commands.group(invoke_without_command = True)
-    @setup_check
+    @self.bot.setup_check
     async def lowtierquote(self, ctx):
         """Base command. Without arguments it posts a random LTG quote."""
         numberOfQuotes = int(self.quotes.acell('F1').value)
