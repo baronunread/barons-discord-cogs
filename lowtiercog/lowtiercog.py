@@ -42,7 +42,7 @@ class Lowtiercog(commands.Cog):
 
     @lowtierquote.command(name = "show")
     async def _lowtiershow(self, ctx, code):
-        """Showcases a specific quote given an ID. The row number in the Google Sheet is the code.
+        """Showcases a specific quote given an ID. The row number minus 1 in the Google Sheet is the code.
            To see the the Google Sheets use the list command."""
         quote = self.quotes.cell(int(code) + 1, 1).value
         if not quote: quote = "There's no quote associated to that ID."
@@ -50,7 +50,8 @@ class Lowtiercog(commands.Cog):
 
     @lowtierquote.command(name = "list")
     async def _lowtierlist(self, ctx):
-        """Sends the Google Sheet link."""
+        """Sends the Google Sheet link.
+        If you want the ID of a certain quote, the row number minus 1 is the ID value."""
         await ctx.send("https://docs.google.com/spreadsheets/d/1wOBldLlBONvFxVI0jRALLuUpaQ8uev_JOUvzyL6PTd8")
 
     @lowtierquote.command(name = "add")
@@ -64,7 +65,7 @@ class Lowtiercog(commands.Cog):
     @lowtierquote.command(name = "delete")
     @commands.has_permissions(manage_messages = True)
     async def _lowtierdel(self, ctx, *, code):
-        """Removes a quote from the list of quotes, given the ID"""
+        """Removes a quote from the list of quotes, given the ID."""
         self.quotes.delete_rows(int(code) + 1)
         self.numQuotes -= 1
         await ctx.send("Quote successfully deleted!")
