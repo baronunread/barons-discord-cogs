@@ -44,7 +44,7 @@ class Lowtiercog(commands.Cog):
     async def _lowtiershow(self, ctx, code):
         """Showcases a specific quote given an ID. The row number in the Google Sheet is the code.
            To see the the Google Sheets use the list command."""
-        quote = self.quotes.cell(code + 1, 1).value
+        quote = self.quotes.cell(int(code) + 1, 1).value
         if not quote: quote = "There's no quote associated to that ID."
         await ctx.send(quote)
 
