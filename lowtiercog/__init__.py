@@ -12,4 +12,4 @@ if (not path.exists("quotes.json") ):
         json.dump(data, file)
 
 def setup(bot):
-    bot.add_cog(Lowtiercog())
+    bot.add_cog(Lowtiercog(bot))
