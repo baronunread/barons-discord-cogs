@@ -31,13 +31,13 @@ class Lowtiercog(commands.Cog):
     async def parse(self):
         gc = gspread.service_account(filename = "ltgkeys.json")   
         self.quotes = gc.open('ltg').sheet1
-        self.numQuotes = int(self.quotes.acell('F1').value)
+        self.numQuotes = int(self.quotes.acell('A1').value)
  
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx):
         """Base command. Without arguments it posts a random LTG quote."""
         selected = random.randint(1, self.numQuotes)
-        quote = self.quotes.cell(selected, 1).value
+        quote = self.quotes.cell(selected + 1, 1).value
         await ctx.send(quote) 
 
     @lowtierquote.command(name = "show")
@@ -57,7 +57,7 @@ class Lowtiercog(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def _lowtieradd(self, ctx, *, msg):
         """Adds a quote to the list of quotes."""
-        self.quotes.update_cell(self.numQuotes + 1, 1, msg)
+        self.quotes.update_cell(self.numQuotes + 2, 1, msg)
         self.numQuotes += 1
         await ctx.send("Quote successfully added! Its ID is: {}".format(self.numQuotes))
         
