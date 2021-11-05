@@ -44,8 +44,8 @@ class Lowtiercog(commands.Cog):
         await ctx.send(quote)
 
     @lowtierquote.error
-    async def check_error(ctx, error):
-        if error is AttributeError:
+    async def check_error(self, ctx, error):
+        if not self.quotes:
             await ctx.send("I haven't been setup yet.")
         else:
             await ctx.send("An unexpected error has happened.")
