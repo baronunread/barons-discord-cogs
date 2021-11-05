@@ -30,12 +30,18 @@ class Lowtiercog(commands.Cog):
         except:
             pass
 
-    async def setup_check(self, ctx):
-        if not self.quotes:
+    # async def setup_check(self, ctx):
+    #     if not self.quotes:
+    #         await ctx.send("I haven't been setup yet.")
+
+    async def check_error(ctx, error):
+        if error is AttributeError:
             await ctx.send("I haven't been setup yet.")
-            return
-        
-    @commands.before_invoke(setup_check)    
+        else:
+            await ctx.send("An unexpected error has happened.")
+
+    @commands.error(check_error)
+    # @commands.before_invoke(setup_check)    
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx):
         """Base command. Without arguments it posts a random LTG quote."""
@@ -44,6 +50,7 @@ class Lowtiercog(commands.Cog):
         quote = self.quotes.cell(selected, 1).value
         await ctx.send(quote)
 
+    # @commands.before_invoke(setup_check)
     @lowtierquote.command(name = "show")
     async def _lowtiershow(self, ctx, code):
         """Showcases a specific quote given an ID."""
@@ -63,6 +70,7 @@ class Lowtiercog(commands.Cog):
             except:
                 await ctx.send("Invalid code.")
 
+    # @commands.before_invoke(setup_check)
     @lowtierquote.command(name = "list")
     async def _lowtierlist(self, ctx):
         """Showcases the current list of quotes. The preview is 50 characters long."""
@@ -91,6 +99,7 @@ class Lowtiercog(commands.Cog):
         except:
             await ctx.send("ERROR: Please open your DMs.")
 
+    # @commands.before_invoke(setup_check)
     @lowtierquote.command(name = "add")
     @commands.has_permissions(manage_messages = True)
     async def _lowtieradd(self, ctx, *, msg):
@@ -117,6 +126,7 @@ class Lowtiercog(commands.Cog):
             json.dump(data, file, indent = 2)
         await ctx.send("It is done. The ID is %d." %id)
 
+    # @commands.before_invoke(setup_check)
     @lowtierquote.command(name = "delete")
     @commands.has_permissions(manage_messages = True)
     async def _lowtierdelete(self, ctx, code):
