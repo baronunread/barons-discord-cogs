@@ -34,13 +34,6 @@ class Lowtiercog(commands.Cog):
     #     if not self.quotes:
     #         await ctx.send("I haven't been setup yet.")
 
-    async def check_error(ctx, error):
-        if error is AttributeError:
-            await ctx.send("I haven't been setup yet.")
-        else:
-            await ctx.send("An unexpected error has happened.")
-
-    @commands.error(check_error)
     # @commands.before_invoke(setup_check)    
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx):
@@ -49,6 +42,13 @@ class Lowtiercog(commands.Cog):
         selected = random.randint(1, numberOfQuotes)
         quote = self.quotes.cell(selected, 1).value
         await ctx.send(quote)
+
+    @lowtierquote.error
+    async def check_error(ctx, error):
+        if error is AttributeError:
+            await ctx.send("I haven't been setup yet.")
+        else:
+            await ctx.send("An unexpected error has happened.")
 
     # @commands.before_invoke(setup_check)
     @lowtierquote.command(name = "show")
