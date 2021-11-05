@@ -65,7 +65,7 @@ class Lowtiercog(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def _lowtierdel(self, ctx, *, code):
         """Removes a quote from the list of quotes, given the ID"""
-        self.quotes.delete_rows(code)
+        self.quotes.delete_rows(int(code))
         self.numQuotes -= 1
         await ctx.send("Quote successfully deleted!")
         
