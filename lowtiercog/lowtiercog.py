@@ -10,7 +10,7 @@ class Lowtiercog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.quotes = None
-        self.numQuotes = 0
+        self.numQuotes = None
         self.bot.loop.create_task(self.validate_cache())
     
     @commands.command()
@@ -18,20 +18,21 @@ class Lowtiercog(commands.Cog):
     async def setup(self, ctx):
         try:
             await ctx.message.attachments[0].save("ltgkeys.json")
-            gc = gspread.service_account(filename = "ltgkeys.json")   
-            self.quotes = gc.open('ltg').sheet1
-            self.numQuotes = int(self.quotes.acell('F1').value)
+            await self.parse()
             await ctx.send("We have successfully setup everything.")
         except:
             await ctx.send("An error has occured.")
 
     async def validate_cache(self):
         try:
-            gc = gspread.service_account(filename = "ltgkeys.json")   
-            self.quotes = gc.open('ltg').sheet1
-            self.numQuotes = int(self.quotes.acell('F1').value)
+            await self.parse()
         except:
             pass
+
+    async def parse(self):
+        gc = gspread.service_account(filename = "ltgkeys.json")   
+        self.quotes = gc.open('ltg').sheet1
+        self.numQuotes = int(self.quotes.acell('F1').value)
  
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx):
@@ -74,17 +75,21 @@ class Lowtiercog(commands.Cog):
         
     @lowtierquote.command(name = "delete")
     @commands.has_permissions(manage_messages = True)
-    async def _lowtierdelete(self, ctx, *, msg):
+    async def _lowtierdel(self, ctx, *, msg):
         """Removes a quote from the list of quotes, given the quote."""
         self.numQuotes -= 1
         self.quotes.delete_rows(self.quotes.find(msg).row)
         await ctx.send("Quote successfully deleted!")
         
     @lowtierquote.error
+    @_lowtierlist.error
     @_lowtiershow.error
+    @_lowtieradd.error
+    @_lowtierdel.error
     async def check_error(self, ctx, error):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
+        elif isinstance(error, discord.HTTPException):
+            await ctx.send("Open up your DMs.")
         else:
             await ctx.send("An unexpected error has happened.")
-            #HTTPException?
