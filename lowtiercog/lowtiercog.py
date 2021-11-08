@@ -34,19 +34,11 @@ class Lowtiercog(commands.Cog):
         self.numQuotes = int(self.quotes.acell('A1').value)
  
     @commands.group(invoke_without_command = True)
-    async def lowtierquote(self, ctx):
+    async def lowtierquote(self, ctx, code = None):
         """Base command. Without arguments it posts a random LTG quote."""
-        selected = random.randint(1, self.numQuotes)
+        selected = random.randint(1, self.numQuotes) if not code else int(code)
         quote = self.quotes.cell(selected + 1, 1).value
         await ctx.send(quote) 
-
-    @lowtierquote.command(name = "show")
-    async def _lowtiershow(self, ctx, code):
-        """Showcases a specific quote given an ID. The row number minus 1 in the Google Sheet is the code.
-           To see the the Google Sheets use the list command."""
-        quote = self.quotes.cell(int(code) + 1, 1).value
-        if not quote: quote = "There's no quote associated to that ID."
-        await ctx.send(quote)
 
     @lowtierquote.command(name = "list")
     async def _lowtierlist(self, ctx):
@@ -72,7 +64,6 @@ class Lowtiercog(commands.Cog):
         
     @lowtierquote.error
     @_lowtierlist.error
-    @_lowtiershow.error
     @_lowtieradd.error
     @_lowtierdel.error
     async def check_error(self, ctx, error):
@@ -80,5 +71,5 @@ class Lowtiercog(commands.Cog):
             await ctx.send("I haven't been setup yet.")
         elif isinstance(error, discord.HTTPException):
             await ctx.send("Open up your DMs.")
-        else:
-            await ctx.send("An unexpected error has happened.")
+        elif isinstance(error, ValueError):
+            await ctx.send("You've input something wrong. Please check your input.")
