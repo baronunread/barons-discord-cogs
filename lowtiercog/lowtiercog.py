@@ -36,8 +36,9 @@ class Lowtiercog(commands.Cog):
     @commands.group(invoke_without_command = True)
     async def lowtierquote(self, ctx, code = None):
         """Base command. Without arguments it posts a random LTG quote."""
-        selected = random.randint(1, self.numQuotes) if not code else int(code)
-        quote = self.quotes.cell(selected + 1, 1).value
+        async with ctx.typing():
+            selected = random.randint(1, self.numQuotes) if not code else int(code)
+            quote = self.quotes.cell(selected + 1, 1).value
         await ctx.send(quote) 
 
     @lowtierquote.command(name = "list")
