@@ -307,6 +307,7 @@ class Antispam(commands.Cog):
             await self.config.member(user).warned.set(False)  
 
     async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime = 0):
+        await self.remove_roles_and_mute(user, role)
         reason = " for spamming" if not manual else ""
         random.seed(random.random())
         selected = random.choice(self.cache_messages)
@@ -323,13 +324,6 @@ class Antispam(commands.Cog):
             msgEmbed.add_field(name = "TIME IN JAIL:", value = await self.represent_time(mutedTime))
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
-        await self.config.member(user).roles.set([role.id for role in user.roles])
-        for userRole in user.roles:
-            try:
-                await user.remove_roles(userRole)
-            except:
-                pass
-        await user.add_roles(role)
         if manual:
             return
         toDelete = await self.config.member(user).messageList()
@@ -337,6 +331,15 @@ class Antispam(commands.Cog):
             channel = user.guild.get_channel(pair[0])
             message = await channel.fetch_message(pair[1])
             await message.delete()
+
+    async def remove_roles_and_mute(self, user, role):
+        await self.config.member(user).roles.set([role.id for role in user.roles])
+        for userRole in user.roles:
+            try:
+                await user.remove_roles(userRole)
+            except:
+                pass
+        await user.add_roles(role)
 
     async def unmute(self, msgChannel, user, role, modChannel):
         msgDict =   {
