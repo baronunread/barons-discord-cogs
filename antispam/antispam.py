@@ -260,11 +260,15 @@ class Antispam(commands.Cog):
         await ctx.send("Edited the channel successfully.")
     
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message): 
         ctx = await self.bot.get_context(message)
         whitelist = await self.return_cache("whitelist")
         user = message.author
-        role = get(user.guild.roles, id = self.cache_role)
+        try:
+            role = get(user.guild.roles, id = self.cache_role)
+        except:
+            await ctx.send("I haven't been setup yet.")
+            return
         if role in user.roles or user.bot or ctx.valid or str(ctx.channel.id) in whitelist:
             return
         msgList = await self.config.member(user).messageList()
@@ -383,7 +387,6 @@ class Antispam(commands.Cog):
     @manual_mute.error
     @manual_unmute.error
     @timed_mute_info.error
-    @on_message.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
