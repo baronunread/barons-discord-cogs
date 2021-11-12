@@ -345,12 +345,22 @@ class Antispam(commands.Cog):
         await user.add_roles(role)
 
     async def unmute(self, msgChannel, user, role, modChannel):
+        await self.add_roles_and_unmute(user, role)
         msgDict =   {
                         "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
                         "description" : user.mention + " has been unmuted"                    }
         msgEmbed = Embed.from_dict(msgDict)
         msgEmbed.timestamp = datetime.now(tz = timezone.utc)
         await modChannel.send(embed = msgEmbed)
+        await msgChannel.send(user.mention + " you've been unmuted!")
+        await self.config.member(user).clear()
+        try:    
+            timer, = [task for task in all_tasks() if task.get_name() == str(user.id)]
+            timer.cancel()
+        except:
+            pass
+
+    async def add_roles_and_unmute(self, user, role):
         roles = await self.config.member(user).roles()
         roles = [get(user.guild.roles, id = roleID) for roleID in roles]
         await user.remove_roles(role)
@@ -359,13 +369,6 @@ class Antispam(commands.Cog):
                 await user.add_roles(userRole)
             except:
                 pass
-        await msgChannel.send(user.mention + " you've been unmuted!")
-        await self.config.member(user).clear()
-        try:    
-            timer, = [task for task in all_tasks() if task.get_name() == str(user.id)]
-            timer.cancel()
-        except:
-            pass
 
     @commands.command()
     @commands.has_permissions(manage_messages = True)
