@@ -91,9 +91,6 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
         """Manually mutes someone."""
-        if not self.cache_role or not self.cache_channel:
-            await ctx.send("I have not been set up yet!")
-            return
         msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
             await ctx.send("I need either a reply or mention to mute someone.")
@@ -119,9 +116,6 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
-        if not self.cache_role or not self.cache_channel:
-            await ctx.send("I have not been set up yet!")
-            return
         msgChannel, user, role, modChannel = await self.get_context_data(ctx)
         if not user:
             await ctx.send("I need either a reply or mention to unmute someone.")    
@@ -136,9 +130,6 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def timed_mute_info(self, ctx):
         """Checks how much time is left in the muted status."""
-        if not self.cache_role or not self.cache_channel:
-            await ctx.send("I have not been set up yet!")
-            return
         notUsed, user, role, notUsed = await self.get_context_data(ctx)
         if not user:
             await ctx.send("I need either a reply or mention to check up on someone's jail time.")    
@@ -273,10 +264,10 @@ class Antispam(commands.Cog):
         ctx = await self.bot.get_context(message)
         whitelist = await self.return_cache("whitelist")
         user = message.author
-        if user.bot or ctx.valid or not self.cache_role or not self.cache_channel or str(ctx.channel.id) in whitelist:
+        role = get(user.guild.roles, id = self.cache_role)
+        if role in user.roles or user.bot or ctx.valid or str(ctx.channel.id) in whitelist:
             return
         msgList = await self.config.member(user).messageList()
-        role = get(user.guild.roles, id = self.cache_role)
         modChannel = message.guild.get_channel(self.cache_channel) 
         timePrevious = await self.config.member(user).timePrevious() 
         previousMessageHash = await self.config.member(user).previousMessageHash()
@@ -388,3 +379,11 @@ class Antispam(commands.Cog):
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
+
+    @manual_mute.error
+    @manual_unmute.error
+    @timed_mute_info.error
+    @on_message.error
+    async def check_error(self, ctx, error):
+        if not self.cache_role or not self.cache_channel:
+            await ctx.send("I haven't been setup yet.")
