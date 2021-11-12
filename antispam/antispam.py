@@ -299,7 +299,7 @@ class Antispam(commands.Cog):
             if spamValue >= 6 and not warned:
                 await self.config.member(user).warned.set(True)
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
-            elif spamValue >= 8 and warned:
+            if warned:
                 try:
                     alreadyMuting, = [task for task in all_tasks() if task.get_name() == str(user.id) + "Mute"]
                 except ValueError:
