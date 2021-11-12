@@ -122,7 +122,9 @@ class Antispam(commands.Cog):
             listOfMutes.append(user)
             await self.config.mutes.set(listOfMutes)
             timeOfMute = ctx.message.created_at.timestamp()
-            await self.config.member(user).timeOfMute.set(timeOfMute)   
+            await self.config.member(user).timeOfMute.set(timeOfMute)
+            #debug
+            await ctx.send("Mute is {}".format(timeOfMute))   
             self.bot.loop.create_task(self.unmute_timer(timeSeconds, user, role, modChannel, msgChannel), name = user.id)
 
     async def unmute_timer(self, time, user, role, modChannel, msgChannel = None):
@@ -166,6 +168,8 @@ class Antispam(commands.Cog):
             else:
                 currentTime = ctx.message.created_at.timestamp()
                 timeOfMute = await self.config.member(user).timeOfMute()
+                #debug
+                await ctx.send("Mute is {}".format(timeOfMute))
                 remainingTime = time - int(currentTime - timeOfMute)
                 if not remainingTime: return
                 data =  {
