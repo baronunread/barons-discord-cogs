@@ -300,7 +300,9 @@ class Antispam(commands.Cog):
                 await self.config.member(user).warned.set(True)
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
             elif spamValue >= 8 and warned:
-                await self.mute(message.channel, user, role, modChannel, False)            
+                alreadyMuting, = [task for task in all_tasks() if task.get_name() == str(user.id) + "Mute"]
+                if not alreadyMuting:
+                    self.bot.loop.create_task(self.mute(message.channel, user, role, modChannel, False), name = str(user.id) + "Mute")            
         else:
             await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
             await self.config.member(user).spamValue.set(0)
