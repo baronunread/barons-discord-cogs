@@ -180,7 +180,7 @@ class Antispam(commands.Cog):
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
         if not user:
-            return None, None, None, None
+            return None, None
         return msgChannel, user
 
     async def get_role_and_mod_channel(self, user):
@@ -423,9 +423,9 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    #@manual_mute.error
-    #@manual_unmute.error
-    #@timed_mute_info.error
+    @manual_mute.error
+    @manual_unmute.error
+    @timed_mute_info.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
