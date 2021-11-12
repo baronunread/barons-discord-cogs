@@ -292,7 +292,7 @@ class Antispam(commands.Cog):
         fastSpam = deltaTime < 1
         sameSpam = not differentHash
         if fastSpam or sameSpam:
-            spamValue += 1 if fastSpam else 2.5
+            spamValue += 2 if sameSpam else 1
             msgList.append( (message.channel.id, message.id) )
             await self.config.member(user).messageList.set(msgList)
             await self.config.member(user).spamValue.set(spamValue)    
