@@ -109,9 +109,7 @@ class Antispam(commands.Cog):
         """Manually mutes someone."""
         msgChannel, user = await self.get_context_data(ctx)
         role, modChannel = await self.get_role_and_mod_channel(user)
-        if not user:
-            await ctx.send("I need either a reply or mention to mute someone.")
-        elif user.bot:
+        if user.bot:
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles:
             await ctx.send("The user is already muted.")
@@ -140,9 +138,7 @@ class Antispam(commands.Cog):
         """Manually unmutes someone."""
         msgChannel, user = await self.get_context_data(ctx)
         role, modChannel = await self.get_role_and_mod_channel(user)
-        if not user:
-            await ctx.send("I need either a reply or mention to unmute someone.")    
-        elif user.bot:
+        if user.bot:
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
             await self.unmute(user, role, modChannel, msgChannel)
@@ -155,9 +151,7 @@ class Antispam(commands.Cog):
         """Checks how much time is left in the muted status."""
         notUsed, user = await self.get_context_data(ctx)
         role = get(user.guild.roles, id = self.cache_role)
-        if not user:
-            await ctx.send("I need either a reply or mention to check up on someone's jail time.")    
-        elif user.bot:
+        if user.bot:
             await ctx.send("Bots can't be muted so why should I even check up on them?!?")
         elif role in user.roles:
             time = await self.config.member(user).secondsOfMute()
@@ -406,12 +400,8 @@ class Antispam(commands.Cog):
         msg = ctx.message
         msgChannel = ctx.channel
         stop = msg.created_at
-        try:
-            id = msg.reference.message_id
-            toDelete = await msgChannel.fetch_message(id)
-        except AttributeError:
-            await ctx.send("I can only delete from a reply onward.")
-            return
+        id = msg.reference.message_id
+        toDelete = await msgChannel.fetch_message(id)
         await toDelete.delete()
         time = toDelete.created_at
         list = [1]
@@ -423,9 +413,12 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    #@manual_mute.error
-    #@manual_unmute.error
-    #@timed_mute_info.error
+    # @manual_mute.error
+    # @manual_unmute.error
+    # @timed_mute_info.error
+    # @purge.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
+        elif isinstance(error, AttributeError):
+            await ctx.send("I need a reply or a mention to work. For purge I need only the reply.")
