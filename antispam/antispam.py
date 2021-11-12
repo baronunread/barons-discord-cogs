@@ -119,7 +119,7 @@ class Antispam(commands.Cog):
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
             if not timeSeconds: return
             listOfMutes = await self.config.mutes()
-            listOfMutes.append(user)
+            listOfMutes.append(user.id)
             await self.config.mutes.set(listOfMutes)
             timeOfMute = ctx.message.created_at.timestamp()
             await self.config.member(user).timeOfMute.set(timeOfMute) 
