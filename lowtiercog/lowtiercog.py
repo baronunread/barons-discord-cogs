@@ -70,7 +70,5 @@ class Lowtiercog(commands.Cog):
     async def check_error(self, ctx, error):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
-        elif isinstance(error, discord.HTTPException):
-            await ctx.send("Open up your DMs.")
-        elif isinstance(error, ValueError):
+        elif isinstance(error, (commands.ConversionError, ValueError)):
             await ctx.send("You've input something wrong. Please check your input.")
