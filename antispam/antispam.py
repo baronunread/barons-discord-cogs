@@ -117,8 +117,6 @@ class Antispam(commands.Cog):
             await ctx.send("The user is already muted.")
         else:
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
-            #debug
-            await ctx.send("Mute is long {}".format(timeSeconds))  
             if not timeSeconds: return
             listOfMutes = await self.config.mutes()
             listOfMutes.append(user)
@@ -425,8 +423,8 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    @manual_mute.error
-    @manual_unmute.error
+    #@manual_mute.error
+    #@manual_unmute.error
     #@timed_mute_info.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
