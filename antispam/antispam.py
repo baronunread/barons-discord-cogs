@@ -38,7 +38,7 @@ class Antispam(commands.Cog):
                             "whitelist": []
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0, timeOfMute = None)
+        self.config.register_member(warned = False, spamValue = 0, timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0, timeOfMute = None)
         self.cache_role = None
         self.cache_channel = None
         self.cache_messages = []
@@ -290,19 +290,26 @@ class Antispam(commands.Cog):
         await self.config.member(user).timePrevious.set(timeCurrent)
         await self.config.member(user).previousMessageHash.set(currentMessageHash)
         if deltaTime > 300:
-            await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
+            await self.config.member(user).clear()
             return
-        if deltaTime < 1 or not differentHash:
+        warned = await self.config.member(user).warned()
+        spamValue = await self.config.member(user).spamValue()
+        fastSpam = deltaTime < 1
+        sameSpam = not differentHash
+        if fastSpam or sameSpam:
+            spamValue += 1 if fastSpam else 2
             msgList.append( (message.channel.id, message.id) )
-            await self.config.member(user).messageList.set(msgList)    
-            messages = len(msgList)
-            if messages == 3:
+            await self.config.member(user).messageList.set(msgList)
+            await self.config.member(user).spamValue.set(spamValue)    
+            if spamValue > 6 and not warned:
+                await self.config.member(user).warned.set(True)
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
-            elif messages == 5:
-                await self.mute(message.channel, user, role, modChannel, False)
-                return
+            elif spamValue > 8 and warned:
+                await self.mute(message.channel, user, role, modChannel, False)            
         else:
             await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
+            await self.config.member(user).spamValue.set(0)
+            await self.config.member(user).warned.set(False)  
 
     async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime = 0):
         reason = " for spamming" if not manual else ""
