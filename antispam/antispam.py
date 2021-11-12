@@ -373,11 +373,11 @@ class Antispam(commands.Cog):
         except AttributeError:
             await ctx.send("I can only delete from a reply onward.")
             return
+        await toDelete.delete()
         time = toDelete.created_at
         list = [1]
         while list:    
             list = await msgChannel.purge(after = time, before = stop)
-        await toDelete.delete()
         await ctx.send("https://tenor.com/view/mib-men-in-black-will-smith-flash-gif-7529438")
         
     @commands.Cog.listener()
