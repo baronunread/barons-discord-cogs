@@ -3,7 +3,7 @@ from discord.utils import get
 from discord import Embed 
 from asyncio import sleep as a_sleep, all_tasks
 from datetime import datetime, timezone
-import time
+import discord
 import random
 import re
 
@@ -35,6 +35,7 @@ class Antispam(commands.Cog):
                             "role": None,
                             "channel": None,
                             "messages": ["has been muted."],
+                            "mutes": [],
                             "whitelist": []
                          }
         self.config.register_global(**default_global)
@@ -44,6 +45,7 @@ class Antispam(commands.Cog):
         self.cache_messages = []
         self.cache_whitelist = []
         self.bot.loop.create_task(self.validate_cache())
+        self.bot.loop.create_task(self.start_mute_timers())
 
     async def return_cache(self, type: str):
         if type == "role":
@@ -74,7 +76,21 @@ class Antispam(commands.Cog):
         if self.cache_messages == []:
             await self.update_cache("messages")
         if self.cache_whitelist == []:
-            await self.update_cache("whitelist")    
+            await self.update_cache("whitelist")
+
+    async def start_mute_timers(self):
+        listOfMutes = await self.config.mutes()
+        if not listOfMutes: return
+        try:
+            role, modChannel = await self.get_role_and_mod_channel(listOfMutes[0])
+        except:
+            return
+        currentTime = datetime.now(tz = timezone.utc).timestamp()
+        for user in listOfMutes:
+            time = await self.config.member(user).secondsOfMute()
+            timeOfMute = await self.config.member(user).timeOfMute()
+            remainingTime = min(0, time - int(currentTime - timeOfMute))
+            self.bot.loop.create_task(self.unmute_timer(remainingTime, user, role, modChannel), name = user.id) 
 
     async def represent_time(self, time):
         m, s = divmod(time, 60)
@@ -91,7 +107,8 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
         """Manually mutes someone."""
-        msgChannel, user, role, modChannel = await self.get_context_data(ctx)
+        msgChannel, user = await self.get_context_data(ctx)
+        role, modChannel = await self.get_role_and_mod_channel(user)
         if not user:
             await ctx.send("I need either a reply or mention to mute someone.")
         elif user.bot:
@@ -100,29 +117,35 @@ class Antispam(commands.Cog):
             await ctx.send("The user is already muted.")
         else:
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
-            muteInfo = (msgChannel, user, role, modChannel)
             if not timeSeconds: return
+            listOfMutes = await self.config.mutes()
+            listOfMutes.append(user)
+            await self.config.mutes.set(listOfMutes)
             timeOfMute = ctx.message.created_at.timestamp()
             await self.config.member(user).timeOfMute.set(timeOfMute)   
-            self.bot.loop.create_task(self.unmute_timer(timeSeconds, muteInfo), name = user.id)
+            self.bot.loop.create_task(self.unmute_timer(timeSeconds, user, role, modChannel, msgChannel), name = user.id)
 
-    async def unmute_timer(self, time, info):
+    async def unmute_timer(self, time, user, role, modChannel, msgChannel = None):
         while time > 1:
             await a_sleep(time // 2)
             time -= time // 2 
-        await self.unmute(info[0], info[1], info[2], info[3])   
+        listOfMutes = await self.config.mutes()
+        listOfMutes.remove(user)
+        await self.config.mutes.set(listOfMutes)
+        await self.unmute(user, role, modChannel, msgChannel)   
 
     @commands.command(name = "speakup")
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
-        msgChannel, user, role, modChannel = await self.get_context_data(ctx)
+        msgChannel, user = await self.get_context_data(ctx)
+        role, modChannel = await self.get_role_and_mod_channel(user)
         if not user:
             await ctx.send("I need either a reply or mention to unmute someone.")    
         elif user.bot:
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
-            await self.unmute(msgChannel, user, role, modChannel)
+            await self.unmute(user, role, modChannel, msgChannel)
         else:
             await ctx.send("The user isn't muted.")
 
@@ -130,7 +153,8 @@ class Antispam(commands.Cog):
     @commands.has_permissions(manage_messages = True)
     async def timed_mute_info(self, ctx):
         """Checks how much time is left in the muted status."""
-        notUsed, user, role, notUsed = await self.get_context_data(ctx)
+        notUsed, user = await self.get_context_data(ctx)
+        role = get(user.guild.roles, id = self.cache_role)
         if not user:
             await ctx.send("I need either a reply or mention to check up on someone's jail time.")    
         elif user.bot:
@@ -142,7 +166,7 @@ class Antispam(commands.Cog):
             else:
                 currentTime = ctx.message.created_at.timestamp()
                 timeOfMute = await self.config.member(user).timeOfMute()
-                remainingTime = await self.get_time(currentTime, timeOfMute, time)
+                remainingTime = time - int(currentTime - timeOfMute)
                 if not remainingTime: return
                 data =  {
                             "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)}                        }
@@ -153,16 +177,16 @@ class Antispam(commands.Cog):
         else:
             await ctx.send("The user isn't muted.")   
 
-    async def get_time(self, currentTime, timeOfMute, jailTime):
-        return jailTime - int(currentTime - timeOfMute)
-
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
         if not user:
             return None, None, None, None
+        return msgChannel, user
+
+    async def get_role_and_mod_channel(self, user):
         role = get(user.guild.roles, id = self.cache_role)
         modChannel = user.guild.get_channel(self.cache_channel)
-        return msgChannel, user, role, modChannel
+        return role, modChannel
 
     async def try_get_user_and_channel(self, msg):
         msgChannel = msg.channel
@@ -344,7 +368,7 @@ class Antispam(commands.Cog):
                 pass
         await user.add_roles(role)
 
-    async def unmute(self, msgChannel, user, role, modChannel):
+    async def unmute(self, user, role, modChannel, msgChannel = None):
         await self.add_roles_and_unmute(user, role)
         msgDict =   {
                         "author": {"name": "UNMUTED", "icon_url": str(user.avatar_url)},
@@ -352,7 +376,13 @@ class Antispam(commands.Cog):
         msgEmbed = Embed.from_dict(msgDict)
         msgEmbed.timestamp = datetime.now(tz = timezone.utc)
         await modChannel.send(embed = msgEmbed)
-        await msgChannel.send(user.mention + " you've been unmuted!")
+        if msgChannel:
+            await msgChannel.send(user.mention + " you've been unmuted!")
+        else: 
+            try:
+                await user.send("You've been unmuted!")
+            except discord.HTTPException:
+                await modChannel.send("I've tried to send a DM to {} to tell them they've been unmuted but their DMs are closed.".format(user.mention))   
         await self.config.member(user).clear()
         try:    
             timer, = [task for task in all_tasks() if task.get_name() == str(user.id)]
