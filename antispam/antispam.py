@@ -422,3 +422,5 @@ class Antispam(commands.Cog):
             await ctx.send("I haven't been setup yet.")
         elif isinstance(error, AttributeError):
             await ctx.send("I need a reply or a mention to work. For purge I need only the reply.")
+        else:
+            await ctx.send("Something unexpected happened: {}".format(error))
