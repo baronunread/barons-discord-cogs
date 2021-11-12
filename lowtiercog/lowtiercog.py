@@ -70,5 +70,7 @@ class Lowtiercog(commands.Cog):
     async def check_error(self, ctx, error):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
-        elif isinstance(error, (commands.ConversionError, ValueError)):
+        elif isinstance(error.__cause__, ValueError):
             await ctx.send("You've input something wrong. Please check your input.")
+        else:
+            await ctx.send("Something unexpected happened so send this to Baron Unread: {}".format(error))
