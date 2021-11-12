@@ -296,10 +296,10 @@ class Antispam(commands.Cog):
             msgList.append( (message.channel.id, message.id) )
             await self.config.member(user).messageList.set(msgList)
             await self.config.member(user).spamValue.set(spamValue)    
-            if spamValue > 6 and not warned:
+            if spamValue >= 6 and not warned:
                 await self.config.member(user).warned.set(True)
                 await message.channel.send(user.mention + " stop spamming or you'll be muted.")
-            elif spamValue > 8 and warned:
+            elif spamValue >= 8 and warned:
                 await self.mute(message.channel, user, role, modChannel, False)            
         else:
             await self.config.member(user).messageList.set( [ (message.channel.id, message.id) ] )
