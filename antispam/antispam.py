@@ -420,7 +420,7 @@ class Antispam(commands.Cog):
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
-        elif isinstance(error, (commands.ConversionError, AttributeError)):
+        elif isinstance(error.__original__, AttributeError):
             await ctx.send("I need a reply or a mention to work. For purge I need only the reply.")
         else:
             await ctx.send("Something unexpected happened: {}".format(error))
