@@ -425,7 +425,7 @@ class Antispam(commands.Cog):
 
     @manual_mute.error
     @manual_unmute.error
-    @timed_mute_info.error
+    #@timed_mute_info.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
