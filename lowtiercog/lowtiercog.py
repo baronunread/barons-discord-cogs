@@ -63,10 +63,10 @@ class Lowtiercog(commands.Cog):
         self.numQuotes -= 1
         await ctx.send("Quote successfully deleted!")
         
-    # @lowtierquote.error
-    # @_lowtierlist.error
-    # @_lowtieradd.error
-    # @_lowtierdel.error
+    @lowtierquote.error
+    @_lowtierlist.error
+    @_lowtieradd.error
+    @_lowtierdel.error
     async def check_error(self, ctx, error):
         if not self.quotes:
             await ctx.send("I haven't been setup yet.")
