@@ -413,10 +413,10 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    @manual_mute.error
-    @manual_unmute.error
-    @timed_mute_info.error
-    @purge.error
+    # @manual_mute.error
+    # @manual_unmute.error
+    # @timed_mute_info.error
+    # @purge.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
