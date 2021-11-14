@@ -49,6 +49,11 @@ class Antispam(commands.Cog):
         self.cache_guild = None
         self.bot.loop.create_task(self.initialization_task())
     
+    @commands.command()
+    async def reset(self, ctx):
+        self.config.mutes.set([])
+        await ctx.send()
+
     async def initialization_task(self):
         await self.bot.wait_until_ready()
         self.cache_guild = self.bot.guilds[0]
@@ -162,8 +167,9 @@ class Antispam(commands.Cog):
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
             listOfMutes = await self.config.mutes()
-            if listOfMutes and user.id in listOfMutes:
-                await self.config.mutes.set(listOfMutes.remove(user.id))
+            if user.id in listOfMutes:
+                listOfMutes.remove(user.id)
+                await self.config.mutes.set(listOfMutes)
             await self.unmute(user, role, modChannel, msgChannel)
         else:
             await ctx.send("The user isn't muted.")
