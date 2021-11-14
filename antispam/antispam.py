@@ -48,11 +48,6 @@ class Antispam(commands.Cog):
         self.cache_whitelist = []
         self.cache_guild = None
         self.bot.loop.create_task(self.initialization_task())
-    
-    @commands.command()
-    async def reset(self, ctx):
-        await self.config.mutes.set([])
-        await ctx.send("Done!")
 
     async def initialization_task(self):
         await self.bot.wait_until_ready()
