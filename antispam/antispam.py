@@ -1,4 +1,3 @@
-from asyncio.tasks import wait_for
 from redbot.core import commands, Config
 from discord.utils import get
 from discord import Embed 
@@ -49,8 +48,6 @@ class Antispam(commands.Cog):
         self.bot.loop.create_task(self.initialization_task())
     
     async def initialization_task(self):
-        # while not self.bot.guilds:
-        #     await a_sleep (0.1)
         await self.bot.wait_until_ready()
         self.cache_guild = self.bot.guilds[0]
         await self.validate_cache()
@@ -304,7 +301,6 @@ class Antispam(commands.Cog):
         try:
             role = get(user.guild.roles, id = self.cache_role)
         except:
-            await ctx.send("I haven't been setup yet.")
             return
         if role in user.roles: return    
         msgList = await self.config.member(user).messageList()
