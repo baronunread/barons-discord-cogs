@@ -44,12 +44,11 @@ class Antispam(commands.Cog):
         self.cache_channel = None
         self.cache_messages = []
         self.cache_whitelist = []
-        self.bot.loop.create_task(self.validate_cache())
-        #self.bot.loop.create_task(self.start_mute_timers(self.bot.guilds[0]))
 
-    @commands.command()
-    async def test(self, ctx):
-        await ctx.send(self.bot.guilds[0])
+    @commands.Cog.listener()    
+    async def on_ready(self):
+        self.bot.loop.create_task(self.validate_cache())
+        self.bot.loop.create_task(self.start_mute_timers())
     
     async def return_cache(self, type: str):
         if type == "role":
@@ -83,15 +82,12 @@ class Antispam(commands.Cog):
         if self.cache_whitelist == []:
             await self.update_cache("whitelist")
 
-    async def start_mute_timers(self, guild):
+    async def start_mute_timers(self):
         listOfMutes = await self.config.mutes()
         if not listOfMutes: return
+        guild = self.bot.guilds[0]
         role = self.cache_role
         modChannel = self.cache_channel
-        # try:
-            #role, modChannel = await self.get_role_and_mod_channel(listOfMutes[0])
-        # except:
-        #     return
         currentTime = datetime.now(tz = timezone.utc).timestamp()
         for user in listOfMutes:
             user = await guild.fetch_member(user)
