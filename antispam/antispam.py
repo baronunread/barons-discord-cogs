@@ -125,8 +125,8 @@ class Antispam(commands.Cog):
         """Manually mutes someone."""
         timeSeconds = textAndTime[0]
         reason = textAndTime[1]
-        if ctx.mentions:
-            reason = reason.replace(ctx.mentions[0], "")
+        if ctx.message.mentions:
+            reason = reason.replace(ctx.message.mentions[0], "")
         msgChannel, user = await self.get_context_data(ctx)
         role = self.cache_role
         modChannel = self.cache_channel
