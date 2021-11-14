@@ -45,7 +45,7 @@ class Antispam(commands.Cog):
         self.cache_messages = []
         self.cache_whitelist = []
         self.bot.loop.create_task(self.validate_cache())
-        self.bot.loop.create_task(self.start_mute_timers(self.bot.guilds[0]))
+        #self.bot.loop.create_task(self.start_mute_timers(self.bot.guilds[0]))
 
     @commands.command()
     async def test(self, ctx):
