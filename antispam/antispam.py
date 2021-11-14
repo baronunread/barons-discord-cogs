@@ -433,7 +433,7 @@ class Antispam(commands.Cog):
         await self.config.member(user).clear()  
 
     @manual_mute.error
-    @manual_unmute.error
+    #@manual_unmute.error
     @timed_mute_info.error
     @purge.error
     async def check_error(self, ctx, error):
