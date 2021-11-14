@@ -124,7 +124,7 @@ class Antispam(commands.Cog):
     async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
         """Manually mutes someone."""
         timeSeconds = textAndTime[0]
-        reason = re.sub(r"(?=<)(<@!\d+>)", "", discord.utils.escape_mentions(textAndTime[1]))
+        reason = re.sub(r"(?=<)(<@!\d+>)", "", str(discord.utils.escape_mentions(textAndTime[1])))
         msgChannel, user = await self.get_context_data(ctx) 
         role = self.cache_role
         modChannel = self.cache_channel
