@@ -126,6 +126,8 @@ class Antispam(commands.Cog):
         timeSeconds = textAndTime[0]
         reason = textAndTime[1]
         msgChannel, user = await self.get_context_data(ctx)
+        if ctx.mentions:
+            reason = reason.replace(user, "")
         role = self.cache_role
         modChannel = self.cache_channel
         if user.bot:
