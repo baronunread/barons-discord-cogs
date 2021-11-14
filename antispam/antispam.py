@@ -1,3 +1,4 @@
+from asyncio.tasks import wait_for
 from redbot.core import commands, Config
 from discord.utils import get
 from discord import Embed 
@@ -46,14 +47,12 @@ class Antispam(commands.Cog):
         self.cache_whitelist = []
         self.cache_guild = None
         self.bot.loop.create_task(self.initialization_task())
-
-    @commands.Cog.listener()    
-    async def on_ready(self):
-        self.cache_guild = self.bot.guilds[0]
     
     async def initialization_task(self):
-        while not self.cache_guild:
-            await a_sleep (0.1)
+        # while not self.bot.guilds:
+        #     await a_sleep (0.1)
+        await self.bot.wait_until_ready()
+        self.cache_guild = self.bot.guilds[0]
         await self.validate_cache()
         await self.start_mute_timers()
     
@@ -80,7 +79,6 @@ class Antispam(commands.Cog):
             self.cache_whitelist = value
         
     async def validate_cache(self):
-        await self.bot.wait_until_ready()
         if self.cache_role == None: 
             await self.update_cache("role")
         if self.cache_channel == None:
@@ -91,7 +89,6 @@ class Antispam(commands.Cog):
             await self.update_cache("whitelist")
 
     async def start_mute_timers(self):
-        await self.bot.wait_until_ready()
         listOfMutes = await self.config.mutes()
         if not listOfMutes: return
         guild = self.cache_guild
