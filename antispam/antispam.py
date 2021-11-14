@@ -82,6 +82,7 @@ class Antispam(commands.Cog):
     async def start_mute_timers(self):
         listOfMutes = await self.config.mutes()
         if not listOfMutes: return
+        guild = self.bot.guilds[0]
         role = self.cache_role
         modChannel = self.cache_channel
         # try:
@@ -90,7 +91,7 @@ class Antispam(commands.Cog):
         #     return
         currentTime = datetime.now(tz = timezone.utc).timestamp()
         for user in listOfMutes:
-            user = await self.bot.fetch_user(user)
+            user = await guild.fetch_member(user)
             time = await self.config.member(user).secondsOfMute()
             timeOfMute = await self.config.member(user).timeOfMute()
             remainingTime = max(0, time - int(currentTime - timeOfMute))
