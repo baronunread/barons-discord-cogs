@@ -121,7 +121,7 @@ class Antispam(commands.Cog):
             await self.config.mutes.set(listOfMutes)
             timeOfMute = ctx.message.created_at.timestamp()
             await self.config.member(user).timeOfMute.set(timeOfMute) 
-            self.bot.loop.create_task(self.unmute_timer(timeSeconds, user, role, modChannel, msgChannel), name = user.id)
+            self.bot.loop.create_task(self.unmute_timer(timeSeconds, user.id, role, modChannel, msgChannel), name = user.id)
 
     async def unmute_timer(self, time, user, role, modChannel, msgChannel = None):
         while time > 1:
