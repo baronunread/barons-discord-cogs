@@ -83,12 +83,14 @@ class Antispam(commands.Cog):
             await self.update_cache("whitelist")
 
     async def start_mute_timers(self):
-        listOfMutes = await self.config.mutes().set()
+        listOfMutes = await self.config.mutes()
         if not listOfMutes: return
         guild = self.bot.guilds[0]
         role = self.cache_role
         modChannel = self.cache_channel
         currentTime = datetime.now(tz = timezone.utc).timestamp()
+        realListOfMutes = [user for user in listOfMutes if role in user.roles]
+        await self.config.mutes.set(realListOfMutes)
         for user in listOfMutes:
             user = await guild.fetch_member(user)
             time = await self.config.member(user).secondsOfMute()
@@ -148,6 +150,9 @@ class Antispam(commands.Cog):
         if user.bot:
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
+            listOfMutes = await self.config.mutes()
+            listOfMutes.delete(user.id)
+            await self.config.mutes.set(listOfMutes)
             await self.unmute(user, role, modChannel, msgChannel)
         else:
             await ctx.send("The user isn't muted.")
