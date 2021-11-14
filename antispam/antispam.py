@@ -47,6 +47,10 @@ class Antispam(commands.Cog):
         self.bot.loop.create_task(self.validate_cache())
         self.bot.loop.create_task(self.start_mute_timers(self.bot.guilds[0]))
 
+    @commands.command()
+    async def test(self, ctx):
+        await ctx.send(self.bot.guilds)
+    
     async def return_cache(self, type: str):
         if type == "role":
             return self.cache_role
