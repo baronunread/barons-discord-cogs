@@ -59,10 +59,11 @@ class Antispam(commands.Cog):
 
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
+        guild = self.bot.guilds[0]
         if type == "role":
-            self.cache_role = value
+            self.cache_role = get(guild.roles, id = value)
         elif type == "channel":
-            self.cache_channel = value
+            self.cache_channel = guild.get_channel(value)
         elif type == "messages":
             self.cache_messages = value
         elif type == "whitelist":
@@ -81,8 +82,10 @@ class Antispam(commands.Cog):
     async def start_mute_timers(self):
         listOfMutes = await self.config.mutes()
         if not listOfMutes: return
+        role = self.cache_role
+        modChannel = self.cache_channel
         # try:
-        role, modChannel = await self.get_role_and_mod_channel(listOfMutes[0])
+            #role, modChannel = await self.get_role_and_mod_channel(listOfMutes[0])
         # except:
         #     return
         currentTime = datetime.now(tz = timezone.utc).timestamp()
@@ -109,7 +112,9 @@ class Antispam(commands.Cog):
     async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
         """Manually mutes someone."""
         msgChannel, user = await self.get_context_data(ctx)
-        role, modChannel = await self.get_role_and_mod_channel(user)
+        #role, modChannel = await self.get_role_and_mod_channel(user)
+        role = self.cache_role
+        modChannel = self.cache_channel
         if user.bot:
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles:
@@ -138,7 +143,9 @@ class Antispam(commands.Cog):
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
         msgChannel, user = await self.get_context_data(ctx)
-        role, modChannel = await self.get_role_and_mod_channel(user)
+        #role, modChannel = await self.get_role_and_mod_channel(user)
+        role = self.cache_role
+        modChannel = self.cache_channel
         if user.bot:
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
@@ -178,10 +185,10 @@ class Antispam(commands.Cog):
             return None, None
         return msgChannel, user
 
-    async def get_role_and_mod_channel(self, user):
-        role = get(user.guild.roles, id = self.cache_role)
-        modChannel = user.guild.get_channel(self.cache_channel)
-        return role, modChannel
+    # async def get_role_and_mod_channel(self, user):
+    #     role = get(user.guild.roles, id = self.cache_role)
+    #     modChannel = user.guild.get_channel(self.cache_channel)
+    #     return role, modChannel
 
     async def try_get_user_and_channel(self, msg):
         msgChannel = msg.channel
