@@ -9,12 +9,14 @@ import re
 
 # This whole section was copied from another mute cog project written by user XuaTheGrate
 time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
+remove_time = re.compile(r"(?i)(\d{1,5}[hsmd])+?")
 time_dict = {"h":3600, "s":1, "m":60, "d":86400}
 
 class TimeConverter(commands.Converter):
     async def convert(self, ctx, argument):
         args = argument.lower()
         matches = re.findall(time_regex, args)
+        text = re.sub(remove_time, argument)
         time = 0
         for v, k in matches:
             try:
@@ -23,7 +25,7 @@ class TimeConverter(commands.Converter):
                 raise commands.BadArgument("{} is an invalid time-key! h/m/s/d are valid!".format(k))
             except ValueError:
                 raise commands.BadArgument("{} is not a number!".format(v))
-        return int(time)
+        return (int(time), text)
 # End of copy, thanks again ;)
 
 class Antispam(commands.Cog):
@@ -119,8 +121,10 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
-    async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
+    async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
         """Manually mutes someone."""
+        timeSeconds = textAndTime[0]
+        reason = textAndTime[1]
         msgChannel, user = await self.get_context_data(ctx)
         role = self.cache_role
         modChannel = self.cache_channel
@@ -129,7 +133,7 @@ class Antispam(commands.Cog):
         elif role in user.roles:
             await ctx.send("The user is already muted.")
         else:
-            await self.mute(msgChannel, user, role, modChannel, True, timeSeconds)
+            await self.mute(msgChannel, user, role, modChannel, True, timeSeconds, reason)
             if not timeSeconds: return
             listOfMutes = await self.config.mutes()
             listOfMutes.append(user.id)
@@ -341,11 +345,12 @@ class Antispam(commands.Cog):
             await self.config.member(user).spamValue.set(0)
             await self.config.member(user).warned.set(False)  
 
-    async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime = 0):
+    async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime = 0, selected = None):
         await self.remove_roles_and_mute(user, role)
         reason = " for spamming" if not manual else ""
         random.seed(random.random())
-        selected = random.choice(self.cache_messages)
+        if not selected:
+            selected = random.choice(self.cache_messages)
         data =  {
                     "author": {"name": "MUTED" if not mutedTime else "TIMED MUTE", "icon_url": str(user.avatar_url)}
                 }
