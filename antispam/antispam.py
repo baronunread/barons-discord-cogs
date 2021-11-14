@@ -100,7 +100,6 @@ class Antispam(commands.Cog):
             time = await self.config.member(user).secondsOfMute()
             timeOfMute = await self.config.member(user).timeOfMute()
             remainingTime = max(0, time - int(currentTime - timeOfMute))
-            await user.send("Current time: {} \n Seconds of mute: {} \n Time of mute: {} \n Remaining time: {}".format(currentTime, time, timeOfMute, remainingTime))
             self.bot.loop.create_task(self.unmute_timer(remainingTime, user, role, modChannel), name = user.id) 
         await self.config.mutes.set(listOfActualMutes)
 
