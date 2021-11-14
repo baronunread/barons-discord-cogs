@@ -44,7 +44,6 @@ class Antispam(commands.Cog):
         self.cache_channel = None
         self.cache_messages = []
         self.cache_whitelist = []
-        self.cache_guild = None
         self.bot.loop.create_task(self.validate_cache())
         self.bot.loop.create_task(self.start_mute_timers())
 
@@ -64,7 +63,7 @@ class Antispam(commands.Cog):
 
     async def update_cache(self, type: str, content = None):
         value = content if content else await self.config.get_raw(type)
-        guild = self.cache_guild
+        guild = self.bot.guilds[0]
         if type == "role":
             self.cache_role = get(guild.roles, id = value)
         elif type == "channel":
@@ -89,7 +88,7 @@ class Antispam(commands.Cog):
         await self.bot.wait_until_ready()
         listOfMutes = await self.config.mutes()
         if not listOfMutes: return
-        guild = self.cache_guild
+        guild = self.bot.guilds[0]
         role = self.cache_role
         modChannel = self.cache_channel
         currentTime = datetime.now(tz = timezone.utc).timestamp()
