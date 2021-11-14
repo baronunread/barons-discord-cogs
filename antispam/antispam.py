@@ -16,7 +16,7 @@ class TimeConverter(commands.Converter):
     async def convert(self, ctx, argument):
         args = argument.lower()
         matches = re.findall(time_regex, args)
-        text = re.sub(remove_time, argument)
+        text = re.sub(remove_time, "", argument)
         time = 0
         for v, k in matches:
             try:
