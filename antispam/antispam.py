@@ -83,7 +83,7 @@ class Antispam(commands.Cog):
             await self.update_cache("whitelist")
 
     async def start_mute_timers(self):
-        listOfMutes = await self.config.mutes()
+        listOfMutes = await self.config.mutes().set()
         if not listOfMutes: return
         guild = self.bot.guilds[0]
         role = self.cache_role
@@ -113,7 +113,6 @@ class Antispam(commands.Cog):
     async def manual_mute(self, ctx, *, timeSeconds :TimeConverter = None):
         """Manually mutes someone."""
         msgChannel, user = await self.get_context_data(ctx)
-        #role, modChannel = await self.get_role_and_mod_channel(user)
         role = self.cache_role
         modChannel = self.cache_channel
         if user.bot:
@@ -144,7 +143,6 @@ class Antispam(commands.Cog):
     async def manual_unmute(self, ctx):
         """Manually unmutes someone."""
         msgChannel, user = await self.get_context_data(ctx)
-        #role, modChannel = await self.get_role_and_mod_channel(user)
         role = self.cache_role
         modChannel = self.cache_channel
         if user.bot:
@@ -185,11 +183,6 @@ class Antispam(commands.Cog):
         if not user:
             return None, None
         return msgChannel, user
-
-    # async def get_role_and_mod_channel(self, user):
-    #     role = get(user.guild.roles, id = self.cache_role)
-    #     modChannel = user.guild.get_channel(self.cache_channel)
-    #     return role, modChannel
 
     async def try_get_user_and_channel(self, msg):
         msgChannel = msg.channel
