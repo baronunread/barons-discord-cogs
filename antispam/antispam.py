@@ -90,7 +90,7 @@ class Antispam(commands.Cog):
         #     return
         currentTime = datetime.now(tz = timezone.utc).timestamp()
         for user in listOfMutes:
-            user = self.bot.fetch_user(user)
+            user = await self.bot.fetch_user(user)
             time = await self.config.member(user).secondsOfMute()
             timeOfMute = await self.config.member(user).timeOfMute()
             remainingTime = max(0, time - int(currentTime - timeOfMute))
