@@ -156,7 +156,7 @@ class Antispam(commands.Cog):
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
             listOfMutes = await self.config.mutes()
-            listOfMutes.delete(user.id)
+            listOfMutes.remove(user.id)
             await self.config.mutes.set(listOfMutes)
             await self.unmute(user, role, modChannel, msgChannel)
         else:
@@ -167,7 +167,7 @@ class Antispam(commands.Cog):
     async def timed_mute_info(self, ctx):
         """Checks how much time is left in the muted status."""
         notUsed, user = await self.get_context_data(ctx)
-        role = get(user.guild.roles, id = self.cache_role)
+        role = self.cache_role
         if user.bot:
             await ctx.send("Bots can't be muted so why should I even check up on them?!?")
         elif role in user.roles:
@@ -426,10 +426,10 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    # @manual_mute.error
-    # @manual_unmute.error
-    # @timed_mute_info.error
-    # @purge.error
+    @manual_mute.error
+    @manual_unmute.error
+    @timed_mute_info.error
+    @purge.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
