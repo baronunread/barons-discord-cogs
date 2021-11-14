@@ -96,7 +96,7 @@ class Antispam(commands.Cog):
             if role not in user.roles: #removal of unmuted users from the list and clearing their data
                 await self.config.member(user).clear()
                 continue
-            listOfActualMutes.append(user)
+            listOfActualMutes.append(user.id)
             time = await self.config.member(user).secondsOfMute()
             timeOfMute = await self.config.member(user).timeOfMute()
             remainingTime = max(0, time - int(currentTime - timeOfMute))
