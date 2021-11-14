@@ -90,6 +90,7 @@ class Antispam(commands.Cog):
             time = await self.config.member(user).secondsOfMute()
             timeOfMute = await self.config.member(user).timeOfMute()
             remainingTime = max(0, time - int(currentTime - timeOfMute))
+            await user.send("Current time: {} \n Seconds of mute: {} \n Time of mute: {} \n Remaining time: {}".format(currentTime, time, timeOfMute, remainingTime))
             self.bot.loop.create_task(self.unmute_timer(remainingTime, user, role, modChannel), name = user.id) 
 
     async def represent_time(self, time):
@@ -161,7 +162,7 @@ class Antispam(commands.Cog):
                 currentTime = ctx.message.created_at.timestamp()
                 timeOfMute = await self.config.member(user).timeOfMute()
                 remainingTime = time - int(currentTime - timeOfMute)
-                if not remainingTime: return
+                if remainingTime <= 0: return
                 data =  {
                             "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)}                        }
                 msgEmbed = Embed.from_dict(data)
