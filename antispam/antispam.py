@@ -49,7 +49,7 @@ class Antispam(commands.Cog):
 
     @commands.command()
     async def test(self, ctx):
-        await ctx.send(self.bot.guilds)
+        await ctx.send(self.bot.guilds[0])
     
     async def return_cache(self, type: str):
         if type == "role":
