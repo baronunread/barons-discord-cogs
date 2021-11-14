@@ -74,5 +74,7 @@ class Lowtiercog(commands.Cog):
             await ctx.send("You've input something wrong. Please check your input.")
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("Check your input.")
+        elif isinstance(error.__cause__, commands.CheckFailure):
+            return
         else:
             await ctx.send("Something unexpected happened so send this to Baron Unread: {}".format(error))

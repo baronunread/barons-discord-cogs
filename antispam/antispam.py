@@ -423,5 +423,7 @@ class Antispam(commands.Cog):
             await ctx.send("I haven't been setup yet.")
         elif isinstance(error.__cause__, AttributeError):
             await ctx.send("I need a reply or a mention to work. For purge I need only the reply.")
+        elif isinstance(error.__cause__, commands.CheckFailure):
+            return
         else:
             await ctx.send("Something unexpected happened so send this to Baron Unread: {}".format(error))
