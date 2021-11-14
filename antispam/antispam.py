@@ -52,7 +52,7 @@ class Antispam(commands.Cog):
     @commands.command()
     async def reset(self, ctx):
         self.config.mutes.set([])
-        await ctx.send()
+        await ctx.send("Done!")
 
     async def initialization_task(self):
         await self.bot.wait_until_ready()
