@@ -162,8 +162,8 @@ class Antispam(commands.Cog):
             await ctx.send("I can't edit the roles of a bot!")  
         elif role in user.roles:
             listOfMutes = await self.config.mutes()
-            listOfMutes.remove(user.id)
-            await self.config.mutes.set(listOfMutes)
+            if user.id in listOfMutes:
+                await self.config.mutes.set(listOfMutes.remove(user.id))
             await self.unmute(user, role, modChannel, msgChannel)
         else:
             await ctx.send("The user isn't muted.")
