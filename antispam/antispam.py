@@ -301,15 +301,11 @@ class Antispam(commands.Cog):
         ctx = await self.bot.get_context(message)
         whitelist = await self.return_cache("whitelist")
         user = message.author
-        if user.bot or ctx.valid or str(ctx.channel.id) in whitelist:
+        if user.bot or ctx.valid or str(ctx.channel.id) in whitelist or not self.cache_role:
             return
-        try:
-            role = get(user.guild.roles, id = self.cache_role)
-        except:
-            return
-        if role in user.roles: return    
-        msgList = await self.config.member(user).messageList()
-        modChannel = message.guild.get_channel(self.cache_channel) 
+        role = self.cache_role   
+        modChannel = self.cache_channel 
+        msgList = await self.config.member(user).messageList()       
         timePrevious = await self.config.member(user).timePrevious() 
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at.timestamp()
@@ -433,9 +429,9 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    # @manual_mute.error
-    # #@manual_unmute.error
-    # @timed_mute_info.error
+    @manual_mute.error
+    @manual_unmute.error
+    @timed_mute_info.error
     @purge.error
     async def check_error(self, ctx, error):
         if not self.cache_role or not self.cache_channel:
