@@ -119,12 +119,6 @@ class Antispam(commands.Cog):
             string += "{}:{:02d}:{:02d}".format(h,m,s)
         return string
 
-    @commands.command()
-    async def test(self, ctx, id1, id2):
-        if await ctx.fetch_message(id1) == await ctx.fetch_message(id2):
-            await ctx.send("Yeah")
-        await ctx.send("No nigga")
-
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
@@ -315,7 +309,8 @@ class Antispam(commands.Cog):
         timePrevious = await self.config.member(user).timePrevious() 
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at.timestamp()
-        currentMessageHash = hash(message)
+        currentMessageHash = hash(message.clean_content)
+        currentMessageHash += message.attachments[0].size + hash(message.attachments[0].filename) if message.attachments else 0
         if not timePrevious or type(timePrevious) is not float:
             timePrevious = timeCurrent
             previousMessageHash = currentMessageHash
