@@ -8,15 +8,14 @@ class Lowtiercog(commands.Cog):
         self.bot = bot
         self.quotes = None
         self.numQuotes = None
-        #self.bot.loop.create_task(self.cog_before_invoke())
+        self.bot.loop.create_task(self.cog_before_invoke())
 
     async def cog_before_invoke(self, ctx):
+        if self.quotes: return
         try:
             await self.parse()
         except:
             pass
-        if self.quotes: 
-            await ctx.send("Succesfully validated cache!")
   
     @commands.command()
     @commands.has_permissions(manage_messages = True)
