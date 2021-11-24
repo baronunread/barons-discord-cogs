@@ -8,9 +8,12 @@ class Lowtiercog(commands.Cog):
         self.bot = bot
         self.quotes = None
         self.numQuotes = None
-        self.bot.loop.create_task(self.cog_before_invoke())
+        self.bot.loop.create_task(self.validate_cache())
 
     async def cog_before_invoke(self, ctx):
+        await self.validate_cache()
+
+    async def validate_cache(self):
         if self.quotes: return
         try:
             await self.parse()
