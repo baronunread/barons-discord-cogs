@@ -8,8 +8,16 @@ class Lowtiercog(commands.Cog):
         self.bot = bot
         self.quotes = None
         self.numQuotes = None
-        self.bot.loop.create_task(self.validate_cache())
-    
+        #self.bot.loop.create_task(self.cog_before_invoke())
+
+    async def cog_before_invoke(self, ctx):
+        try:
+            await self.parse()
+        except:
+            pass
+        if self.quotes: 
+            await ctx.send("Succesfully validated cache!")
+  
     @commands.command()
     @commands.has_permissions(manage_messages = True)
     async def setup(self, ctx):
@@ -20,14 +28,6 @@ class Lowtiercog(commands.Cog):
             await ctx.message.delete()
         except:
             await ctx.send("An error has occured.")
-
-    @before_invoke
-    async def validate_cache(self):
-        if self.quotes: return
-        try:
-            await self.parse()
-        except:
-            pass
 
     async def parse(self):
         gc = gspread.service_account(filename = "ltgkeys.json")   
