@@ -1,6 +1,5 @@
 from redbot.core import commands
 import gspread
-import discord
 import random
 
 class Lowtiercog(commands.Cog):
@@ -22,7 +21,9 @@ class Lowtiercog(commands.Cog):
         except:
             await ctx.send("An error has occured.")
 
+    @before_invoke
     async def validate_cache(self):
+        if self.quotes: return
         try:
             await self.parse()
         except:
