@@ -309,7 +309,7 @@ class Antispam(commands.Cog):
         timePrevious = await self.config.member(user).timePrevious() 
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at.timestamp()
-        currentMessageHash = hash(message.clean_content) if message.clean_content else hash( message.attachments[0].filename + str(message.attachments[0].size) )
+        currentMessageHash = hash(message)
         if not timePrevious or type(timePrevious) is not float:
             timePrevious = timeCurrent
             previousMessageHash = currentMessageHash
