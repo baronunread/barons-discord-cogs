@@ -93,7 +93,8 @@ class Antispam(commands.Cog):
         guild = self.cache_guild
         role = self.cache_role
         modChannel = self.cache_channel
-        currentTime = datetime.now().timestamp()
+        message = await modChannel.send("Attempting to restart the muted timers...")
+        currentTime = message.created_at.timestamp()
         listOfMutes = [*set(listOfMutes),] #duplicates from manual unmutes removal
         listOfActualMutes = []
         for user in listOfMutes:     
