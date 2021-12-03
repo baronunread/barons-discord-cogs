@@ -97,7 +97,10 @@ class Antispam(commands.Cog):
         listOfMutes = [*set(listOfMutes),] #duplicates from manual unmutes removal
         listOfActualMutes = []
         for user in listOfMutes:     
-            user = await guild.fetch_member(user)
+            try: 
+                user = await guild.fetch_member(user)
+            except:
+                continue #if user fetching fails for any reason the user is probably gone
             if role not in user.roles: #removal of unmuted users from the list and clearing their data
                 await self.config.member(user).clear()
                 continue
