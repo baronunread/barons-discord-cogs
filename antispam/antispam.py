@@ -93,7 +93,7 @@ class Antispam(commands.Cog):
         guild = self.cache_guild
         role = self.cache_role
         modChannel = self.cache_channel
-        message = await modChannel.send("Attempting to restart the muted timers...")
+        message = await modChannel.send("Grabbing local time to restart the muted timers...")
         currentTime = message.created_at.timestamp()
         listOfMutes = [*set(listOfMutes),] #duplicates from manual unmutes removal
         listOfActualMutes = []
@@ -111,6 +111,7 @@ class Antispam(commands.Cog):
             remainingTime = max(0, time - int(currentTime - timeOfMute))
             self.bot.loop.create_task(self.unmute_timer(remainingTime, user, role, modChannel), name = user.id) 
         await self.config.mutes.set(listOfActualMutes)
+        await message.delete()
 
     async def represent_time(self, time):
         m, s = divmod(time, 60)
