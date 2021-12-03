@@ -93,7 +93,7 @@ class Antispam(commands.Cog):
         guild = self.cache_guild
         role = self.cache_role
         modChannel = self.cache_channel
-        currentTime = datetime.now(tz = timezone.utc).timestamp()
+        currentTime = datetime.now().timestamp()
         listOfMutes = [*set(listOfMutes),] #duplicates from manual unmutes removal
         listOfActualMutes = []
         for user in listOfMutes:     
