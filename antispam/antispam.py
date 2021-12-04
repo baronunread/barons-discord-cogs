@@ -365,7 +365,7 @@ class Antispam(commands.Cog):
         modEmbed = msgEmbed.copy()
         msgEmbed.description = f"{user.mention} {selected}"
         mutedText = f"muted the user {user.mention}"
-        modEmbed.description = f"I have {mutedText} for spamming" if not manual else f"{moderator} has {mutedText}"
+        modEmbed.description = f"I have {mutedText} for spamming" if not manual else f"{moderator.mention} has {mutedText}"
         if mutedTime:
             await self.config.member(user).secondsOfMute.set(mutedTime)
             msgEmbed.add_field(name = "TIME IN JAIL:", value = await self.represent_time(mutedTime))
