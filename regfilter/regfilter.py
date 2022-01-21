@@ -90,8 +90,7 @@ class Regfilter(commands.Cog):
         compiled = []
         for pattern in toCompile:
             compiled.append( re.compile(pattern) )
-        if type == "regex": self.cache_regex = compiled
-        if type == "ignore": self.cache_ignore = compiled
+        return compiled
 
     async def update_cache(self, type, content = None):
         value = content if content else await self.config.get_raw(type)
