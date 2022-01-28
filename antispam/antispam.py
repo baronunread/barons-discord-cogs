@@ -124,6 +124,11 @@ class Antispam(commands.Cog):
             string += "{}:{:02d}:{:02d}".format(h,m,s)
         return string
 
+    @commands.command()
+    async def checkIt(self, ctx):
+        stickers = ctx.message.stickers
+        await ctx.send(f"The ID is {stickers[0].id}")
+
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
