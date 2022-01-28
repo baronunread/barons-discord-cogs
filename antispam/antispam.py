@@ -127,7 +127,7 @@ class Antispam(commands.Cog):
     @commands.command()
     async def checkIt(self, ctx):
         stickers = ctx.message.stickers
-        await ctx.send(f"The ID is {stickers[0].id}")
+        await ctx.send(f"The stickers are {stickers}")
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
