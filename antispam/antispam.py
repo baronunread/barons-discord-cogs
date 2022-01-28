@@ -320,6 +320,7 @@ class Antispam(commands.Cog):
         timeCurrent = message.created_at.timestamp()
         currentMessageHash = hash(message.clean_content)
         currentMessageHash += message.attachments[0].size + hash(message.attachments[0].filename) if message.attachments else 0
+        currentMessageHash += hash(message.stickers[0].id) if message.stickers else 0
         if not timePrevious or type(timePrevious) is not float:
             timePrevious = timeCurrent
             previousMessageHash = currentMessageHash
