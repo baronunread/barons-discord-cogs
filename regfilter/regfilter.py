@@ -102,12 +102,12 @@ class Regfilter(commands.Cog):
             self.cache_ignore = await self.compile_cache("ignore", value = value)
                      
     async def validate_cache(self):
-        if  not self.cache_regex: 
-            await self.compile_cache("regex")
+        if not self.cache_regex: 
+            await self.update_cache("regex")
         if not self.cache_ignore:
             await self.update_cache("names")    
         if not self.cache_ignore:
-            await self.compile_cache("ignore")
+            await self.update_cache("ignore")
         if not self.leet_dict:
             await self.build_dict()
             
