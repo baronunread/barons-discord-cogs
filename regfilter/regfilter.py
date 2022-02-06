@@ -230,7 +230,6 @@ class Regfilter(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        await self.validate_cache()
         author = message.author
         if author.bot:
             return
