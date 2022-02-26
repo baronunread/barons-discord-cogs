@@ -95,9 +95,7 @@ class Autorole(commands.Cog):
         if role in userRoles and not remembered:
             await self.config.member(user).remembered.set(True)
             remembered = True 
-        if remembered:
-            if role not in userRoles:
-                await user.add_roles(role)    
+        if remembered:   
             return
         messages += 1
         await self.config.member(user).messages.set(messages)
