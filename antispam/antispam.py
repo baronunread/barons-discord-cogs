@@ -137,6 +137,7 @@ class Antispam(commands.Cog):
         msgChannel, user = await self.get_context_data(ctx) 
         role = self.cache_role
         modChannel = self.cache_channel
+        await ctx.send(reason)
         if user.bot:
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles:
