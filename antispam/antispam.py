@@ -356,7 +356,7 @@ class Antispam(commands.Cog):
     async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime, selected, moderator = None):
         await self.remove_roles_and_mute(user, role)
         random.seed(random.random())
-        if not selected or selected == "":
+        if not selected:
             selected = random.choice(self.cache_messages)
         data =  {
                     "author": {"name": "MUTED" if not mutedTime else "TIMED MUTE", "icon_url": str(user.avatar_url)}
