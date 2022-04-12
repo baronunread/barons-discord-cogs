@@ -137,7 +137,6 @@ class Antispam(commands.Cog):
         msgChannel, user = await self.get_context_data(ctx) 
         role = self.cache_role
         modChannel = self.cache_channel
-        await ctx.send(reason)
         if user.bot:
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles:
@@ -197,7 +196,8 @@ class Antispam(commands.Cog):
                 remainingTime = time - int(currentTime - timeOfMute)
                 if remainingTime <= 0: return
                 data =  {
-                            "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)}                        }
+                            "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)}                        
+                        }
                 msgEmbed = Embed.from_dict(data)
                 msgEmbed.timestamp = datetime.now(tz = timezone.utc)
                 msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(remainingTime))
@@ -356,7 +356,7 @@ class Antispam(commands.Cog):
     async def mute(self, msgChannel, user, role, modChannel, manual, mutedTime, selected, moderator = None):
         await self.remove_roles_and_mute(user, role)
         random.seed(random.random())
-        if not selected:
+        if not selected or selected == "":
             selected = random.choice(self.cache_messages)
         data =  {
                     "author": {"name": "MUTED" if not mutedTime else "TIMED MUTE", "icon_url": str(user.avatar_url)}
