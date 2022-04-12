@@ -130,7 +130,7 @@ class Antispam(commands.Cog):
         """Manually mutes someone."""
         try:
             timeSeconds = textAndTime[0]
-            reason = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1]))
+            reason = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
         except TypeError:
             timeSeconds = 0
             reason = None
