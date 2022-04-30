@@ -23,7 +23,7 @@ class Regfilter(commands.Cog):
                                         r"\bt+\s*r+[\sr]*[aæ]+[\saæ]*n+\s*n+[\sn]*[iy]|\b\w*t+r+[aæ]+n{2,}[iy]"
                                         ],
                             "names": [],
-                            "ignore":[ r"\bhttp[^' ']*" ],
+                            "ignore":[],
                             "letters":["a","c","e","f","g","h","i","j","k","n","o","p","r","s","t","y"],
                             "a": ["ⱥ","@","4","α","λ","ƛ","δ","σ","а","ҩ"],                                             
                             "c": ["ȼ","с","¢","ƈ","ϲ","ͼ","ҫ"], 
