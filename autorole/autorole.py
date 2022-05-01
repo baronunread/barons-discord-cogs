@@ -26,16 +26,15 @@ class Autorole(commands.Cog):
             self.cache_messages = value
         
     async def validate_cache(self):
-        if self.cache_role == None: 
+        if not self.cache_role: 
             await self.update_cache("role")
-        if self.cache_messages == 0:
+        if not self.cache_messages:
             await self.update_cache("messages")
     
     @commands.command()
-    async def clear_me(self, ctx):
-        user = ctx.message.author
-        await self.config.member(user).clear()
-        await ctx.send("All cleared!")
+    @commands.has_permissions(manage_messages = True)
+    async def print_status(self, ctx):
+        await ctx.send(f"Role is {self.cache_role} \n Message amount is {self.cache_messages}")
 
     @commands.command()
     async def iamrole(self, ctx):
@@ -104,8 +103,6 @@ class Autorole(commands.Cog):
         if remembered:   
             return
         messages += 1
-        channel = message.channel
-        await channel.send(f"You've sent {messages} messages")
         await self.config.member(user).messages.set(messages)
         if messages >= self.cache_messages:
             await user.add_roles(role)
