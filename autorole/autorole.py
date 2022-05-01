@@ -34,7 +34,8 @@ class Autorole(commands.Cog):
     @commands.command()
     async def clear_me(self, ctx):
         user = ctx.message.author
-        await self.config.clear(user)
+        await self.config.member(user).clear()
+        await ctx.send("All cleared!")
 
     @commands.command()
     async def iamrole(self, ctx):
