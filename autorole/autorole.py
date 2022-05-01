@@ -30,11 +30,6 @@ class Autorole(commands.Cog):
             await self.update_cache("role")
         if not self.cache_messages:
             await self.update_cache("messages")
-    
-    @commands.command()
-    @commands.has_permissions(manage_messages = True)
-    async def print_status(self, ctx):
-        await ctx.send(f"Role is {self.cache_role} \n Message amount is {self.cache_messages}")
 
     @commands.command()
     async def iamrole(self, ctx):
@@ -111,3 +106,7 @@ class Autorole(commands.Cog):
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, guild, user):
+        await self.config.member(user).messages.set(0)  
