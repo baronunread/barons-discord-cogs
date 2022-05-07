@@ -38,7 +38,7 @@ class Antispam(commands.Cog):
                             "spamRole": None,
                             "roles": {},
                             "channel": None,
-                            "messages": ["has been muted."],
+                            "messages": ["has been punished."],
                             "mutes": [],
                             "whitelist": []
                          }
@@ -128,12 +128,6 @@ class Antispam(commands.Cog):
             string += "{}:{:02d}:{:02d}".format(h,m,s)
         return string
 
-    @commands.command(name = "test")
-    async def test(self, ctx):
-        await ctx.send(f'The dict cache is: {self.cache_roles}')
-        dict = await self.config.roles()
-        await ctx.send(f'The dict is: {dict}')
-
     @commands.command(name = "clear")
     @commands.has_permissions(manage_messages = True)
     async def clear(self, ctx):
@@ -143,26 +137,18 @@ class Antispam(commands.Cog):
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
-        """Manually mutes someone. If you don't pick a role it will pick the default one"""
+        """Manually punishes someone. If you don't pick a role it will pick the default one"""
         spamRole = await self.config.spamRole()
-        # try:
-        timeSeconds = textAndTime[0]
-        text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
-        roles = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
-        roleName = roles[0] if roles else spamRole
-        reason = re.sub(rf"\b{roleName}", "", text).strip()
-        if timeSeconds:
-            await ctx.send(f"Time = {timeSeconds}")
-        if text:
-            await ctx.send(f"Text = {text}")
-        if roleName:
-            await ctx.send(f"Role = {roleName}")
-        if reason:
-            await ctx.send(f"Reason = {reason}")
-        # except TypeError:
-        #     timeSeconds = 0
-        #     reason = None
-        #     roleName = spamRole
+        try:
+            timeSeconds = textAndTime[0]
+            text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
+            roles = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
+            roleName = roles[0] if roles else spamRole
+            reason = re.sub(rf"\b{roleName}", "", text).strip()
+        except TypeError:
+            timeSeconds = 0
+            reason = None
+            roleName = spamRole
         msgChannel, user = await self.get_context_data(ctx) 
         role = self.cache_roles[roleName]
         spamRole = self.cache_roles[spamRole]
@@ -170,7 +156,7 @@ class Antispam(commands.Cog):
         if user.bot:
             await ctx.send("I can't edit the roles of a bot!")
         elif role in user.roles or spamRole in user.roles:
-            await ctx.send("The user is already muted.")
+            await ctx.send("The user is already punished.")
         else:
             await self.mute(msgChannel, user, role, modChannel, True, timeSeconds, reason, ctx.message.author)
             if not timeSeconds: return
@@ -193,7 +179,7 @@ class Antispam(commands.Cog):
     @commands.command(name = "speakup")
     @commands.has_permissions(manage_messages = True)
     async def manual_unmute(self, ctx):
-        """Manually unmutes someone."""
+        """Manually frees someone."""
         msgChannel, user = await self.get_context_data(ctx)
         roles = self.cache_roles.values()
         modChannel = self.cache_channel
@@ -208,21 +194,21 @@ class Antispam(commands.Cog):
                 await self.config.mutes.set(listOfMutes)
             await self.unmute(user, role, modChannel, msgChannel)
         else:
-            await ctx.send("The user isn't muted.")
+            await ctx.send("The user isn't currently punished.")
 
     @commands.command(name = "checkup")
     @commands.has_permissions(manage_messages = True)
     async def timed_mute_info(self, ctx):
-        """Checks how much time is left in the muted status."""
+        """Checks how much time is left in the punished status."""
         notUsed, user = await self.get_context_data(ctx)
         roles = self.cache_roles.values()
         check = [role for role in roles if role in user.roles]
         if user.bot:
-            await ctx.send("Bots can't be muted so why should I even check up on them?!?")
+            await ctx.send("Bots can't be punished so why should I even check up on them?!?")
         elif check:
             time = await self.config.member(user).secondsOfMute()
             if not time:
-                await ctx.send("The mute is indefinite.")
+                await ctx.send("The punishment is indefinite.")
             else:
                 currentTime = ctx.message.created_at.timestamp()
                 timeOfMute = await self.config.member(user).timeOfMute()
@@ -236,7 +222,7 @@ class Antispam(commands.Cog):
                 msgEmbed.add_field(name = "TIME IN JAIL LEFT:", value = await self.represent_time(remainingTime))
                 await ctx.send(embed = msgEmbed)
         else:
-            await ctx.send("The user isn't muted.")   
+            await ctx.send("The user isn't currently punished.")   
 
     async def get_context_data(self, ctx):
         msgChannel, user = await self.try_get_user_and_channel(ctx.message)
@@ -424,7 +410,7 @@ class Antispam(commands.Cog):
             await self.config.member(user).spamValue.set(spamValue)    
             if spamValue >= 6 and not warned:
                 await self.config.member(user).warned.set(True)
-                await message.channel.send(f"{user.mention} stop spamming or you'll be muted.")
+                await message.channel.send(f"{user.mention} stop spamming or you'll be punished.")
             if warned:
                 try:
                     alreadyMuting, = [task for task in all_tasks() if task.get_name() == f"{user.id}Mute"]
@@ -448,9 +434,10 @@ class Antispam(commands.Cog):
         if mutedTime:
             await self.config.member(user).secondsOfMute.set(mutedTime)
             msgEmbed.add_field(name = "TIME IN JAIL:", value = await self.represent_time(mutedTime))
+            msgEmbed.add_field(name = "ROLE:", value = role.name)
         modEmbed = msgEmbed.copy()
         msgEmbed.description = f"{user.mention} {selected}"
-        mutedText = f"muted the user {user.mention}"
+        mutedText = f"punished the user {user.mention}"
         modEmbed.description = f"I have {mutedText} for spamming" if not manual else f"{moderator.mention} has {mutedText}"
         await msgChannel.send(embed = msgEmbed)
         await modChannel.send(embed = modEmbed)
