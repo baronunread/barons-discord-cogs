@@ -130,7 +130,9 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "test")
     async def test(self, ctx):
-        await ctx.send(f'The dict is: {self.cache_roles}')
+        await ctx.send(f'The dict cache is: {self.cache_roles}')
+        dict = await self.config.roles()
+        await ctx.send(f'The dict is: {dict}')
 
     @commands.command(name = "clear")
     @commands.has_permissions(manage_messages = True)
