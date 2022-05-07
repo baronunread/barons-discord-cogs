@@ -322,24 +322,24 @@ class Antispam(commands.Cog):
         """Base command. Select what to list."""
         pass
 
-    async def list_help(self, ctx, type):
+    async def list_help(self, author, type):
         list = self.return_cache(type) if (type != "roles") else self.return_cache(type).values()
-        await ctx.message.author.send(f"```{list}```")
+        await author.send(f"```{list}```")
 
     @list_things.command(name = "roles")
     async def list_whitelist(self, ctx):
         """Sends the list of roles through DMs"""
-        await self.list_help(ctx, "roles")
+        await self.list_help(ctx.message.author, "roles")
     
     @list_things.command(name = "whitelist")
     async def list_whitelist(self, ctx):
         """Sends the list of whitelisted channels through DMs"""
-        await self.list_help("whitelist")
+        await self.list_help(ctx.message.author, "whitelist")
 
     @list_things.command(name = "messages")
     async def list_mute(self, ctx):
         """Sends the list of messages through DMs"""
-        await self.list_help("messages")
+        await self.list_help(ctx.message.author, "messages")
        
     @antispam.command(name = "setup")
     async def setup(self, ctx):
