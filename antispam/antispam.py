@@ -257,7 +257,7 @@ class Antispam(commands.Cog):
         await self.config.set_raw(type, value = dict)
         await self.update_cache(type, dict)
     
-    @antispam.command(name = "add")
+    @antispam.group(name = "add")
     async def add(self, ctx):
         """Base command. Select what to add."""
 
@@ -295,7 +295,7 @@ class Antispam(commands.Cog):
         await self.config.set_raw(type, value = dict)
         await self.update_cache(type, dict)
     
-    @antispam.command(name = "delete")
+    @antispam.group(name = "delete")
     async def delete(self, ctx):
         """Base command. Select what to delete."""
 
@@ -315,7 +315,7 @@ class Antispam(commands.Cog):
         """Removes a message from the list of messages."""
         await self.del_something(ctx, "messages", msg)
 
-    @antispam.command(name = "list")
+    @antispam.group(name = "list")
     async def list_things(self, ctx):
         """Base command. Select what to list."""
         pass
