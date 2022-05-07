@@ -344,8 +344,8 @@ class Antispam(commands.Cog):
         """Insert the ID of the role that mutes people by default and the ID of the mod channel that you'd want to use for the notifications."""
         author = ctx.message.author
         channel = ctx.message.channel
-        def check(m, user):
-            return m.channel == channel and user == author
+        def check(msg):
+            return msg.channel == channel and msg.author == author
         try:
             await ctx.send("Please send the name of the role that will mute the people with the command by default.")
             spamRole = await self.bot.wait_for('message', check = check, timeout = 120.0)
