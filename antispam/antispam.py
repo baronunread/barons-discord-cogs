@@ -356,9 +356,9 @@ class Antispam(commands.Cog):
         except asyncio.TimeoutError:
             await ctx.send("Too much time has passed, I'll be going to sleep...")
             return    
-        await self.add_variable("spamRole", spamRole)
-        await self.add_key("roles", spamRole, int(spamRoleID))
-        await self.add_variable("channel", int(channelID))
+        await self.add_variable("spamRole", spamRole.content)
+        await self.add_key("roles", spamRole, int(spamRoleID.content))
+        await self.add_variable("channel", int(channelID.content))
         await ctx.send("Setup complete.")
 
     @commands.Cog.listener()
