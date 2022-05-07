@@ -324,17 +324,17 @@ class Antispam(commands.Cog):
         list = self.return_cache(type) if (type != "roles") else self.return_cache(type).values()
         await ctx.message.author.send(f"```{list}```")
 
-    @antispam.command(name = "roles")
+    @list_things.command(name = "roles")
     async def list_whitelist(self, ctx):
         """Sends the list of roles through DMs"""
         await self.list_help("roles")
     
-    @antispam.command(name = "whitelist")
+    @list_things.command(name = "whitelist")
     async def list_whitelist(self, ctx):
         """Sends the list of whitelisted channels through DMs"""
         await self.list_help("whitelist")
 
-    @antispam.command(name = "messages")
+    @list_things.command(name = "messages")
     async def list_mute(self, ctx):
         """Sends the list of messages through DMs"""
         await self.list_help("messages")
