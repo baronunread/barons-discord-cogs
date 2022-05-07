@@ -147,13 +147,17 @@ class Antispam(commands.Cog):
         spamRole = await self.config.spamRole()
         try:
             timeSeconds = textAndTime[0]
-            reason = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
-            # roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
-            # reason = re.sub(rf"\b{roleName}", text)
-            await ctx.send(timeSeconds)
-            # await ctx.send(text)
-            # await ctx.send(roleName)
-            await ctx.send(reason)
+            text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
+            roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
+            reason = re.sub(rf"\b{roleName}", text)
+            if timeSeconds:
+                await ctx.send(f"Time = {timeSeconds}")
+            if text:
+                await ctx.send(f"Text = {text}")
+            if roleName:
+                await ctx.send(f"Role = {roleName}")
+            if reason:
+                await ctx.send(f"Reason = {reason}")
         except TypeError:
             timeSeconds = 0
             reason = None
