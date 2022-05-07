@@ -128,6 +128,10 @@ class Antispam(commands.Cog):
             string += "{}:{:02d}:{:02d}".format(h,m,s)
         return string
 
+    @commands.command(name = "test")
+    async def test(self, ctx):
+        await ctx.send(f'The dict is: {self.cache_roles}')
+
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
     async def manual_mute(self, ctx, roleName, *, textAndTime :TimeConverter = None):
