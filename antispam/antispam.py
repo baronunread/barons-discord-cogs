@@ -148,8 +148,9 @@ class Antispam(commands.Cog):
         # try:
         timeSeconds = textAndTime[0]
         text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
-        roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
-        reason = re.sub(rf"\b{roleName}", text)
+        roles = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
+        roleName = roles[0] if roles else spamRole
+        reason = re.sub(rf"\b{roleName}", "", text).strip()
         if timeSeconds:
             await ctx.send(f"Time = {timeSeconds}")
         if text:
