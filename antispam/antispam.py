@@ -323,7 +323,7 @@ class Antispam(commands.Cog):
         pass
 
     async def list_help(self, author, type):
-        list = self.return_cache(type) if (type != "roles") else self.return_cache(type).values()
+        list = await self.return_cache(type) if (type != "roles") else await self.return_cache(type).values()
         await author.send(f"```{list}```")
 
     @list_things.command(name = "roles")
