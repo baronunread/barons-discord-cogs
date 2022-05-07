@@ -142,7 +142,7 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
-    async def manual_mute(self, ctx, roleName, *, textAndTime :TimeConverter = None):
+    async def manual_mute(self, ctx, roleName = None, *, textAndTime :TimeConverter = None):
         """Manually mutes someone. If you don't pick a role it will pick the default one"""
         spamRole = await self.config.spamRole()
         if not roleName:
