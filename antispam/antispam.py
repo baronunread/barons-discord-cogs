@@ -142,17 +142,18 @@ class Antispam(commands.Cog):
 
     @commands.command(name = "simmerdown")
     @commands.has_permissions(manage_messages = True)
-    async def manual_mute(self, ctx, roleName = None, *, textAndTime :TimeConverter = None):
+    async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
         """Manually mutes someone. If you don't pick a role it will pick the default one"""
         spamRole = await self.config.spamRole()
-        if not roleName:
-            roleName = spamRole  
         try:
             timeSeconds = textAndTime[0]
-            reason = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
+            text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
+            roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}")][0]
+            reason = re.sub(rf"\b{roleName}", text)
         except TypeError:
             timeSeconds = 0
             reason = None
+            roleName = spamRole
         msgChannel, user = await self.get_context_data(ctx) 
         role = self.cache_roles[roleName]
         spamRole = self.cache_roles[spamRole]
