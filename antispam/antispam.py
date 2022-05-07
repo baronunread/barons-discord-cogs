@@ -277,7 +277,7 @@ class Antispam(commands.Cog):
     @add.command(name = "role")
     async def add_role(self, ctx, key, id):
         """Adds a role to the list of roles."""
-        await self.add_key("roles", key, id)
+        await self.add_key("roles", key, int(id))
         await ctx.send("Successfully added the new role.")
 
     @add.command(name = "whitelist")
@@ -373,7 +373,7 @@ class Antispam(commands.Cog):
             await ctx.send("Too much time has passed, I'll be going to sleep...")
             return    
         await self.add_variable("spamRole", spamRole.content)
-        await self.add_key("roles", spamRole.content, int(spamRoleID.content))
+        await self.add_key("roles", spamRole.content, spamRoleID.content)
         await self.add_variable("channel", int(channelID.content))
         await ctx.send("Setup complete.")
 
