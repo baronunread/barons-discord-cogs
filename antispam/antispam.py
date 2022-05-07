@@ -145,23 +145,23 @@ class Antispam(commands.Cog):
     async def manual_mute(self, ctx, *, textAndTime :TimeConverter = None):
         """Manually mutes someone. If you don't pick a role it will pick the default one"""
         spamRole = await self.config.spamRole()
-        try:
-            timeSeconds = textAndTime[0]
-            text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
-            roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
-            reason = re.sub(rf"\b{roleName}", text)
-            if timeSeconds:
-                await ctx.send(f"Time = {timeSeconds}")
-            if text:
-                await ctx.send(f"Text = {text}")
-            if roleName:
-                await ctx.send(f"Role = {roleName}")
-            if reason:
-                await ctx.send(f"Reason = {reason}")
-        except TypeError:
-            timeSeconds = 0
-            reason = None
-            roleName = spamRole
+        # try:
+        timeSeconds = textAndTime[0]
+        text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
+        roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)]
+        reason = re.sub(rf"\b{roleName}", text)
+        if timeSeconds:
+            await ctx.send(f"Time = {timeSeconds}")
+        if text:
+            await ctx.send(f"Text = {text}")
+        if roleName:
+            await ctx.send(f"Role = {roleName}")
+        if reason:
+            await ctx.send(f"Reason = {reason}")
+        # except TypeError:
+        #     timeSeconds = 0
+        #     reason = None
+        #     roleName = spamRole
         msgChannel, user = await self.get_context_data(ctx) 
         role = self.cache_roles[roleName]
         spamRole = self.cache_roles[spamRole]
