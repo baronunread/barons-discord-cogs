@@ -148,7 +148,7 @@ class Antispam(commands.Cog):
         try:
             timeSeconds = textAndTime[0]
             text = re.sub(r"(?=<)(<...\d+>)|\s{2,}|^\s+", "", discord.utils.escape_mentions(textAndTime[1])).strip()
-            roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}")][0]
+            roleName = [role for role in self.cache_roles.keys() if re.search(rf"\b{role}", text)][0]
             reason = re.sub(rf"\b{roleName}", text)
         except TypeError:
             timeSeconds = 0
