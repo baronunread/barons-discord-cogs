@@ -327,7 +327,7 @@ class Antispam(commands.Cog):
         await author.send(f"```{list}```")
 
     @list_things.command(name = "roles")
-    async def list_whitelist(self, ctx):
+    async def list_roles(self, ctx):
         """Sends the list of roles through DMs"""
         await self.list_help(ctx.message.author, "roles")
     
