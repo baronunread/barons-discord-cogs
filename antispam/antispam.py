@@ -260,6 +260,7 @@ class Antispam(commands.Cog):
     @antispam.group(name = "add")
     async def add(self, ctx):
         """Base command. Select what to add."""
+        pass
 
     @add.command(name = "role")
     async def add_role(self, ctx, key, id):
@@ -289,7 +290,7 @@ class Antispam(commands.Cog):
         await self.update_cache(type, list)   
         await ctx.send("Successfully removed the item.")
 
-    async def del_key(self, ctx, type: str, key):
+    async def del_key(self, type: str, key):
         dict = await self.config.get_raw(type)
         dict.pop(key, None)
         await self.config.set_raw(type, value = dict)
@@ -298,9 +299,10 @@ class Antispam(commands.Cog):
     @antispam.group(name = "delete")
     async def delete(self, ctx):
         """Base command. Select what to delete."""
+        pass
 
     @delete.command(name = "role")
-    async def add_role(self, ctx, key, id):
+    async def del_role(self, ctx, key):
         """Deletes a role from the list of roles."""
         await self.del_key("roles", key)
         await ctx.send("Successfully deleted the new role.")
@@ -327,7 +329,7 @@ class Antispam(commands.Cog):
     @list_things.command(name = "roles")
     async def list_whitelist(self, ctx):
         """Sends the list of roles through DMs"""
-        await self.list_help("roles")
+        await self.list_help(ctx, "roles")
     
     @list_things.command(name = "whitelist")
     async def list_whitelist(self, ctx):
