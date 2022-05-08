@@ -377,11 +377,15 @@ class Antispam(commands.Cog):
     async def on_message(self, message): 
         ctx = await self.bot.get_context(message)
         whitelist = await self.return_cache("whitelist")
+        roles = await self.return_cache("roles")
         user = message.author
         if user.bot or ctx.valid or str(ctx.channel.id) in whitelist or not self.cache_roles:
             return
+        check = [role for role in roles.values() if role in user.roles]
+        if check:
+            return
         spamRole = await self.config.spamRole()
-        role = self.cache_roles[spamRole]   
+        role = roles[spamRole]   
         modChannel = self.cache_channel 
         msgList = await self.config.member(user).messageList()       
         timePrevious = await self.config.member(user).timePrevious() 
