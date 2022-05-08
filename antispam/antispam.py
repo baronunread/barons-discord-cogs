@@ -379,7 +379,7 @@ class Antispam(commands.Cog):
         whitelist = await self.return_cache("whitelist")
         roles = await self.return_cache("roles")
         user = message.author
-        if user.bot or ctx.valid or str(ctx.channel.id) in whitelist or not self.cache_roles:
+        if user.bot or ctx.valid or str(ctx.channel.id) in whitelist or not roles:
             return
         check = [role for role in roles.values() if role in user.roles]
         if check:
@@ -392,6 +392,8 @@ class Antispam(commands.Cog):
         previousMessageHash = await self.config.member(user).previousMessageHash()
         timeCurrent = message.created_at.timestamp()
         currentMessageHash = hash(message.clean_content)
+        if not currentMessageHash:
+            return
         currentMessageHash += message.attachments[0].size + hash(message.attachments[0].filename) if message.attachments else 0
         if not timePrevious or type(timePrevious) is not float:
             timePrevious = timeCurrent
