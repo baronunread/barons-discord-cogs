@@ -86,20 +86,15 @@ class Autorole(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         user = message.author
-        if user.bot or not self.cache_role:
+        remembered = await self.config.member(user).remembered()
+        if user.bot or not self.cache_role or remembered:
             return
         role = get(user.guild.roles, id = self.cache_role)
-        userRoles = user.roles
+        maxMessages = await self.config.messages()
         messages = await self.config.member(user).messages()
-        remembered = await self.config.member(user).remembered() 
-        if role in userRoles and not remembered:
-            await self.config.member(user).remembered.set(True)
-            remembered = True 
-        if remembered:   
-            return
         messages += 1
         await self.config.member(user).messages.set(messages)
-        if messages >= self.cache_messages:
+        if messages >= maxMessages:
             await user.add_roles(role)
             await self.config.member(user).remembered.set(True)
 
