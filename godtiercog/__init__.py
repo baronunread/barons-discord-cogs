@@ -11,5 +11,5 @@ if (not path.exists("posts.json") ):
     with open('posts.json', 'w') as file:
         json.dump(data, file)
 
-def setup(bot):
-    bot.add_cog(Godtiercog())
+async def setup(bot):
+    await bot.add_cog(Godtiercog())

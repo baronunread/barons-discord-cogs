@@ -1,4 +1,4 @@
 from .replypin import Replypin
 
-def setup(bot):
-    bot.add_cog(Replypin())
+async def setup(bot):
+    await bot.add_cog(Replypin())

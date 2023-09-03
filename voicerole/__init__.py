@@ -1,4 +1,4 @@
 from .voicerole import Voicerole
 
-def setup(bot):
-    bot.add_cog(Voicerole(bot))
+async def setup(bot):
+    await bot.add_cog(Voicerole(bot))

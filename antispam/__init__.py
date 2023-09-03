@@ -1,4 +1,4 @@
 from .antispam import Antispam
 
-def setup(bot):
-    bot.add_cog(Antispam(bot))
+async def setup(bot):
+    await bot.add_cog(Antispam(bot))

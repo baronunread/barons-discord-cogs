@@ -1,4 +1,4 @@
 from .lowtiercog import Lowtiercog
 
-def setup(bot):
-    bot.add_cog(Lowtiercog(bot))
+async def setup(bot):
+    await bot.add_cog(Lowtiercog(bot))
