@@ -43,7 +43,7 @@ class Antispam(commands.Cog):
                             "whitelist": []
                          }
         self.config.register_global(**default_global)
-        self.config.register_member(warned = False, spamValue = 0, timePrevious = None, previousMessageHash = None, messageList = [], roles = [], secondsOfMute = 0, timeOfMute = None)
+        self.config.register_member(warned = False, spamValue = 0, timePrevious = None, previousMessageHash = 0, messageList = [], roles = [], secondsOfMute = 0, timeOfMute = None)
         self.cache_roles = {}
         self.cache_channel = None
         self.cache_messages = []
