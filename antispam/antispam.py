@@ -215,7 +215,7 @@ class Antispam(commands.Cog):
                 remainingTime = time - int(currentTime - timeOfMute)
                 if remainingTime <= 0: return
                 data =  {
-                            "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar_url)}                        
+                            "author": {"name": "TIMED MUTE", "icon_url": str(user.avatar)}                        
                         }
                 msgEmbed = Embed.from_dict(data)
                 msgEmbed.timestamp = datetime.now(tz = timezone.utc)
@@ -433,7 +433,7 @@ class Antispam(commands.Cog):
         if not selected:
             selected = random.choice(self.cache_messages)
         data =  {
-                    "author": {"name": "PUNISHED" if not mutedTime else "TIMED PUNISHMENT", "icon_url": str(user.avatar_url)}
+                    "author": {"name": "PUNISHED" if not mutedTime else "TIMED PUNISHMENT", "icon_url": str(user.avatar)}
                 }
         msgEmbed = Embed.from_dict(data)
         msgEmbed.timestamp = datetime.now(tz = timezone.utc)
@@ -467,7 +467,7 @@ class Antispam(commands.Cog):
     async def unmute(self, user, role, modChannel, msgChannel = None):
         await self.add_roles_and_unmute(user, role)
         msgDict =   {
-                        "author": {"name": "FREED", "icon_url": str(user.avatar_url)},
+                        "author": {"name": "FREED", "icon_url": str(user.avatar)},
                         "description" : f"{user.mention} has been freed"                    }
         msgEmbed = Embed.from_dict(msgDict)
         msgEmbed.timestamp = datetime.now(tz = timezone.utc)
