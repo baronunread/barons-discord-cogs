@@ -468,7 +468,7 @@ class Antispam(commands.Cog):
         await self.add_roles_and_unmute(user, role)
         msgDict =   {
                         "author": {"name": "FREED", "icon_url": str(user.avatar)},
-                        "description" : f"{user.mention} has been freed"                    }
+                        "description" : f"{user.mention} has been freed" }
         msgEmbed = Embed.from_dict(msgDict)
         msgEmbed.timestamp = datetime.now(tz = timezone.utc)
         await modChannel.send(embed = msgEmbed)
@@ -515,10 +515,10 @@ class Antispam(commands.Cog):
     async def on_member_ban(self, guild, user):
         await self.config.member(user).clear()  
 
-    # @manual_mute.error
-    # @manual_unmute.error
-    # @timed_mute_info.error
-    # @purge.error
+    @manual_mute.error
+    @manual_unmute.error
+    @timed_mute_info.error
+    @purge.error
     async def check_error(self, ctx, error):
         if not self.cache_roles or not self.cache_channel:
             await ctx.send("I haven't been setup yet.")
