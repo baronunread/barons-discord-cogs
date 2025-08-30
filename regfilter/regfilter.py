@@ -14,27 +14,36 @@ MESSAGE_DELETE_INTERVAL = 1.0 / MESSAGE_DELETE_RATE_LIMIT
 MEMBER_EDIT_INTERVAL = 1.0 / MEMBER_EDIT_RATE_LIMIT
 
 class Regfilter(commands.Cog):
-    async def delete_worker(self):
+    async def queue_worker(self, queue, action, interval):
         while True:
-            message = await self.delete_queue.get()
+            item = await queue.get()
             try:
-                await message.delete()
+                await action(item)
             except discord.HTTPException as e:
                 if hasattr(e, 'status') and e.status == 429:
                     retry_after = e.response.headers.get('Retry-After')
                     if retry_after is None:
                         print(f"[Regfilter] HTTP 429 but no Retry-After header: {e}")
-                        return  # Early exit, skip this message
-                    # Add a small buffer (e.g., 0.1s) to ensure we're past the limit
+                        continue
                     wait_time = float(retry_after) + 0.1
+                    print(f"[Regfilter] Rate limited, waiting {wait_time}s")
                     await asyncio.sleep(wait_time)
                     try:
-                        await message.delete()
+                        await action(item)
                     except Exception as e2:
-                        print(f"[Regfilter] Failed to delete after retry: {e2}")
+                        print(f"[Regfilter] Failed after retry: {e2}")
                 else:
-                    print(f"[Regfilter] HTTPException during message delete: {e}")
-            await asyncio.sleep(MESSAGE_DELETE_INTERVAL)
+                    print(f"[Regfilter] HTTPException during queue_worker: {e}")
+            except Exception as e:
+                print(f"[Regfilter] Unexpected error in queue_worker: {e}")
+            await asyncio.sleep(interval)
+
+    async def delete_callback(self, message):
+        await message.delete()
+
+    async def member_edit_callback(self, edit_task):
+        member, new_nick = edit_task
+        await member.edit(nick=new_nick, reason="Filtered username")
     
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
@@ -44,9 +53,9 @@ class Regfilter(commands.Cog):
         # Queues for rate-limited actions
         self.delete_queue = asyncio.Queue()
         self.member_edit_queue = asyncio.Queue()
-        # Start worker tasks
-        self.bot.loop.create_task(self.delete_worker())
-        #self.bot.loop.create_task(self.member_edit_worker())
+        # Start generalized worker tasks
+        self.bot.loop.create_task(self.queue_worker(self.delete_queue, self.delete_callback, MESSAGE_DELETE_INTERVAL))
+        self.bot.loop.create_task(self.queue_worker(self.member_edit_queue, self.member_edit_callback, MEMBER_EDIT_INTERVAL))
         default_global = {
                             "regex": [  
                                         r"\bj+\s*[aæ]+[\saæ]*p+[\sp]*s?\b",
@@ -301,8 +310,7 @@ class Regfilter(commands.Cog):
             names = await self.return_cache("names")
             try:
                 name = random.choice(names)
-                await member.edit(nick = name, reason = "Filtered username")
-            except discord.HTTPException:
-                pass
             except IndexError:
+                print(f"[Regfilter] No names available for nickname replacement.")
                 return
+            await self.member_edit_queue.put((member, name))
