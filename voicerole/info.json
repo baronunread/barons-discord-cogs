@@ -1,8 +1,12 @@
 {
-    "author" : ["Baron Unread"],
-    "install_msg" : "I just hope it works",
-    "name" : "voicerole",
-    "short" : "f*cking tasks",
-    "description" : "Useful tool for making the voice chat text channel not a cesspool anymore!",
-    "tags" : ["tools"]
+    "author": [
+        "Baron Unread"
+    ],
+    "install_msg": "VoiceRole is live! Manage access to voice chat text channels automatically.",
+    "name": "voicerole",
+    "short": "Automated roles for voice chat participation.",
+    "description": "Useful tool for making the voice chat text channel not a cesspool anymore!",
+    "tags": [
+        "tools"
+    ]
 }
