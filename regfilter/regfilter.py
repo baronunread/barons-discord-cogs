@@ -1,5 +1,6 @@
 
 from redbot.core import commands, Config
+import logging
 import unicodedata
 import discord
 import random
@@ -23,19 +24,19 @@ class Regfilter(commands.Cog):
                 if hasattr(e, 'status') and e.status == 429:
                     retry_after = e.response.headers.get('Retry-After')
                     if retry_after is None:
-                        print(f"[Regfilter] HTTP 429 but no Retry-After header: {e}")
+                        logging.warning(f"[Regfilter] HTTP 429 but no Retry-After header: {e}")
                         continue
                     wait_time = float(retry_after) + 0.1
-                    print(f"[Regfilter] Rate limited, waiting {wait_time}s")
+                    logging.warning(f"[Regfilter] Rate limited, waiting {wait_time}s")
                     await asyncio.sleep(wait_time)
                     try:
                         await action(item)
                     except Exception as e2:
-                        print(f"[Regfilter] Failed after retry: {e2}")
+                        logging.error(f"[Regfilter] Failed after retry: {e2}")
                 else:
-                    print(f"[Regfilter] HTTPException during queue_worker: {e}")
+                    logging.error(f"[Regfilter] HTTPException during queue_worker: {e}")
             except Exception as e:
-                print(f"[Regfilter] Unexpected error in queue_worker: {e}")
+                logging.error(f"[Regfilter] Unexpected error in queue_worker: {e}")
             await asyncio.sleep(interval)
 
     async def delete_callback(self, message):
@@ -311,6 +312,6 @@ class Regfilter(commands.Cog):
             try:
                 name = random.choice(names)
             except IndexError:
-                print(f"[Regfilter] No names available for nickname replacement.")
+                logging.warning(f"[Regfilter] No names available for nickname replacement.")
                 return
             await self.member_edit_queue.put((member, name))
