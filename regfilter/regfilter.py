@@ -1,15 +1,52 @@
+
 from redbot.core import commands, Config
 import unicodedata
 import discord
 import random
 import re
+import asyncio
+
+# Global rate limit constants
+MESSAGE_DELETE_RATE_LIMIT = 50  # requests per second
+MEMBER_EDIT_RATE_LIMIT = 2      # requests per second
+
+MESSAGE_DELETE_INTERVAL = 1.0 / MESSAGE_DELETE_RATE_LIMIT
+MEMBER_EDIT_INTERVAL = 1.0 / MEMBER_EDIT_RATE_LIMIT
 
 class Regfilter(commands.Cog):
+    async def delete_worker(self):
+        while True:
+            message = await self.delete_queue.get()
+            try:
+                await message.delete()
+            except discord.HTTPException as e:
+                if hasattr(e, 'status') and e.status == 429:
+                    retry_after = e.response.headers.get('Retry-After')
+                    if retry_after is None:
+                        print(f"[Regfilter] HTTP 429 but no Retry-After header: {e}")
+                        return  # Early exit, skip this message
+                    # Add a small buffer (e.g., 0.1s) to ensure we're past the limit
+                    wait_time = float(retry_after) + 0.1
+                    await asyncio.sleep(wait_time)
+                    try:
+                        await message.delete()
+                    except Exception as e2:
+                        print(f"[Regfilter] Failed to delete after retry: {e2}")
+                else:
+                    print(f"[Regfilter] HTTPException during message delete: {e}")
+            await asyncio.sleep(MESSAGE_DELETE_INTERVAL)
+    
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
+        # Queues for rate-limited actions
+        self.delete_queue = asyncio.Queue()
+        self.member_edit_queue = asyncio.Queue()
+        # Start worker tasks
+        self.bot.loop.create_task(self.delete_worker())
+        #self.bot.loop.create_task(self.member_edit_worker())
         default_global = {
                             "regex": [  
                                         r"\bj+\s*[aæ]+[\saæ]*p+[\sp]*s?\b",
@@ -236,7 +273,7 @@ class Regfilter(commands.Cog):
         content = await self.replace(message.clean_content)
         regexs = await self.return_cache("regex")
         if await self.triggered_filter(content, regexs):
-            await message.delete()
+            await self.delete_queue.put(message)
 
     async def triggered_filter(self, content, regexs):
         for regex in regexs:
