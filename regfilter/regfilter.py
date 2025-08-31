@@ -90,22 +90,25 @@ class Regfilter(commands.Cog):
                             "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
                             }
         self.config.register_global(**default_global)
-        self.cache_regex = []
-        self.cache_names = []
-        self.cache_ignore = []
-        self.leet_dict = {}
+        # Unified cache dictionary
+        self.cache = {
+            "regex": [],
+            "names": [],
+            "ignore": [],
+            "leet_dict": {}
+        }
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
         for key in await self.config.letters():
             keyDict = dict.fromkeys(await self.config.get_raw(key), key)
-            self.leet_dict.update(keyDict)
+            self.cache["leet_dict"].update(keyDict)
 
     async def update_dict(self, badLetter, letter, add: bool):
         if add:
-            self.leet_dict[badLetter] = letter
+            self.cache["leet_dict"][badLetter] = letter
         else:
-            self.leet_dict.pop(badLetter)
+            self.cache["leet_dict"].pop(badLetter, None)
     
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
@@ -113,49 +116,40 @@ class Regfilter(commands.Cog):
         noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # removes most of the diacritics TODO #1 better diacritic remover
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
         alphanum = ''.join(c for c in noLookAlikes if c.isalnum() or c == ' ')              # remove anything that isn't an alphabetic character or a space
-        for ignore in self.cache_ignore:
+        for ignore in self.cache["ignore"]:
             alphanum = ignore.sub('', alphanum)                                             # remove ignored words as they are not important
         return alphanum
 
     async def clean(self, cleaned):
-        for toReplace in self.leet_dict:
-            cleaned = cleaned.replace(toReplace, self.leet_dict[toReplace])
+        for toReplace in self.cache["leet_dict"]:
+            cleaned = cleaned.replace(toReplace, self.cache["leet_dict"][toReplace])
         return cleaned
 
     async def return_cache(self, type: str):
-        if type == "regex":
-            return self.cache_regex
-        elif type == "names":
-            return self.cache_names
-        elif type == "ignore":
-            return self.cache_ignore
+        if type in self.cache:
+            return self.cache[type]
         else:
             return await self.config.get_raw(type)
 
-    async def compile_cache(self, type, value = None):
+    async def compile_cache(self, type, value=None):
         toCompile = value if value else await self.config.get_raw(type)
-        compiled = []
-        for pattern in toCompile:
-            compiled.append( re.compile(pattern) )
-        return compiled
+        return [re.compile(pattern) for pattern in toCompile]
 
-    async def update_cache(self, type, content = None):
+    async def update_cache(self, type, content=None):
         value = content if content else await self.config.get_raw(type)
-        if type == "regex":
-            self.cache_regex = await self.compile_cache("regex", value = value)
-        elif type == "names":
-            self.cache_names = value
-        elif type == "ignore":
-            self.cache_ignore = await self.compile_cache("ignore", value = value)
+        if type in ["regex", "ignore"]:
+            self.cache[type] = await self.compile_cache(type, value=value)
+        else:
+            self.cache[type] = value
                      
     async def validate_cache(self):
-        if not self.cache_regex: 
+        if not self.cache["regex"]:
             await self.update_cache("regex")
-        if not self.cache_ignore:
-            await self.update_cache("names")    
-        if not self.cache_ignore:
+        if not self.cache["names"]:
+            await self.update_cache("names")
+        if not self.cache["ignore"]:
             await self.update_cache("ignore")
-        if not self.leet_dict:
+        if not self.cache["leet_dict"]:
             await self.build_dict()
             
     @commands.group()
@@ -275,6 +269,12 @@ class Regfilter(commands.Cog):
         """Sends the letter list through DMs."""
         await self.generic_list(ctx, ctx.message.author, "letters")
     
+    async def triggered_filter(self, content, regexs):
+        for regex in regexs:
+            if regex.search(content):
+                return True
+        return False
+    
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         author = message.author
@@ -285,12 +285,6 @@ class Regfilter(commands.Cog):
         if await self.triggered_filter(content, regexs):
             await self.delete_queue.put(message)
 
-    async def triggered_filter(self, content, regexs):
-        for regex in regexs:
-            if regex.search(content):
-                return True
-        return False
-
     @commands.Cog.listener()
     async def on_message_edit(self, _prior, message):
         await self.on_message(message)
@@ -298,20 +292,16 @@ class Regfilter(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         if before.display_name != after.display_name:
-            await self.maybe_filter_name(after)
+            await self.filter_name(after)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        await self.maybe_filter_name(member)
+        await self.filter_name(member)
 
-    async def maybe_filter_name(self, member: discord.Member):
+    async def filter_name(self, member: discord.Member):
         content = await self.replace(member.display_name)
         regex = await self.return_cache("regex")
         if await self.triggered_filter(content, regex):
             names = await self.return_cache("names")
-            try:
-                name = random.choice(names)
-            except IndexError:
-                logging.warning(f"[Regfilter] No names available for nickname replacement.")
-                return
+            name = random.choice(names)
             await self.member_edit_queue.put((member, name))
