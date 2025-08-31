@@ -1,15 +1,62 @@
+
 from redbot.core import commands, Config
+import logging
 import unicodedata
 import discord
 import random
 import re
+import asyncio
+
+# Global rate limit constants
+MESSAGE_DELETE_RATE_LIMIT = 50  # requests per second
+MEMBER_EDIT_RATE_LIMIT = 2      # requests per second
+
+MESSAGE_DELETE_INTERVAL = 1.0 / MESSAGE_DELETE_RATE_LIMIT
+MEMBER_EDIT_INTERVAL = 1.0 / MEMBER_EDIT_RATE_LIMIT
 
 class Regfilter(commands.Cog):
+    async def queue_worker(self, queue, action, interval):
+        while True:
+            item = await queue.get()
+            try:
+                await action(item)
+            except discord.HTTPException as e:
+                if hasattr(e, 'status') and e.status == 429:
+                    retry_after = e.response.headers.get('Retry-After')
+                    if retry_after is None:
+                        logging.warning(f"[Regfilter] HTTP 429 but no Retry-After header: {e}")
+                        continue
+                    wait_time = float(retry_after) + 0.1
+                    logging.warning(f"[Regfilter] Rate limited, waiting {wait_time}s")
+                    await asyncio.sleep(wait_time)
+                    try:
+                        await action(item)
+                    except Exception as e2:
+                        logging.error(f"[Regfilter] Failed after retry: {e2}")
+                else:
+                    logging.error(f"[Regfilter] HTTPException during queue_worker: {e}")
+            except Exception as e:
+                logging.error(f"[Regfilter] Unexpected error in queue_worker: {e}")
+            await asyncio.sleep(interval)
+
+    async def delete_callback(self, message):
+        await message.delete()
+
+    async def member_edit_callback(self, edit_task):
+        member, new_nick = edit_task
+        await member.edit(nick=new_nick, reason="Filtered username")
+    
     """Uses a REGEX expression to filter bad words.
     Includes by default some very used slurs."""
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier = 38927046139453664535446215365606156952951)
+        # Queues for rate-limited actions
+        self.delete_queue = asyncio.Queue()
+        self.member_edit_queue = asyncio.Queue()
+        # Start generalized worker tasks
+        self.bot.loop.create_task(self.queue_worker(self.delete_queue, self.delete_callback, MESSAGE_DELETE_INTERVAL))
+        self.bot.loop.create_task(self.queue_worker(self.member_edit_queue, self.member_edit_callback, MEMBER_EDIT_INTERVAL))
         default_global = {
                             "regex": [  
                                         r"\bj+\s*[aæ]+[\saæ]*p+[\sp]*s?\b",
@@ -22,7 +69,7 @@ class Regfilter(commands.Cog):
                                         r"\bn+\s*[il]+[\sil]*g+\s*g+[\sg]*[eæœ]+[\seæœ]*r|\b\w*n+[il]+g{2,}[eæœ]+r",
                                         r"\bt+\s*r+[\sr]*[aæ]+[\saæ]*n+\s*n+[\sn]*[iy]|\b\w*t+r+[aæ]+n{2,}[iy]"
                                         ],
-                            "names": [],
+                            "names": ["Redacted"],
                             "ignore":[],
                             "letters":["a","c","e","f","g","h","i","j","k","n","o","p","r","s","t","y"],
                             "a": ["ⱥ","@","4","α","λ","ƛ","δ","σ","а","ҩ"],                                             
@@ -43,22 +90,25 @@ class Regfilter(commands.Cog):
                             "y": ["ɏ","ч","ӌ","ƴ","у","ҷ"]
                             }
         self.config.register_global(**default_global)
-        self.cache_regex = []
-        self.cache_names = []
-        self.cache_ignore = []
-        self.leet_dict = {}
+        # Unified cache dictionary
+        self.cache = {
+            "regex": [],
+            "names": [],
+            "ignore": [],
+            "leet_dict": {}
+        }
         self.bot.loop.create_task(self.validate_cache())
 
     async def build_dict(self):
         for key in await self.config.letters():
             keyDict = dict.fromkeys(await self.config.get_raw(key), key)
-            self.leet_dict.update(keyDict)
+            self.cache["leet_dict"].update(keyDict)
 
     async def update_dict(self, badLetter, letter, add: bool):
         if add:
-            self.leet_dict[badLetter] = letter
+            self.cache["leet_dict"][badLetter] = letter
         else:
-            self.leet_dict.pop(badLetter)
+            self.cache["leet_dict"].pop(badLetter, None)
     
     async def replace(self, msg):
         noMarkdown = msg.lower().replace("||","")                                           # makes text lowercase and removes critical markdown pairs, leaves singular |
@@ -66,49 +116,40 @@ class Regfilter(commands.Cog):
         noDiacritics = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])     # removes most of the diacritics TODO #1 better diacritic remover
         noLookAlikes = await self.clean(noDiacritics)                                       # removes the remaining characters that aren't necessarily of the type ALPHABETIC WITH
         alphanum = ''.join(c for c in noLookAlikes if c.isalnum() or c == ' ')              # remove anything that isn't an alphabetic character or a space
-        for ignore in self.cache_ignore:
+        for ignore in self.cache["ignore"]:
             alphanum = ignore.sub('', alphanum)                                             # remove ignored words as they are not important
         return alphanum
 
     async def clean(self, cleaned):
-        for toReplace in self.leet_dict:
-            cleaned = cleaned.replace(toReplace, self.leet_dict[toReplace])
+        for toReplace in self.cache["leet_dict"]:
+            cleaned = cleaned.replace(toReplace, self.cache["leet_dict"][toReplace])
         return cleaned
 
     async def return_cache(self, type: str):
-        if type == "regex":
-            return self.cache_regex
-        elif type == "names":
-            return self.cache_names
-        elif type == "ignore":
-            return self.cache_ignore
+        if type in self.cache:
+            return self.cache[type]
         else:
             return await self.config.get_raw(type)
 
-    async def compile_cache(self, type, value = None):
+    async def compile_cache(self, type, value=None):
         toCompile = value if value else await self.config.get_raw(type)
-        compiled = []
-        for pattern in toCompile:
-            compiled.append( re.compile(pattern) )
-        return compiled
+        return [re.compile(pattern) for pattern in toCompile]
 
-    async def update_cache(self, type, content = None):
+    async def update_cache(self, type, content=None):
         value = content if content else await self.config.get_raw(type)
-        if type == "regex":
-            self.cache_regex = await self.compile_cache("regex", value = value)
-        elif type == "names":
-            self.cache_names = value
-        elif type == "ignore":
-            self.cache_ignore = await self.compile_cache("ignore", value = value)
+        if type in ["regex", "ignore"]:
+            self.cache[type] = await self.compile_cache(type, value=value)
+        else:
+            self.cache[type] = value
                      
     async def validate_cache(self):
-        if not self.cache_regex: 
+        if not self.cache["regex"]:
             await self.update_cache("regex")
-        if not self.cache_ignore:
-            await self.update_cache("names")    
-        if not self.cache_ignore:
+        if not self.cache["names"]:
+            await self.update_cache("names")
+        if not self.cache["ignore"]:
             await self.update_cache("ignore")
-        if not self.leet_dict:
+        if not self.cache["leet_dict"]:
             await self.build_dict()
             
     @commands.group()
@@ -235,14 +276,8 @@ class Regfilter(commands.Cog):
             return
         content = await self.replace(message.clean_content)
         regexs = await self.return_cache("regex")
-        if await self.triggered_filter(content, regexs):
-            await message.delete()
-
-    async def triggered_filter(self, content, regexs):
-        for regex in regexs:
-            if regex.search(content):
-                return True
-        return False
+        if any(regex.search(content) for regex in regexs):
+            await self.delete_queue.put(message)
 
     @commands.Cog.listener()
     async def on_message_edit(self, _prior, message):
@@ -251,21 +286,16 @@ class Regfilter(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         if before.display_name != after.display_name:
-            await self.maybe_filter_name(after)
+            await self.filter_name(after)
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        await self.maybe_filter_name(member)
+        await self.filter_name(member)
 
-    async def maybe_filter_name(self, member: discord.Member):
+    async def filter_name(self, member: discord.Member):
         content = await self.replace(member.display_name)
-        regex = await self.return_cache("regex")
-        if await self.triggered_filter(content, regex):
+        regexs = await self.return_cache("regex")
+        if any(regex.search(content) for regex in regexs):
             names = await self.return_cache("names")
-            try:
-                name = random.choice(names)
-                await member.edit(nick = name, reason = "Filtered username")
-            except discord.HTTPException:
-                pass
-            except IndexError:
-                return
+            name = random.choice(names)
+            await self.member_edit_queue.put((member, name))

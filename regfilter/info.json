@@ -1,8 +1,12 @@
 {
-    "author" : ["Baron Unread"],
-    "install_msg" : "I just hope it works",
-    "name" : "regfilter",
-    "short" : "f*cking tasks",
-    "description" : "Filters text with a REGEX instead through literals.",
-    "tags" : ["tools"]
+    "author": [
+        "Baron Unread"
+    ],
+    "install_msg": "Regfilter installed! Your server can now filter messages using powerful regex rules.",
+    "name": "regfilter",
+    "short": "Advanced regex-based message filtering.",
+    "description": "Filters text with a REGEX instead through literals.",
+    "tags": [
+        "tools"
+    ]
 }

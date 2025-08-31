@@ -1,0 +1,15 @@
+{
+    "author": [
+        "Baron Unread"
+    ],
+    "install_msg": "Barons Discord Cogs suite installed! Enhance your server with moderation, automation, and utility tools.",
+    "name": "barons-discord-cogs",
+    "short": "A collection of Discord server management cogs.",
+    "description": "A suite of Discord cogs for moderation, automation, and server utilities. Includes antispam, autorole, regfilter, replypin, and voicerole for a better server experience.",
+    "tags": [
+        "discord",
+        "moderation",
+        "automation",
+        "tools"
+    ]
+}

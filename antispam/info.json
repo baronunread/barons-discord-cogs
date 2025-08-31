@@ -1,8 +1,12 @@
 {
-    "author" : ["Baron Unread"],
-    "install_msg" : "I just hope it works",
-    "name" : "antispam",
-    "short" : "f*cking tasks",
-    "description" : "Finds if someone is spamming and gives it a role. Gives the moderators a heads up in their private channel.",
-    "tags" : ["tools"]
+    "author": [
+        "Baron Unread"
+    ],
+    "install_msg": "Antispam is now active! Your server will be protected from spam and moderators will be notified automatically.",
+    "name": "antispam",
+    "short": "Detects and manages spam efficiently.",
+    "description": "Finds if someone is spamming and gives it a role. Gives the moderators a heads up in their private channel.",
+    "tags": [
+        "tools"
+    ]
 }

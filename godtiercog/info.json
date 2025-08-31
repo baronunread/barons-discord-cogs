@@ -1,8 +1,0 @@
-{
-    "author" : ["Baron Unread"],
-    "install_msg" : "I just hope it works",
-    "name" : "godtiercog",
-    "short" : "random funny posts",
-    "description" : "Randomly picks a post from a list",
-    "tags" : ["fun", "tools"]
-}

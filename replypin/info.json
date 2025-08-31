@@ -1,8 +1,12 @@
 {
-    "author" : ["Baron Unread"],
-    "install_msg" : "I just hope it works",
-    "name" : "replypin",
-    "short" : "f*cking tasks",
-    "description" : "Useful tool for pinning more messages than possible.",
-    "tags" : ["tools"]
+    "author": [
+        "Baron Unread"
+    ],
+    "install_msg": "ReplyPin is set up! Easily pin important messages beyond Discord's limits.",
+    "name": "replypin",
+    "short": "Pin replies and important messages with ease.",
+    "description": "Useful tool for pinning more messages than possible.",
+    "tags": [
+        "tools"
+    ]
 }
