@@ -269,12 +269,6 @@ class Regfilter(commands.Cog):
         """Sends the letter list through DMs."""
         await self.generic_list(ctx, ctx.message.author, "letters")
     
-    async def triggered_filter(self, content, regexs):
-        for regex in regexs:
-            if regex.search(content):
-                return True
-        return False
-    
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         author = message.author
@@ -282,7 +276,7 @@ class Regfilter(commands.Cog):
             return
         content = await self.replace(message.clean_content)
         regexs = await self.return_cache("regex")
-        if await self.triggered_filter(content, regexs):
+        if any(regex.search(content) for regex in regexs):
             await self.delete_queue.put(message)
 
     @commands.Cog.listener()
@@ -300,8 +294,8 @@ class Regfilter(commands.Cog):
 
     async def filter_name(self, member: discord.Member):
         content = await self.replace(member.display_name)
-        regex = await self.return_cache("regex")
-        if await self.triggered_filter(content, regex):
+        regexs = await self.return_cache("regex")
+        if any(regex.search(content) for regex in regexs):
             names = await self.return_cache("names")
             name = random.choice(names)
             await self.member_edit_queue.put((member, name))
